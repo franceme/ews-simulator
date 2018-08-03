@@ -1,0 +1,32 @@
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:cryptogram" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cd="urn:com:vantiv:types:encryption:cards:v1" xmlns:cg="urn:com:vantiv:types:encryption:cryptogram">
+    <xsd:import namespace="urn:com:vantiv:types:encryption:cards:v1" schemaLocation="encryption_v4_card.xsd"/>
+    <xsd:complexType name="VerifoneCryptogram">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="EncryptedCard" type="cd:Card"/>
+            <xsd:element minOccurs="0" name="MerchantKeyType" type="cg:VerifoneMerchantKeyType"/>
+            <xsd:element minOccurs="0" name="Terminal" type="cg:VerifoneTerminal"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="VerifoneTerminal">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="RegisterId" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="LaneId" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="ChainCode" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="MerchantId" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="DeviceId" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="EParms" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="VerifoneMerchantKeyType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="SHARED"/>
+            <xsd:enumeration value="UNIQUE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="VoltageCryptogram">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="EncryptedCard" type="cd:Card"/>
+            <xsd:element minOccurs="0" name="EncryptionTransferBlock" type="xsd:base64Binary"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

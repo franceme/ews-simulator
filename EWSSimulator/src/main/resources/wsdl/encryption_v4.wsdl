@@ -1,0 +1,1172 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch0="urn:com:vantiv:types:encryption:transactions:v1" xmlns:sch1="urn:com:vantiv:types:encryption:common" xmlns:sch2="urn:com:vantiv:types:encryption:cards:v1" xmlns:sch3="urn:com:vantiv:types:encryption:cryptogram" xmlns:sch4="urn:com:vantiv:types:encryption:echeck" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:com:vantiv:services:merchant:encryption:v4" targetNamespace="urn:com:vantiv:services:merchant:encryption:v4">
+  <wsdl:types>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cg="urn:com:vantiv:types:encryption:cryptogram" xmlns:cm="urn:com:vantiv:types:encryption:common" xmlns:ec="urn:com:vantiv:types:encryption:echeck" xmlns:pi="urn:com:vantiv:types:encryption:cards:v1" xmlns:pt="urn:com:vantiv:types:encryption:transactions:v1" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:transactions:v1">
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">
+			Data Types representing
+			Encryption Services Transactions
+			Copyright 2017 Vantiv
+			Version: 4.3.0
+		</xsd:documentation>
+</xsd:annotation>
+<xsd:import namespace="urn:com:vantiv:types:encryption:common"/>
+<xsd:import namespace="urn:com:vantiv:types:encryption:cards:v1"/>
+<xsd:import namespace="urn:com:vantiv:types:encryption:cryptogram"/>
+<xsd:import namespace="urn:com:vantiv:types:encryption:echeck"/>
+<xsd:element name="EchoRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Used to test
+					Connections
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element name="Test" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="EchoResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Used to test
+					Connections
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:all>
+<xsd:element name="Response" type="xsd:string"/>
+<xsd:element name="ProjectVersion" type="xsd:string"/>
+<xsd:element name="BuildNumber" type="xsd:string"/>
+<xsd:element name="RevisionNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="HostEnvironment" type="xsd:string"/>
+</xsd:all>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="TokenizeRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Tokenization
+					Transaction Request
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="CardSecurityCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="TokenizeResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Tokenization
+					Transaction Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="xsd:string"/>
+<xsd:element minOccurs="0" name="TokenNewlyGenerated" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="BatchTokenizeRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">BatchTokenization
+					Transaction Request
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element maxOccurs="500" minOccurs="0" name="Card" type="pi:Card"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="BatchTokenizeResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">BatchTokenization
+					Transaction Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element maxOccurs="500" minOccurs="0" name="Token" type="pi:Token"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="TokenInquiryRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Token Inquiry
+					Request.
+					This differs from BatchTokenenize in that a PAN will not be
+					tokenized if it hasn't already been tokenized.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element maxOccurs="200" minOccurs="0" name="Card" type="pi:Card"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="TokenInquiryResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Token Inquiry
+					Response.
+					This differs from BatchTokenenize in that a PAN will not
+					be tokenized if it hasn't already been tokenized.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element maxOccurs="200" minOccurs="0" name="Token" nillable="true" type="pi:Token"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="DetokenizeRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Detokenization
+					Transaction Request
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="xsd:string"/>
+<xsd:element minOccurs="0" name="CVV2Requested" type="xsd:boolean"/>
+<xsd:element minOccurs="0" name="ExpirationDateRequested" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="DetokenizeResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Detokenization
+					Transaction Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="CardSecurityCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="BatchDetokenizeRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">BatchDetokenization
+					Transaction Request
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element maxOccurs="500" minOccurs="0" name="Token" type="pi:Token"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="BatchDetokenizeResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">BatchTokenization
+					Transaction Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element maxOccurs="500" minOccurs="0" name="Card" type="pi:Card"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="RegistrationRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Registration
+					Transaction Request. Registers either a regular PAN or a DPAN
+					(enter either one in the PrimaryAccountNumber field). For DPAN,you
+					must supply the Cryptogram.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="CardSecurityCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:string"/>
+<xsd:element minOccurs="0" name="WalletType" type="pt:WalletType"/>
+<xsd:element minOccurs="0" name="ElectronicCommerceIndicator" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Cryptogram" type="xsd:base64Binary"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="RegistrationResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Registration
+					Transaction Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="xsd:string"/>
+<xsd:element minOccurs="0" name="RegId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="TokenNewlyGenerated" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="TokenRegistrationRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Token Registration
+					Transaction Request. Registers an existing token.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="TokenRegistrationResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Token Registration
+					Transaction Response. Return a newly generated regId for the
+					supplied token.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="RegId" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="DeregistrationRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Deregistration
+					Transaction Request. Deregisters the OmniToken and Pan/DPAN
+					information for the regId submitted. For PANs, if
+					CardSecurityCodeRequested is true and it exists for the PAN, then
+					it is purged from the Vantiv Token Vault after it is returned.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="RegId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="CardSecurityCodeRequested" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="DeregistrationResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Deregistration
+					Transaction Response. If the response contains a Cryptogram, then
+					the token is based on a DPAN. Otherwise, it is based on a regular
+					PAN.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="xsd:string"/>
+<xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="CardSecurityCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:string"/>
+<xsd:element minOccurs="0" name="WalletType" type="pt:WalletType"/>
+<xsd:element minOccurs="0" name="ElectronicCommerceIndicator" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Cryptogram" type="xsd:base64Binary"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="OrderRegistrationRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">OrderRegistration
+					Transaction Request. Registers an order transaction (currently just
+					cvv) into a LVT. The Order LVT returned expires in 24 hours.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="CardSecurityCode" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="OrderRegistrationResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">OrderRegistration
+					Transaction Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="OrderLVT" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="OrderDeregistrationRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">OrderDeregistration
+					Transaction Request. Detokenizes an OmniToken
+					into a Pan and
+					optionally deregisters an Order LVT into a
+					CVV, (an error
+					will be
+					returned if the deregistration fails).
+					Note that the CVV is
+					not
+					purged from the database
+					after it is returned.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="OrderLVT" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Token" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="OrderDeregistrationResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">OrderDeregistration
+					Transaction Response.
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="CardSecurityCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="DecryptRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Decryption Transaction
+					Request
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:choice>
+<xsd:element minOccurs="0" name="VerifoneCryptogram" type="cg:VerifoneCryptogram"/>
+<xsd:element minOccurs="0" name="VoltageCryptogram" type="cg:VoltageCryptogram"/>
+</xsd:choice>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="DecryptResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Decryption Transaction
+					Response
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="DecryptedCard" type="pi:Card"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ECheckTokenizeRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Tokenization
+					Transaction Request for ECheck
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Account" type="ec:Account"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ECheckTokenizeResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Tokenization
+					Transaction Response for ECheck
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="ec:Token"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ECheckDetokenizeRequest">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Detokenization
+					Transaction Request for ECheck
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionRequest">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Token" type="ec:Token"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ECheckDetokenizeResponse">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Detokenization
+					Transaction Response for ECheck
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Account" type="ec:Account"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:complexType abstract="true" name="EncryptionRequest">
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Base Type for
+				Encryption Requests
+			</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Merchant" type="pt:MerchantType"/>
+<xsd:element minOccurs="0" name="BillingFields" type="pt:BillingFields"/>
+</xsd:sequence>
+<xsd:attribute name="merchant-ref-id" type="xsd:string"/>
+</xsd:complexType>
+<xsd:complexType abstract="true" name="EncryptionResponse">
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Base Type for
+				Encryption Responses
+			</xsd:documentation>
+</xsd:annotation>
+<xsd:sequence>
+<xsd:element minOccurs="0" name="RequestId" type="xsd:string"/>
+<xsd:element maxOccurs="10000" minOccurs="0" name="Error" type="cm:VError"/>
+</xsd:sequence>
+<xsd:attribute name="merchant-ref-id" type="xsd:string"/>
+</xsd:complexType>
+<xsd:complexType name="EncryptionFault">
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="message" type="xsd:string"/>
+<xsd:element minOccurs="0" name="code" type="xsd:string"/>
+<xsd:element minOccurs="0" name="id" type="xsd:int"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+<xsd:element name="RequestValidationFault">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Request Validation
+					Fault
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionFault"/>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:element name="ServerFault">
+<xsd:complexType>
+<xsd:annotation>
+<xsd:documentation xml:lang="en-US">Server Fault
+				</xsd:documentation>
+</xsd:annotation>
+<xsd:complexContent>
+<xsd:extension base="pt:EncryptionFault"/>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:element>
+<xsd:complexType name="MerchantType">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="RollupId" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="BillingFields">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="MerchantId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Source" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Intent" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:simpleType final="restriction" name="WalletType">
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="ANDROID"/>
+<xsd:enumeration value="APPLE"/>
+<xsd:enumeration value="SAMSUNG"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cm="urn:com:vantiv:types:encryption:common" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:common">
+<xsd:complexType name="VObject">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="Error" type="cm:VError"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="VError">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="message" type="xsd:string"/>
+<xsd:element minOccurs="0" name="code" type="xsd:string"/>
+<xsd:element minOccurs="0" name="id" type="xsd:int"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cd="urn:com:vantiv:types:encryption:cards:v1" xmlns:cm="urn:com:vantiv:types:encryption:common" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:cards:v1">
+<xsd:import namespace="urn:com:vantiv:types:encryption:common"/>
+<xsd:complexType name="Card">
+<xsd:complexContent>
+<xsd:extension base="cm:VObject">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="ExpirationDate" type="xsd:string"/>
+<xsd:element minOccurs="0" name="SecurityCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Track1" type="xsd:string"/>
+<xsd:element minOccurs="0" name="Track2" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+<xsd:complexType name="Token">
+<xsd:complexContent>
+<xsd:extension base="cm:VObject">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="TokenValue" type="xsd:string"/>
+<xsd:element minOccurs="0" name="TokenNewlyGenerated" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cd="urn:com:vantiv:types:encryption:cards:v1" xmlns:cg="urn:com:vantiv:types:encryption:cryptogram" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:cryptogram">
+<xsd:import namespace="urn:com:vantiv:types:encryption:cards:v1"/>
+<xsd:complexType name="VerifoneCryptogram">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="EncryptedCard" type="cd:Card"/>
+<xsd:element minOccurs="0" name="MerchantKeyType" type="cg:VerifoneMerchantKeyType"/>
+<xsd:element minOccurs="0" name="Terminal" type="cg:VerifoneTerminal"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:complexType name="VerifoneTerminal">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="RegisterId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="LaneId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="ChainCode" type="xsd:string"/>
+<xsd:element minOccurs="0" name="MerchantId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="DeviceId" type="xsd:string"/>
+<xsd:element minOccurs="0" name="EParms" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+<xsd:simpleType name="VerifoneMerchantKeyType">
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="SHARED"/>
+<xsd:enumeration value="UNIQUE"/>
+</xsd:restriction>
+</xsd:simpleType>
+<xsd:complexType name="VoltageCryptogram">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="EncryptedCard" type="cd:Card"/>
+<xsd:element minOccurs="0" name="EncryptionTransferBlock" type="xsd:base64Binary"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cm="urn:com:vantiv:types:encryption:common" xmlns:ec="urn:com:vantiv:types:encryption:echeck" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:echeck">
+<xsd:import namespace="urn:com:vantiv:types:encryption:common"/>
+<xsd:complexType name="Account">
+<xsd:complexContent>
+<xsd:extension base="cm:VObject">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="AccountType" type="ec:AccountType"/>
+<xsd:element minOccurs="0" name="AccountNumber" type="xsd:string"/>
+<xsd:element minOccurs="0" name="RoutingNumber" type="xsd:string"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+<xsd:complexType name="Token">
+<xsd:complexContent>
+<xsd:extension base="cm:VObject">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="tokenValue" type="xsd:string"/>
+<xsd:element minOccurs="0" name="tokenNewlyGenerated" type="xsd:boolean"/>
+</xsd:sequence>
+</xsd:extension>
+</xsd:complexContent>
+</xsd:complexType>
+<xsd:simpleType final="restriction" name="AccountType">
+<xsd:restriction base="xsd:string">
+<xsd:enumeration value="CHECKING"/>
+<xsd:enumeration value="SAVINGS"/>
+<xsd:enumeration value="CORPORATE_CHECKING"/>
+<xsd:enumeration value="CORPORATE_SAVINGS"/>
+</xsd:restriction>
+</xsd:simpleType>
+</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="BatchDetokenizeRequest">
+    <wsdl:part element="sch0:BatchDetokenizeRequest" name="BatchDetokenizeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EchoResponse">
+    <wsdl:part element="sch0:EchoResponse" name="EchoResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RegistrationResponse">
+    <wsdl:part element="sch0:RegistrationResponse" name="RegistrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DecryptResponse">
+    <wsdl:part element="sch0:DecryptResponse" name="DecryptResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="TokenInquiryResponse">
+    <wsdl:part element="sch0:TokenInquiryResponse" name="TokenInquiryResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="TokenizeResponse">
+    <wsdl:part element="sch0:TokenizeResponse" name="TokenizeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeregistrationRequest">
+    <wsdl:part element="sch0:DeregistrationRequest" name="DeregistrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="OrderDeregistrationResponse">
+    <wsdl:part element="sch0:OrderDeregistrationResponse" name="OrderDeregistrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DecryptRequest">
+    <wsdl:part element="sch0:DecryptRequest" name="DecryptRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="TokenInquiryRequest">
+    <wsdl:part element="sch0:TokenInquiryRequest" name="TokenInquiryRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RegistrationRequest">
+    <wsdl:part element="sch0:RegistrationRequest" name="RegistrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="TokenRegistrationRequest">
+    <wsdl:part element="sch0:TokenRegistrationRequest" name="TokenRegistrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EchoRequest">
+    <wsdl:part element="sch0:EchoRequest" name="EchoRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RequestValidationFault">
+    <wsdl:part element="sch0:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DetokenizeRequest">
+    <wsdl:part element="sch0:DetokenizeRequest" name="DetokenizeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="TokenizeRequest">
+    <wsdl:part element="sch0:TokenizeRequest" name="TokenizeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerFault">
+    <wsdl:part element="sch0:ServerFault" name="ServerFault">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DetokenizeResponse">
+    <wsdl:part element="sch0:DetokenizeResponse" name="DetokenizeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ECheckDetokenizeResponse">
+    <wsdl:part element="sch0:ECheckDetokenizeResponse" name="ECheckDetokenizeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="TokenRegistrationResponse">
+    <wsdl:part element="sch0:TokenRegistrationResponse" name="TokenRegistrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ECheckDetokenizeRequest">
+    <wsdl:part element="sch0:ECheckDetokenizeRequest" name="ECheckDetokenizeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="OrderDeregistrationRequest">
+    <wsdl:part element="sch0:OrderDeregistrationRequest" name="OrderDeregistrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BatchTokenizeResponse">
+    <wsdl:part element="sch0:BatchTokenizeResponse" name="BatchTokenizeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="OrderRegistrationResponse">
+    <wsdl:part element="sch0:OrderRegistrationResponse" name="OrderRegistrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DeregistrationResponse">
+    <wsdl:part element="sch0:DeregistrationResponse" name="DeregistrationResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ECheckTokenizeResponse">
+    <wsdl:part element="sch0:ECheckTokenizeResponse" name="ECheckTokenizeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BatchDetokenizeResponse">
+    <wsdl:part element="sch0:BatchDetokenizeResponse" name="BatchDetokenizeResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BatchTokenizeRequest">
+    <wsdl:part element="sch0:BatchTokenizeRequest" name="BatchTokenizeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="OrderRegistrationRequest">
+    <wsdl:part element="sch0:OrderRegistrationRequest" name="OrderRegistrationRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ECheckTokenizeRequest">
+    <wsdl:part element="sch0:ECheckTokenizeRequest" name="ECheckTokenizeRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="EncryptionWebServiceV4">
+    <wsdl:operation name="BatchDetokenize">
+      <wsdl:input message="tns:BatchDetokenizeRequest" name="BatchDetokenizeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:BatchDetokenizeResponse" name="BatchDetokenizeResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Echo">
+      <wsdl:input message="tns:EchoRequest" name="EchoRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:EchoResponse" name="EchoResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Registration">
+      <wsdl:input message="tns:RegistrationRequest" name="RegistrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:RegistrationResponse" name="RegistrationResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Decrypt">
+      <wsdl:input message="tns:DecryptRequest" name="DecryptRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:DecryptResponse" name="DecryptResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TokenInquiry">
+      <wsdl:input message="tns:TokenInquiryRequest" name="TokenInquiryRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:TokenInquiryResponse" name="TokenInquiryResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Tokenize">
+      <wsdl:input message="tns:TokenizeRequest" name="TokenizeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:TokenizeResponse" name="TokenizeResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Deregistration">
+      <wsdl:input message="tns:DeregistrationRequest" name="DeregistrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:DeregistrationResponse" name="DeregistrationResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="OrderDeregistration">
+      <wsdl:input message="tns:OrderDeregistrationRequest" name="OrderDeregistrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:OrderDeregistrationResponse" name="OrderDeregistrationResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TokenRegistration">
+      <wsdl:input message="tns:TokenRegistrationRequest" name="TokenRegistrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:TokenRegistrationResponse" name="TokenRegistrationResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Detokenize">
+      <wsdl:input message="tns:DetokenizeRequest" name="DetokenizeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:DetokenizeResponse" name="DetokenizeResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ECheckDetokenize">
+      <wsdl:input message="tns:ECheckDetokenizeRequest" name="ECheckDetokenizeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:ECheckDetokenizeResponse" name="ECheckDetokenizeResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="BatchTokenize">
+      <wsdl:input message="tns:BatchTokenizeRequest" name="BatchTokenizeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:BatchTokenizeResponse" name="BatchTokenizeResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="OrderRegistration">
+      <wsdl:input message="tns:OrderRegistrationRequest" name="OrderRegistrationRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:OrderRegistrationResponse" name="OrderRegistrationResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ECheckTokenize">
+      <wsdl:input message="tns:ECheckTokenizeRequest" name="ECheckTokenizeRequest">
+    </wsdl:input>
+      <wsdl:output message="tns:ECheckTokenizeResponse" name="ECheckTokenizeResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:ServerFault" name="ServerFault">
+    </wsdl:fault>
+      <wsdl:fault message="tns:RequestValidationFault" name="RequestValidationFault">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="EncryptionWebServiceV4Soap11" type="tns:EncryptionWebServiceV4">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="BatchDetokenize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="BatchDetokenizeRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="BatchDetokenizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Echo">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="EchoRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="EchoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Registration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="RegistrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="RegistrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Decrypt">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DecryptRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DecryptResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TokenInquiry">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="TokenInquiryRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="TokenInquiryResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Tokenize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="TokenizeRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="TokenizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Deregistration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DeregistrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DeregistrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="OrderDeregistration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="OrderDeregistrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="OrderDeregistrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="TokenRegistration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="TokenRegistrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="TokenRegistrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="Detokenize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="DetokenizeRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="DetokenizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ECheckDetokenize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="ECheckDetokenizeRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ECheckDetokenizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="BatchTokenize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="BatchTokenizeRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="BatchTokenizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="OrderRegistration">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="OrderRegistrationRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="OrderRegistrationResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ECheckTokenize">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="ECheckTokenizeRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ECheckTokenizeResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerFault">
+        <soap:fault name="ServerFault" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequestValidationFault">
+        <soap:fault name="RequestValidationFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EncryptionWebServiceV4Service">
+    <wsdl:port binding="tns:EncryptionWebServiceV4Soap11" name="EncryptionWebServiceV4Soap11">
+      <soap:address location="https://ws.vantiv.com/merchant/encryption/v4"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

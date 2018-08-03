@@ -1,0 +1,32 @@
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:echeck" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cm="urn:com:vantiv:types:encryption:common" xmlns:ec="urn:com:vantiv:types:encryption:echeck">
+    <xsd:import namespace="urn:com:vantiv:types:encryption:common" schemaLocation="encryption_v4_common.xsd"/>
+    <xsd:complexType name="Account">
+        <xsd:complexContent>
+            <xsd:extension base="cm:VObject">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" name="AccountType" type="ec:AccountType"/>
+                    <xsd:element minOccurs="0" name="AccountNumber" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="RoutingNumber" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="eCheckToken">
+        <xsd:complexContent>
+            <xsd:extension base="cm:VObject">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" name="tokenValue" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="tokenNewlyGenerated" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:simpleType final="restriction" name="AccountType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CHECKING"/>
+            <xsd:enumeration value="SAVINGS"/>
+            <xsd:enumeration value="CORPORATE_CHECKING"/>
+            <xsd:enumeration value="CORPORATE_SAVINGS"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+</xsd:schema>

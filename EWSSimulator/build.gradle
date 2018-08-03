@@ -1,0 +1,64 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+configurations {
+    jaxb
+}
+
+bootJar {
+    baseName = 'gs-producing-web-service'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-web-services")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    compile group: 'wsdl4j', name: 'wsdl4j', version: '1.6.1'
+    jaxb group:'com.sun.xml.bind', name:'jaxb-core', version:'2.2.7'
+    jaxb group:'com.sun.xml.bind', name:'jaxb-impl', version:'2.2.5-5'
+    jaxb group:'com.sun.xml.bind', name:'jaxb-xjc', version:'2.2.5'
+}
+
+task jaxb () {
+    def jaxbTargetDir = file( "${buildDir}/generated" )
+
+    doLast {
+        jaxbTargetDir.mkdirs()
+
+        ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.jaxb.asPath)
+        ant.jaxbTargetDir = jaxbTargetDir
+
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'ewsSimulator.ws.generated',
+                schema: 'src/main/resources/xsd/encryption_v4_transactions.xsd'
+        )
+    }
+}
+compileJava.dependsOn jaxb
+
+
+
+
+
