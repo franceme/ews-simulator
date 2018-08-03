@@ -1,0 +1,14 @@
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:common" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cm="urn:com:vantiv:types:encryption:common">
+    <xsd:complexType name="VObject">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="Error" type="cm:VError"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="VError">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" name="message" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="code" type="xsd:string"/>
+            <xsd:element minOccurs="0" name="id" type="xsd:int"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

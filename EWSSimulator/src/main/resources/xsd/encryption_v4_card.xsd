@@ -1,0 +1,26 @@
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn:com:vantiv:types:encryption:cards:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:cd="urn:com:vantiv:types:encryption:cards:v1" xmlns:cm="urn:com:vantiv:types:encryption:common">
+    <xsd:import namespace="urn:com:vantiv:types:encryption:common" schemaLocation="encryption_v4_common.xsd"/>
+    <xsd:complexType name="Card">
+        <xsd:complexContent>
+            <xsd:extension base="cm:VObject">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" name="PrimaryAccountNumber" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="ExpirationDate" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="SecurityCode" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="Track1" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="Track2" type="xsd:string"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="Token">
+        <xsd:complexContent>
+            <xsd:extension base="cm:VObject">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" name="TokenValue" type="xsd:string"/>
+                    <xsd:element minOccurs="0" name="TokenNewlyGenerated" type="xsd:boolean"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>
