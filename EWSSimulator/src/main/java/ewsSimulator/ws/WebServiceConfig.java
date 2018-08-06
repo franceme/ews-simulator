@@ -23,7 +23,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         return new ServletRegistrationBean(servlet, "/ws/*");
     }
 
-    @Bean(name = "EWS")
+    @Bean(name = "EWSSimulator")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema encryptionSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("EncryptionWebServiceV4");
@@ -35,7 +35,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public XsdSchema encryptionSchema() {
-        XsdSchema schema = new SimpleXsdSchema(new ClassPathResource("/xsd/encryption_v4_transactions.xsd"));
+        XsdSchema schema = new SimpleXsdSchema(new ClassPathResource("xsd/encryption_v4_transactions.xsd"));
         return schema;
     }
 }
