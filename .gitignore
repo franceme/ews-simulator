@@ -33,4 +33,7 @@ build/
 EWSSimulator.iml
 out/
 EWSSimulator/nohup.out
+EWSSimulator/gradle.properties
+EWSSimulator/classes/
+
 
