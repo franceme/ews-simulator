@@ -40,9 +40,16 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest) {
         RegistrationResponse response = new RegistrationResponse();
-        response.setRequestId("417d3d96-0675-4306-be5b-652c8c6ba9f7");
-        response.setRegId("1479321767965480923");
-        response.setToken("1111000100038566");
+        String primaryAccountNumber = registrationRequest.getPrimaryAccountNumber();
+        int lengthPAN = primaryAccountNumber.length();
+        response.setRequestId(EWSUtils.randomReqId());
+        response.setRegId(EWSUtils.getRegId(primaryAccountNumber));
+        response.setToken(EWSUtils.getToken(primaryAccountNumber));
+
+        if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
+            response.setTokenNewlyGenerated(true);
+        }
+
         response.setTokenNewlyGenerated(false);
 
         return response;
