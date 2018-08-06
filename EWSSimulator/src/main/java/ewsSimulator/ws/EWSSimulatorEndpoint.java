@@ -31,6 +31,11 @@ public class EWSSimulatorEndpoint {
         return new EchoResponse();
     }
 
+    /**
+     *
+     * @param registrationRequest
+     * @return
+     */
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest) {
