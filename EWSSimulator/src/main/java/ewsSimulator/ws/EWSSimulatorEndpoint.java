@@ -1,14 +1,5 @@
 package ewsSimulator.ws;
 
-import ewsSimulator.ws.generated.BatchDetokenizeRequest;
-import ewsSimulator.ws.generated.BatchDetokenizeResponse;
-import ewsSimulator.ws.generated.EchoRequest;
-import ewsSimulator.ws.generated.EchoResponse;
-import ewsSimulator.ws.generated.RegistrationRequest;
-import ewsSimulator.ws.generated.RegistrationResponse;
-import ewsSimulator.ws.generated.TokenizeRequest;
-import ewsSimulator.ws.generated.TokenizeResponse;
-
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -40,9 +31,10 @@ public class EWSSimulatorEndpoint {
      */
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
-    public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest) {
+    public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest) throws InterruptedException {
         RegistrationResponse response = new RegistrationResponse();
         String primaryAccountNumber = registrationRequest.getPrimaryAccountNumber();
+        EWSUtils.delayInResponse(primaryAccountNumber);
         int lengthPAN = primaryAccountNumber.length();
         response.setRequestId(EWSUtils.randomReqId());
         response.setRegId(EWSUtils.getRegId(primaryAccountNumber));

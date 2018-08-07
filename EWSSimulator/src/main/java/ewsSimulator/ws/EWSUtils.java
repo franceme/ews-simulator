@@ -1,5 +1,7 @@
 package ewsSimulator.ws;
 
+import static java.lang.Thread.sleep;
+
 import java.util.UUID;
 
 public class EWSUtils {
@@ -28,11 +30,18 @@ public class EWSUtils {
         }
     }
 
-
     public static String getPAN(String token) {
 
         return getToken(token);
     }
 
+    public static void delayInResponse(String primaryAccountNumber) throws InterruptedException {
+        int lengthPAM = primaryAccountNumber.length();
+
+        if(lengthPAM > 2 && primaryAccountNumber.substring(0, 2).equals("00")) {
+            int time = Integer.parseInt(primaryAccountNumber.substring(2,3));
+            sleep(time * 1000);
+        }
+    }
 
 }
