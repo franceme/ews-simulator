@@ -1,9 +1,12 @@
 package ewsSimulator.ws;
 
+import org.springframework.ws.client.WebServiceFaultException;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+
+import java.util.UUID;
 
 
 @Endpoint
@@ -66,5 +69,30 @@ public class EWSSimulatorEndpoint {
 
         tokenizeResponse.setRequestId(EWSUtils.randomReqId());
         return tokenizeResponse;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "OrderRegistrationRequest")
+    @ResponsePayload
+    public OrderRegistrationResponse orderRegistration(@RequestPayload OrderRegistrationRequest orderRegistrationRequest){
+
+        OrderRegistrationResponse response = new OrderRegistrationResponse();
+        String cvv = "";
+        String orderLVT = "3";
+
+        if(orderRegistrationRequest.getCardSecurityCode() != null)
+            cvv = orderRegistrationRequest.getCardSecurityCode();
+
+
+        if(!EWSUtils.isSecurityCodeValid(cvv))
+            throw new WebServiceFaultException("ERROR: invalid CardSecurityCode");
+
+
+        if(!EWSUtils.isSecurityCodeEmpty(cvv))
+            response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
+
+        response.setRequestId(UUID.randomUUID().toString());
+
+
+        return response;
     }
 }
