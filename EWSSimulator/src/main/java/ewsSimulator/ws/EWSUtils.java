@@ -2,6 +2,7 @@ package ewsSimulator.ws;
 
 import static java.lang.Thread.sleep;
 
+import java.util.Random;
 import java.util.UUID;
 
 public class EWSUtils {
@@ -42,6 +43,40 @@ public class EWSUtils {
             int time = Integer.parseInt(primaryAccountNumber.substring(2,3));
             sleep(time * 1000);
         }
+    }
+
+    public static String generateRandomNumber(int length){
+        Random rnd = new Random();
+        StringBuilder sb = new StringBuilder(length);
+        for(int i=0;i<length;i++)
+            sb.append((char)('0'+rnd.nextInt(10)));
+        return sb.toString();
+    }
+
+
+    public static boolean isSecurityCodeEmpty(String cvv){
+
+        if(cvv == null)
+            return true;
+
+        if((cvv.charAt(0) == '?' || cvv.charAt(0) == ' ') && cvv.length() == 1)
+            return true;
+
+        if(cvv.equalsIgnoreCase(""))
+            return true;
+
+        return false;
+    }
+
+    public static boolean isSecurityCodeValid(String cvv){
+
+        if(cvv.charAt(0) == '?' || cvv.charAt(0) == ' ')
+            return true;
+
+        if(cvv.length() < 3)
+            return false;
+
+        return true;
     }
 
 }
