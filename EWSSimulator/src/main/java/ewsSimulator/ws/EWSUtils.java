@@ -17,14 +17,21 @@ public class EWSUtils {
 
     public static String getToken(String primaryAccountNumber) {
 
-        String token = Long.toString(Long.parseLong(primaryAccountNumber) + 77777);
+        int lengthPAM = primaryAccountNumber.length();
 
-        if(token.length() > 50) {
-
-            return token.substring(0, 50);
+        if(lengthPAM > 3) {
+            StringBuffer sb = new StringBuffer(primaryAccountNumber.substring(0, lengthPAM - 4));
+            String lastFour = primaryAccountNumber.substring(lengthPAM - 4);
+            return sb.reverse().append(lastFour).toString();
+        } else {
+            return primaryAccountNumber;
         }
+    }
 
-        return token;
+
+    public static String getPAN(String token) {
+
+        return getToken(token);
     }
 
 

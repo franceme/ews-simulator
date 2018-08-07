@@ -74,5 +74,5 @@ public class EWSSimulatorEndpoint {
 
         tokenizeResponse.setRequestId(EWSUtils.randomReqId());
         return tokenizeResponse;
-    }l
+    }
 }
