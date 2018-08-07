@@ -6,6 +6,8 @@ import ewsSimulator.ws.generated.EchoRequest;
 import ewsSimulator.ws.generated.EchoResponse;
 import ewsSimulator.ws.generated.RegistrationRequest;
 import ewsSimulator.ws.generated.RegistrationResponse;
+import ewsSimulator.ws.generated.TokenizeRequest;
+import ewsSimulator.ws.generated.TokenizeResponse;
 
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -48,10 +50,29 @@ public class EWSSimulatorEndpoint {
 
         if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
             response.setTokenNewlyGenerated(true);
+        }else {
+            response.setTokenNewlyGenerated(false);
         }
-
-        response.setTokenNewlyGenerated(false);
 
         return response;
     }
+
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")
+    @ResponsePayload
+    public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest) {
+        TokenizeResponse tokenizeResponse = new TokenizeResponse();
+        String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
+        int lengthPAN = primaryAccountNumber.length();
+        tokenizeResponse.setToken(EWSUtils.getToken(primaryAccountNumber));
+
+        if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
+            tokenizeResponse.setTokenNewlyGenerated(true);
+        } else {
+            tokenizeResponse.setTokenNewlyGenerated(false);
+        }
+
+        tokenizeResponse.setRequestId(EWSUtils.randomReqId());
+        return tokenizeResponse;
+    }l
 }
