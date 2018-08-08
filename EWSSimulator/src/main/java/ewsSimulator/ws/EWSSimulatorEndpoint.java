@@ -105,6 +105,12 @@ public class EWSSimulatorEndpoint {
     }
 
 
+    /**
+     *
+     * @param detokenizationRequest
+     * @return
+     * @throws InterruptedException
+     */
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "DetokenizeRequest")
     @ResponsePayload
     public DetokenizeResponse detokenize(@RequestPayload DetokenizeRequest detokenizationRequest) throws InterruptedException {
@@ -138,6 +144,12 @@ public class EWSSimulatorEndpoint {
     }
 
 
+    /**
+     * 
+     * @param orderDeregistrationRequest
+     * @return
+     * @throws InterruptedException
+     */
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "OrderDeregistrationRequest")
     @ResponsePayload
     public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest orderDeregistrationRequest) throws InterruptedException {
