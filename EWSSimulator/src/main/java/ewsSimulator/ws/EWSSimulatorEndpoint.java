@@ -12,6 +12,8 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
+
+import ewsSimulator.ws.validator.Validator;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -104,26 +106,53 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public OrderRegistrationResponse orderRegistration(@RequestPayload OrderRegistrationRequest orderRegistrationRequest){
 
+        //handle default validator based on the merchantID or PAN
+        Validator.validate(orderRegistrationRequest);
+
         OrderRegistrationResponse response = new OrderRegistrationResponse();
-        String cvv = "";
+        String cvv = orderRegistrationRequest.getCardSecurityCode();
         String orderLVT = "3";
-
-        if(orderRegistrationRequest.getCardSecurityCode() != null)
-            cvv = orderRegistrationRequest.getCardSecurityCode();
-
-
-        if(!EWSUtils.isSecurityCodeValid(cvv))
-            throw new WebServiceFaultException("ERROR: invalid CardSecurityCode");
-
 
         if(!EWSUtils.isSecurityCodeEmpty(cvv))
             response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
 
-        response.setRequestId(UUID.randomUUID().toString());
-
+        response.setRequestId(EWSUtils.randomReqId());
 
         return response;
+
     }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchTokenizeRequest")
+    @ResponsePayload
+    public BatchTokenizeResponse batchTokenize(@RequestPayload BatchTokenizeRequest batchTokenizeRequest){
+
+        //handle default validator based on the merchantID or PAN
+        Validator.validate(batchTokenizeRequest);
+
+        //if pan ends with even number token is newly generated (true)
+        //if pan ends with odd number token is not newly generated (false)
+
+        BatchTokenizeResponse response = new BatchTokenizeResponse();
+
+        for(Card card : batchTokenizeRequest.getCard()){
+            String PAN = card.getPrimaryAccountNumber();
+            Token token = new Token();
+
+            VError error = card.getError();
+            if(error != null){
+                token.setError(error);
+                response.getToken().add(token);
+                break;
+            }else{
+                token.setTokenValue(EWSUtils.getToken(PAN));
+                token.setTokenNewlyGenerated(PAN.length() == 13 ? true:false);
+            }
+            response.getToken().add(token);
+
+        }
+        return response;
+    }
+
 
 
 
