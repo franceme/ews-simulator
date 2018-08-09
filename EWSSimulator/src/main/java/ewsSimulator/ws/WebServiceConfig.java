@@ -23,10 +23,18 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
         PayloadValidatingInterceptor validatingInterceptor = new PayloadValidatingInterceptor();
+//        PayloadValidatingInterceptor secutiryInterceptor = new PayloadValidatingInterceptor();
         validatingInterceptor.setValidateRequest(true);
         validatingInterceptor.setValidateResponse(true);
         validatingInterceptor.setXsdSchema(encryptionSchema());
+
+//        secutiryInterceptor.setValidateRequest(true);
+//        secutiryInterceptor.setValidateResponse(true);
+//        secutiryInterceptor.setXsdSchema(encryptionSchema());
+
         interceptors.add(validatingInterceptor);
+//        interceptors.add(secutiryInterceptor);
+
     }
 
     @Bean
@@ -50,6 +58,12 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Bean
     public XsdSchema encryptionSchema() {
         XsdSchema schema = new SimpleXsdSchema(new ClassPathResource("xsd/encryption_v4_transactions.xsd"));
+        return schema;
+    }
+
+    @Bean
+    public XsdSchema securitySchema() {
+        XsdSchema schema = new SimpleXsdSchema(new ClassPathResource("xsd/oasis-200401-wss-wssecurity-secext-1.0.xsd"));
         return schema;
     }
 }

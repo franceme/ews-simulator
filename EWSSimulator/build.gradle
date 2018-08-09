@@ -52,8 +52,27 @@ task jaxb () {
         ant.xjc(
                 destdir: '${jaxbTargetDir}',
                 package: 'ewsSimulator.ws',
+                schema: 'src/main/resources/xsd/xmldsig-core-schema.xsd'
+        )
+
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'ewsSimulator.ws',
+                schema: 'src/main/resources/xsd/oasis-200401-wss-wssecurity-secext-1.0.xsd'
+        )
+
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'ewsSimulator.ws',
+                schema: 'src/main/resources/xsd/oasis-200401-wss-wssecurity-utility-1.0.xsd'
+        )
+
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'ewsSimulator.ws',
                 schema: 'src/main/resources/xsd/encryption_v4_transactions.xsd'
         )
+
     }
 }
 compileJava.dependsOn jaxb

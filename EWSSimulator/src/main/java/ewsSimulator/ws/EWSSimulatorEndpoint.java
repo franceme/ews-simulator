@@ -1,15 +1,36 @@
 package ewsSimulator.ws;
 
+import java.security.Security;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.activation.DataHandler;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.SoapMessage;
+import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
+
+import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 
 @Endpoint
 public class EWSSimulatorEndpoint {
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
+    private static final String HEADER_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchDetokenizeRequest")
     @ResponsePayload
@@ -31,8 +52,13 @@ public class EWSSimulatorEndpoint {
      */
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
-    public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest) throws InterruptedException {
+    public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest,
+                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException {
+
+
+        EWSUtils.getAuthentication(auth);
         RegistrationResponse response = new RegistrationResponse();
+
         String primaryAccountNumber = registrationRequest.getPrimaryAccountNumber();
         EWSUtils.delayInResponse(primaryAccountNumber);
         int lengthPAN = primaryAccountNumber.length();
@@ -48,7 +74,6 @@ public class EWSSimulatorEndpoint {
 
         return response;
     }
-
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")
     @ResponsePayload
