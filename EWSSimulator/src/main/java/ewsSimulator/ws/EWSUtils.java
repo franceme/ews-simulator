@@ -115,7 +115,6 @@ public class EWSUtils {
 
 
     public static String getPANThroughRegId(String regId) {
-
         return Long.toString(Long.parseLong(regId) - 99999);
     }
 
@@ -145,8 +144,39 @@ public class EWSUtils {
         return true;
     }
 
-    public static boolean validToken(String token){
-        if(token.equals("")||token.equals("?")||token.length()>50) return false;
+
+    public static boolean validRegId(String regId){
+        if(regId.equals("")||regId.equals("?")||regId.length()>19) return false;
+        try{
+            Long.parseLong(regId);
+        }
+        catch (Exception e){
+            return false;
+        }
         return true;
     }
+
+
+    public static int getWallet(String CVV){
+        return Integer.parseInt(CVV.charAt(2)+"");
+    }
+
+//
+//    public static boolean validPAN(String PAN){
+//        if(PAN.equals("")||PAN.equals("?")||PAN.length()>19||PAN.length()<13) return false;
+//        try{
+//            Long.parseLong(PAN);
+//        }
+//        catch (Exception e){
+//            return false;
+//        }
+//        return true;
+//    }
+
+//
+//    public static boolean validToken(String token){
+//        if(token.equals("")||token.equals("?")||token.length()>50) return false;
+//        return true;
+//    }
+//
 }
