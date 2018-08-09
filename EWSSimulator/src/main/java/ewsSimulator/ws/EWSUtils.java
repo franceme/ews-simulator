@@ -10,7 +10,7 @@ public class EWSUtils {
     public static String randomReqId() {
 
         String uuid = UUID.randomUUID().toString();
-        return "uuid = " + uuid;
+        return uuid;
     }
 
     public static String getRegId(String primaryAccountNumber) {
@@ -35,6 +35,8 @@ public class EWSUtils {
 
         return getToken(token);
     }
+
+
 
     public static void delayInResponse(String primaryAccountNumber) throws InterruptedException {
         int lengthPAM = primaryAccountNumber.length();
@@ -121,5 +123,42 @@ public class EWSUtils {
 
     public static boolean isClientFaultError(int errorId) {
         return ErrorIdMap.containsErrorId(errorId) && !isServerFaultError(errorId);
+    }
+
+
+    public static String getPANThroughRegId(String regId) {
+
+        return Long.toString(Long.parseLong(regId) - 99999);
+    }
+
+    public static String getCVVThroughToken(String token) {
+        return token.substring(token.length() - 3, token.length());
+    }
+
+    public static boolean validRollupId(String rollupId){
+        if(rollupId.equals("")||rollupId.equals("?")||rollupId.length()>6) return false;
+        try{
+            Integer.parseInt(rollupId);
+        }
+        catch (Exception e){
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean validCVV(String OrderLVT){
+        if(OrderLVT.equals("")||OrderLVT.equals("?")||OrderLVT.length()!=3) return false;
+        try{
+            Integer.parseInt(OrderLVT);
+        }
+        catch (Exception e){
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean validToken(String token){
+        if(token.equals("")||token.equals("?")||token.length()>50) return false;
+        return true;
     }
 }
