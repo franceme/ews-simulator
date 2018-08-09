@@ -79,4 +79,47 @@ public class EWSUtils {
         return true;
     }
 
+    public static void handleDesiredExceptions(String input) {
+        String inputLast3;
+        if (input.length() >= 3) {
+            int errorId = 0;
+            inputLast3 = input.substring(input.length() - 3);
+            try {
+                errorId = Integer.parseInt(inputLast3);
+            } catch (NumberFormatException ex){
+                // Do Nothing
+            }
+
+            if (errorId > 0)
+                throwDesiredException(errorId);
+        }
+    }
+
+    public static void throwDesiredException(int errorId) {
+        if (isServerFaultError(errorId)) {
+            EWSError error = ErrorIdMap.getError(errorId);
+            ServerFault serverFault = new ServerFault();
+            serverFault.setRequestId(randomReqId());
+            serverFault.setMessage(error.getErrorMessage());
+            serverFault.setCode(error.getErrorCode());
+            serverFault.setId(errorId);
+            throw new ServerFaultException("Server Fault Exception", serverFault);
+        } else if (isClientFaultError(errorId)) {
+            EWSError error = ErrorIdMap.getError(errorId);
+            RequestValidationFault requestValidationFault = new RequestValidationFault();
+            requestValidationFault.setRequestId(randomReqId());
+            requestValidationFault.setMessage(error.getErrorMessage());
+            requestValidationFault.setCode(error.getErrorCode());
+            requestValidationFault.setId(errorId);
+            throw new ClientFaultException("Client Fault Exception", requestValidationFault);
+        }
+    }
+
+    public static boolean isServerFaultError(int errorId) {
+        return errorId == 1 || errorId == 2 || errorId == 3 || errorId == 8;
+    }
+
+    public static boolean isClientFaultError(int errorId) {
+        return ErrorIdMap.containsErrorId(errorId) && !isServerFaultError(errorId);
+    }
 }

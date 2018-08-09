@@ -35,28 +35,22 @@ public class EWSSimulatorEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest) throws InterruptedException {
-        ServerFault serverFault = new ServerFault();
-        serverFault.setMessage("An unspecified error occured");
-        serverFault.setCode("UNKNOWN_ERROR");
-        serverFault.setId(2);
-        serverFault.setRequestId(EWSUtils.randomReqId());
-        throw new ServerFaultException("Server Fault Exception", serverFault);
 
-//        RegistrationResponse response = new RegistrationResponse();
-//        String primaryAccountNumber = registrationRequest.getPrimaryAccountNumber();
-//        EWSUtils.delayInResponse(primaryAccountNumber);
-//        int lengthPAN = primaryAccountNumber.length();
-//        response.setRequestId(EWSUtils.randomReqId());
-//        response.setRegId(EWSUtils.getRegId(primaryAccountNumber));
-//        response.setToken(EWSUtils.getToken(primaryAccountNumber));
-//
-//        if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
-//            response.setTokenNewlyGenerated(true);
-//        }else {
-//            response.setTokenNewlyGenerated(false);
-//        }
-//
-//        return response;
+        RegistrationResponse response = new RegistrationResponse();
+        String primaryAccountNumber = registrationRequest.getPrimaryAccountNumber();
+        EWSUtils.delayInResponse(primaryAccountNumber);
+        int lengthPAN = primaryAccountNumber.length();
+        response.setRequestId(EWSUtils.randomReqId());
+        response.setRegId(EWSUtils.getRegId(primaryAccountNumber));
+        response.setToken(EWSUtils.getToken(primaryAccountNumber));
+
+        if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
+            response.setTokenNewlyGenerated(true);
+        }else {
+            response.setTokenNewlyGenerated(false);
+        }
+
+        return response;
     }
 
 
@@ -65,6 +59,7 @@ public class EWSSimulatorEndpoint {
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest) {
         TokenizeResponse tokenizeResponse = new TokenizeResponse();
         String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
+        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
         int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getToken(primaryAccountNumber));
 

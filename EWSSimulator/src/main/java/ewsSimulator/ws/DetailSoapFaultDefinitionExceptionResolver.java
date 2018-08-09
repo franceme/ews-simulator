@@ -1,33 +1,38 @@
 package ewsSimulator.ws;
 
-import java.io.StringWriter;
 
-import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.springframework.ws.soap.SoapFault;
-import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
 public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMappingExceptionResolver {
-
-    private static final QName SERVER_FAULT = new QName("ServerFault");
-    private static final QName REQUEST_VALIDATION_FAULT = new QName("RequestValidationFault");
 
     @Override
     protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
         if (ex instanceof ServerFaultException) {
             ServerFault serverFault = ((ServerFaultException) ex).getServerFault();
-            SoapFaultDetail detail = fault.addFaultDetail();
-            String faultXml = "";
-            detail.addFaultDetailElement(SERVER_FAULT).addText(faultXml);
+            addFaultDetail(serverFault, fault);
+        } else if (ex instanceof ClientFaultException) {
+            RequestValidationFault requestValidationFault = ((ClientFaultException) ex).getRequestValidationFault();
+            addFaultDetail(requestValidationFault, fault);
         }
     }
 
-//    private String getServerFaultXml(ServerFault serverFault) {
-//        StringWriter sw = new StringWriter();
-//        try {
-//
-//        }
+    private void addFaultDetail(Object customFault, SoapFault fault) {
+        fault.addFaultDetail();
+        try {
+            JAXBContext context = JAXBContext.newInstance("ewsSimulator.ws");
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.marshal(customFault, fault.getFaultDetail().getResult());
+        }
+        catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }
 
