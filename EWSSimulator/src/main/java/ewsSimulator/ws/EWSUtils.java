@@ -2,6 +2,7 @@ package ewsSimulator.ws;
 
 import static java.lang.Thread.sleep;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.springframework.ws.soap.SoapHeaderElement;
+import org.w3c.dom.Node;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
@@ -65,21 +67,41 @@ public class EWSUtils {
     }
 
     public static void getAuthentication(SoapHeaderElement header){
-        try {
 
+        if(header == null) {
+            throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+        }
+
+        try {
             JAXBContext context = JAXBContext.newInstance(SecurityHeaderType.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             JAXBElement<SecurityHeaderType> root = unmarshaller.unmarshal(header.getSource(), SecurityHeaderType.class);
 
-            ElementNSImpl checkwhatever = (ElementNSImpl)root.getValue().getAny().get(0);
-            String localName = checkwhatever.getFirstChild().getNextSibling().getLocalName();
+            List<Object> securityAttributeList = root.getValue().getAny();
 
-            String hi = "";
+            if(securityAttributeList.size() == 1) {
+                ElementNSImpl userNameTokenAttribute = (ElementNSImpl)securityAttributeList.get(0);
+
+                if(userNameTokenAttribute.getFirstChild() == null || userNameTokenAttribute.getFirstChild().getNextSibling() == null) {
+                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                }
+
+                Node userNameNode = userNameTokenAttribute.getFirstChild().getNextSibling();
+
+                if(!userNameNode.getLocalName().equals("Username")) {
+                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                }
+
+                if(userNameNode.getNextSibling() == null || !userNameNode.getNextSibling().getLocalName().equals("Password")) {
+                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                }
+            } else {
+                throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+            }
 
         } catch (JAXBException e) {
             e.printStackTrace();
         }
-        //return authentication;
     }
 
     public static String generateRandomNumber(int length){
