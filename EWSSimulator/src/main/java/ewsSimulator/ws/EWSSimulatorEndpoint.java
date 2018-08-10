@@ -154,7 +154,7 @@ public class EWSSimulatorEndpoint {
     }
 
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchTokenizeRequest")
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenInquiryRequest")
     @ResponsePayload
     public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest) {
         Validator.validate(tokenInquiryRequest);
