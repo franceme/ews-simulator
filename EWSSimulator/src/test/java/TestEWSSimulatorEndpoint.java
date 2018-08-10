@@ -1,19 +1,8 @@
+import ewsSimulator.ws.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import ewsSimulator.ws.DetokenizeRequest;
-import ewsSimulator.ws.DetokenizeResponse;
-import ewsSimulator.ws.EWSSimulatorEndpoint;
-import ewsSimulator.ws.EWSUtils;
-import ewsSimulator.ws.MerchantType;
-import ewsSimulator.ws.OrderDeregistrationRequest;
-import ewsSimulator.ws.OrderDeregistrationResponse;
+import static org.junit.Assert.*;
 
 
 public class TestEWSSimulatorEndpoint {
@@ -172,5 +161,44 @@ public class TestEWSSimulatorEndpoint {
         assertTrue("CHECKOUT_ID NOT_FOUND".equals(testResponse.getError().get(0).getMessage()));
         assertNotNull(testResponse.getRequestId());
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+    }
+
+
+    @Test
+    public void testTokenize_simple() {
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber(PAN);
+        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+
+        assertEquals("468498435168468", response.getToken());
+        assertEquals(false, response.isTokenNewlyGenerated());
+        assertNotNull(response.getRequestId());
+    }
+
+    @Test
+    public void testTokenize_PANLast3digitsZero() {
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber("615348948648000");
+        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+
+        assertEquals("468498435168000", response.getToken());
+        assertEquals(true, response.isTokenNewlyGenerated());
+        assertNotNull(response.getRequestId());
+    }
+
+    @Test
+    public void testTokenize_Exception() {
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber("615348948648002");
+
+        try{
+            TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+            fail("ServerFaultException expected. None thrown");
+        } catch (ServerFaultException ex) {
+            ServerFault serverFault = ex.getServerFault();
+            assertEquals(2, (int) serverFault.getId());
+            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
+            assertEquals("an unspecified error occurred.", serverFault.getMessage());
+        }
     }
 }

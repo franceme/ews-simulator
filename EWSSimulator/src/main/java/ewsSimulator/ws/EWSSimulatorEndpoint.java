@@ -92,7 +92,7 @@ public class EWSSimulatorEndpoint {
         int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getToken(primaryAccountNumber));
 
-        if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
+        if(lengthPAN >= 3 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 3)))) {
             tokenizeResponse.setTokenNewlyGenerated(true);
         } else {
             tokenizeResponse.setTokenNewlyGenerated(false);
@@ -151,6 +151,30 @@ public class EWSSimulatorEndpoint {
 
         }
         return response;
+    }
+
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchTokenizeRequest")
+    @ResponsePayload
+    public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest) {
+        Validator.validate(tokenInquiryRequest);
+
+        TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
+
+        for (Card card: tokenInquiryRequest.getCard()) {
+            String primaryAccountNumber = card.getPrimaryAccountNumber();
+            int lengthPAN = primaryAccountNumber.length();
+
+            if ("000".equals(primaryAccountNumber.substring(lengthPAN - 3))) {
+                tokenInquiryResponse.getToken().add(null);
+            } else {
+                Token token = new Token();
+                token.setTokenValue(EWSUtils.getToken(primaryAccountNumber));
+                tokenInquiryResponse.getToken().add(token);
+            }
+        }
+
+        return tokenInquiryResponse;
     }
 
 
