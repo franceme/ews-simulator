@@ -98,7 +98,7 @@ public class EWSUtils {
             } else {
                 throw new SecurityErrorException("TID:20531165.Rejected by policy.");
             }
-            
+
         } catch (JAXBException e) {
             e.printStackTrace();
         }

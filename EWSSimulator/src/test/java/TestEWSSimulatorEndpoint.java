@@ -1,68 +1,204 @@
+import ewsSimulator.ws.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import ewsSimulator.ws.DetokenizeRequest;
-import ewsSimulator.ws.DetokenizeResponse;
-import ewsSimulator.ws.EWSSimulatorEndpoint;
-import ewsSimulator.ws.EWSUtils;
-import ewsSimulator.ws.MerchantType;
 
 public class TestEWSSimulatorEndpoint {
 
-    EWSSimulatorEndpoint ewsSimulatorEndpoint = new EWSSimulatorEndpoint();
-    EWSSimulatorEndpoint ewsSimulatorEndpointSpy;
+    EWSSimulatorEndpoint ewsSimulatorEndpoint;
+    private EWSUtils testUtils;
+    private String requestId;
+    private String token;
+    private String PAN;
+    private String CVV;
+    private String expirationDate;
+    private String rollupId;
+
 
     @Before
     public void setup() {
-        ewsSimulatorEndpointSpy = spy(ewsSimulatorEndpoint);
+        ewsSimulatorEndpoint = new EWSSimulatorEndpoint();
+        requestId = "f75b9c0f-5348-4621-acdc-a00861b25697";
+        token = "468498435168468";
+        PAN = "615348948648468";
+        CVV = "468";
+        expirationDate = "2308";
+        rollupId = "1123";
     }
 
     @Test
-    public void testDetokenize_happyPath() throws InterruptedException {
-        System.out.println("");
-//        DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
-//        MerchantType merchant = new MerchantType();
-//        merchant.setRollupId("1123");
-//        detokenizeRequest.setMerchant(merchant);
-//        detokenizeRequest.setToken("468498435168468");
-//        detokenizeRequest.setCVV2Requested(true);
-//        detokenizeRequest.setExpirationDateRequested(true);
-//        DetokenizeResponse testResponse = ewsSimulatorEndpointSpy.detokenize(detokenizeRequest);
+    public void testDetokenize_success_with_ExpirationDateRequested_CVV2Requested() throws InterruptedException {
+        DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(requestId);
+        detokenizeRequest.setMerchant(merchant);
+        detokenizeRequest.setToken(token);
+        detokenizeRequest.setCVV2Requested(true);
+        detokenizeRequest.setExpirationDateRequested(true);
 
-//        assertEquals("615348948648468",testResponse.getPrimaryAccountNumber());
-//        assertEquals("468",testResponse.getCardSecurityCode());
-//        assertEquals("2308",testResponse.getExpirationDate());
+        DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(detokenizeRequest);
 
-//        SimulatorResponses mockResponses = mock(SimulatorResponses.class);
-//        when(simulators.getSimulatorResponses()).thenReturn(mockResponses);
-//
-//        SimulatorResponseHashEntry hashEntry = new SimulatorResponseHashEntry();
-//        hashEntry.setToken("0000000000004444");
-//        hashEntry.accountNumber = "4100000000000001";
-//        hashEntry.setCvv2Response("123");
-//        when(mockResponses.getDetokenizeResponseFromToken(eq("0000000000004444"))).thenReturn(hashEntry);
-//
-//        DetokenizeRequest detokenizationRequest = new DetokenizeRequest();
-//        detokenizationRequest.setToken("0000000000004444");
-//        detokenizationRequest.setCVV2Requested(false);
-//        detokenizationRequest.setExpirationDateRequested(false);
-//
-//        DetokenizeResponse actualResponse = objectUnderTest.detokenize(detokenizationRequest);
-//
-//        assertEquals("4100000000000001", actualResponse.getPrimaryAccountNumber());
-//        assertNull(actualResponse.getCardSecurityCode());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(CVV,testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
     }
 
+    @Test
+    public void testDetokenize_success_without_ExpirationDateRequested_CVV2Requested() throws InterruptedException {
+        DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        detokenizeRequest.setMerchant(merchant);
+        detokenizeRequest.setToken(token);
+        detokenizeRequest.setCVV2Requested(false);
+        detokenizeRequest.setExpirationDateRequested(false);
+
+        DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(detokenizeRequest);
+
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertNotNull(testResponse.getRequestId());
+        assertNull(testResponse.getCardSecurityCode());
+        assertNull(testResponse.getExpirationDate());
+    }
+
+    @Test
+    public void testOrderDeregistration_CVVInitialNot3() throws InterruptedException {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT(CVV);
+        orderDeregistrationRequest.setToken(token);
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest);
+
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertNotNull(testResponse.getRequestId());
+    }
+
+    @Test
+    public void testOrderDeregistration_CVVInitial3() throws InterruptedException {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT("303");
+        orderDeregistrationRequest.setToken(token);
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest);
+
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertNotNull(testResponse.getRequestId());
+        assertEquals("303",testResponse.getCardSecurityCode());
+    }
+
+    @Test
+    public void testOrderDeregistration_CVVInitial3EndWith6() throws InterruptedException {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT("306");
+        orderDeregistrationRequest.setToken(token);
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest);
+
+        assertEquals(9999,(int)testResponse.getError().get(0).getId());
+        assertTrue("GENERIC CHECKOUT_ID ERROR".equals(testResponse.getError().get(0).getMessage()));
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+    }
+
+    @Test
+    public void testOrderDeregistration_CVVInitial3EndWith7() throws InterruptedException {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT("307");
+        orderDeregistrationRequest.setToken(token);
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest);
+
+        assertEquals(2,(int)testResponse.getError().get(0).getId());
+        assertTrue("GENERIC CHECKOUT_ID ERROR".equals(testResponse.getError().get(0).getMessage()));
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+    }
+
+    @Test
+    public void testOrderDeregistration_CVVInitial3EndWith8() throws InterruptedException {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT("308");
+        orderDeregistrationRequest.setToken(token);
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest);
+
+        assertEquals(4,(int)testResponse.getError().get(0).getId());
+        assertTrue("CHECKOUT_ID INVALID".equals(testResponse.getError().get(0).getMessage()));
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+    }
+
+    @Test
+    public void testOrderDeregistration_CVInitial3VEndWith9() throws InterruptedException {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT("309");
+        orderDeregistrationRequest.setToken(token);
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest);
+
+        assertEquals(6,(int)testResponse.getError().get(0).getId());
+        assertTrue("CHECKOUT_ID NOT_FOUND".equals(testResponse.getError().get(0).getMessage()));
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+    }
+
+
+    @Test
+    public void testTokenize_simple() {
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber(PAN);
+        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+
+        assertEquals("468498435168468", response.getToken());
+        assertEquals(false, response.isTokenNewlyGenerated());
+        assertNotNull(response.getRequestId());
+    }
+
+    @Test
+    public void testTokenize_PANLast3digitsZero() {
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber("615348948648000");
+        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+
+        assertEquals("468498435168000", response.getToken());
+        assertEquals(true, response.isTokenNewlyGenerated());
+        assertNotNull(response.getRequestId());
+    }
+
+    @Test
+    public void testTokenize_Exception() {
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber("615348948648002");
+
+        try{
+            TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+            fail("ServerFaultException expected. None thrown");
+        } catch (ServerFaultException ex) {
+            ServerFault serverFault = ex.getServerFault();
+            assertEquals(2, (int) serverFault.getId());
+            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
+            assertEquals("an unspecified error occurred.", serverFault.getMessage());
+        }
+    }
 }
