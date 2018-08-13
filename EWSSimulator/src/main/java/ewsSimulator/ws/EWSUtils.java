@@ -82,11 +82,11 @@ public class EWSUtils {
             if(securityAttributeList.size() == 1) {
                 ElementNSImpl userNameTokenAttribute = (ElementNSImpl)securityAttributeList.get(0);
 
-                if(userNameTokenAttribute.getFirstChild() == null || userNameTokenAttribute.getFirstChild().getNextSibling() == null) {
+                if(userNameTokenAttribute.getFirstChild() == null) {
                     throw new SecurityErrorException("TID:20531165.Rejected by policy.");
                 }
 
-                Node userNameNode = userNameTokenAttribute.getFirstChild().getNextSibling();
+                Node userNameNode = userNameTokenAttribute.getFirstChild();
 
                 if(!userNameNode.getLocalName().equals("Username")) {
                     throw new SecurityErrorException("TID:20531165.Rejected by policy.");

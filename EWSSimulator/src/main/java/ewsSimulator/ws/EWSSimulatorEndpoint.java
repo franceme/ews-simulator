@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.activation.DataHandler;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -11,20 +12,30 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import ewsSimulator.ws.validator.Validator;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.ws.client.WebServiceFaultException;
+import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpServletConnection;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
@@ -61,9 +72,24 @@ public class EWSSimulatorEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest,
-                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException {
+                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth,
+                                             MessageContext messageContext) throws InterruptedException, JAXBException, TransformerException {
 
         EWSUtils.getAuthentication(auth);
+        String test = getHttpHeaderValue("v_CorrelationId");
+        SaajSoapMessage soapRequest = (SaajSoapMessage) messageContext.getRequest();
+        org.springframework.ws.soap.SoapHeader reqheader = soapRequest.getSoapHeader();
+        SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
+        org.springframework.ws.soap.SoapHeader respheader = soapResponse.getSoapHeader();
+        TransformerFactory transformerFactory = TransformerFactory
+                .newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        Iterator<SoapHeaderElement> itr = reqheader.examineAllHeaderElements();
+        while (itr.hasNext()) {
+            SoapHeaderElement ele = itr.next();
+            transformer.transform(ele.getSource(), respheader.getResult());
+        }
+
         RegistrationResponse response = new RegistrationResponse();
 
         String primaryAccountNumber = registrationRequest.getPrimaryAccountNumber();
@@ -81,6 +107,16 @@ public class EWSSimulatorEndpoint {
         }
 
         return response;
+    }
+
+    protected HttpServletRequest getHttpServletRequest() {
+        TransportContext ctx = TransportContextHolder.getTransportContext();
+        return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletRequest() : null;
+    }
+
+    protected String getHttpHeaderValue( final String headerName ) {
+        HttpServletRequest httpServletRequest = getHttpServletRequest();
+        return ( null != httpServletRequest ) ? httpServletRequest.getHeader( headerName ) : null;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")

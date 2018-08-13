@@ -30,148 +30,148 @@ public class Validator {
 
 
     public static boolean validateMerchantRefId(String merchantRefId){
-        if(merchantRefId == null || merchantRefId.length() > 16 || isStringEmpty(merchantRefId))
-            //EWSUtils.throwDesiredException(INVALID_REQ,INVALID_MERCHANT_REF_ID);
-            return false;
+//        if(merchantRefId == null || merchantRefId.length() > 16 || isStringEmpty(merchantRefId))
+//            //EWSUtils.throwDesiredException(INVALID_REQ,INVALID_MERCHANT_REF_ID);
+//            return false;
         return true;
     }
 
     public static void validateCard(List<Card> cards){
-        for(Card card : cards)
-            validateCard(card);
+//        for(Card card : cards)
+//            validateCard(card);
     }
 
     public static void validateCard(Card card){
-        if(!isValidPAN(card.getPrimaryAccountNumber()))
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_PAN);
+//        if(!isValidPAN(card.getPrimaryAccountNumber()))
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_PAN);
     }
 
     public static void validateToken(List<Token> tokens){
-        for(Token token: tokens)
-            validateToken(token);
+//        for(Token token: tokens)
+//            validateToken(token);
     }
 
     public static void validateToken(Token token){
-        if(!isValidToken(token.getTokenValue()))
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_TOKEN);
+//        if(!isValidToken(token.getTokenValue()))
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_TOKEN);
     }
 
     public static void validate(TokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
-        if(request.getMerchant() == null)
-            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
-
-        if(!isValidRollupId(request.getMerchant().getRollupId()))
-            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
-
-        if(!isValidPAN(request.getPrimaryAccountNumber()))
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_PAN);
-
-        if(!isStringEmpty(request.getCardSecurityCode()))
-            if(isValidCVV(request.getCardSecurityCode()))
-                EWSUtils.throwDesiredException(INVALID_REQ,INVALID_SECURITY_CODE);
-
-        //validator to simulate based on the last few digits of the merchant-ref-id
-        if(validateMerchantRefId(request.getMerchantRefId()))
-            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
+//        if(request.getMerchant() == null)
+//            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
+//
+//        if(!isValidRollupId(request.getMerchant().getRollupId()))
+//            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
+//
+//        if(!isValidPAN(request.getPrimaryAccountNumber()))
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_PAN);
+//
+//        if(!isStringEmpty(request.getCardSecurityCode()))
+//            if(isValidCVV(request.getCardSecurityCode()))
+//                EWSUtils.throwDesiredException(INVALID_REQ,INVALID_SECURITY_CODE);
+//
+//        //validator to simulate based on the last few digits of the merchant-ref-id
+//        if(validateMerchantRefId(request.getMerchantRefId()))
+//            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
 
     }
 
     public static void validate(DetokenizeRequest request){
 
-        //mantory field check that is not mentioned in the xsd but in the document
-        if(request.getMerchant() == null)
-            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
-
-        if(!isValidRollupId(request.getMerchant().getRollupId()))
-            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
-
-        if(isValidToken(request.getToken()))
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_TOKEN);
-
-        //validator to simulate based on the last few digits of the merchant-ref-id
-        if(validateMerchantRefId(request.getMerchantRefId()))
-            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
+//        //mantory field check that is not mentioned in the xsd but in the document
+//        if(request.getMerchant() == null)
+//            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
+//
+//        if(!isValidRollupId(request.getMerchant().getRollupId()))
+//            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
+//
+//        if(isValidToken(request.getToken()))
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_TOKEN);
+//
+//        //validator to simulate based on the last few digits of the merchant-ref-id
+//        if(validateMerchantRefId(request.getMerchantRefId()))
+//            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
 
     }
 
 
     public static void validate(BatchTokenizeRequest request){
 
-        //mantory field check that is not mentioned in the xsd but in the document
-        if(request.getMerchant() == null)
-            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
-
-        if(!isValidRollupId(request.getMerchant().getRollupId()))
-            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
-
-        if(request.getCard() == null || request.getCard().size() > 500 || request.getCard().size() == 0)
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_CARD_DETAILS);
-
-        validateCard(request.getCard());
-
-        //validator to simulate based on the last few digits of the merchant-ref-id
-        if(validateMerchantRefId(request.getMerchantRefId()))
-        EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
+//        //mantory field check that is not mentioned in the xsd but in the document
+//        if(request.getMerchant() == null)
+//            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
+//
+//        if(!isValidRollupId(request.getMerchant().getRollupId()))
+//            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
+//
+//        if(request.getCard() == null || request.getCard().size() > 500 || request.getCard().size() == 0)
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_CARD_DETAILS);
+//
+//        validateCard(request.getCard());
+//
+//        //validator to simulate based on the last few digits of the merchant-ref-id
+//        if(validateMerchantRefId(request.getMerchantRefId()))
+//        EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
 
     }
 
 
     public static void validate(BatchDetokenizeRequest request){
 
-        //mantory field check that is not mentioned in the xsd but in the document
-        if(request.getMerchant() == null)
-            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
-
-        if(!isValidRollupId(request.getMerchant().getRollupId()))
-            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
-
-        if(request.getToken() == null || request.getToken().size() > BATCH_TOKENIZE_CARD_LIMIT || request.getToken().size() == 0)
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_TOKEN);
-
-        validateToken(request.getToken());
-
-        //validator to simulate based on the last few digits of the merchant-ref-id
-        if(validateMerchantRefId(request.getMerchantRefId()))
-            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
+//        //mantory field check that is not mentioned in the xsd but in the document
+//        if(request.getMerchant() == null)
+//            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
+//
+//        if(!isValidRollupId(request.getMerchant().getRollupId()))
+//            EWSUtils.throwDesiredException(INVALID_REQ, INVALID_ROLLUP_ID);
+//
+//        if(request.getToken() == null || request.getToken().size() > BATCH_TOKENIZE_CARD_LIMIT || request.getToken().size() == 0)
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_TOKEN);
+//
+//        validateToken(request.getToken());
+//
+//        //validator to simulate based on the last few digits of the merchant-ref-id
+//        if(validateMerchantRefId(request.getMerchantRefId()))
+//            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
 
     }
 
     public static void validate(TokenInquiryRequest request){
 
-        //mandatory field check that is not mentioned in the xsd but in document
-        if(request.getMerchant() == null)
-            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
-
-        if(!isValidRollupId(request.getMerchant().getRollupId()))
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_ROLLUP_ID);
-
-        if(request.getCard() == null || request.getCard().size() > TOKEN_INQUIRY_CARD_LIMIT || request.getCard().size() == 0)
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_CARD_DETAILS);
-
-        validateCard(request.getCard());
-
-        //exceptions to simulate based on the last few digits of merchant-ref-id or PAN
-        if(validateMerchantRefId(request.getMerchantRefId()))
-            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
+//        //mandatory field check that is not mentioned in the xsd but in document
+//        if(request.getMerchant() == null)
+//            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
+//
+//        if(!isValidRollupId(request.getMerchant().getRollupId()))
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_ROLLUP_ID);
+//
+//        if(request.getCard() == null || request.getCard().size() > TOKEN_INQUIRY_CARD_LIMIT || request.getCard().size() == 0)
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_CARD_DETAILS);
+//
+//        validateCard(request.getCard());
+//
+//        //exceptions to simulate based on the last few digits of merchant-ref-id or PAN
+//        if(validateMerchantRefId(request.getMerchantRefId()))
+//            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
     }
 
     public static void validate(OrderRegistrationRequest request){
 
-        //mandatory field check that is not mentioned in the xsd but in document
-        if(request.getMerchant() == null)
-            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
-
-        if(!isValidRollupId(request.getMerchant().getRollupId()))
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_ROLLUP_ID);
-
-        if(!isValidCVV(request.getCardSecurityCode()) )
-            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_SECURITY_CODE);
-
-        //exceptions to simulate based on the last few digits of merchant-ref-id or PAN
-        if(validateMerchantRefId(request.getMerchantRefId()))
-            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
+//        //mandatory field check that is not mentioned in the xsd but in document
+//        if(request.getMerchant() == null)
+//            EWSUtils.throwDesiredException(INVALID_REQ, MERCHANT_NOT_FOUND);
+//
+//        if(!isValidRollupId(request.getMerchant().getRollupId()))
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_ROLLUP_ID);
+//
+//        if(!isValidCVV(request.getCardSecurityCode()) )
+//            EWSUtils.throwDesiredException(INVALID_REQ,INVALID_SECURITY_CODE);
+//
+//        //exceptions to simulate based on the last few digits of merchant-ref-id or PAN
+//        if(validateMerchantRefId(request.getMerchantRefId()))
+//            EWSUtils.handleDesiredExceptions(request.getMerchantRefId());
     }
 
 
