@@ -228,7 +228,10 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "DetokenizeRequest")
     @ResponsePayload
-    public DetokenizeResponse detokenize(@RequestPayload DetokenizeRequest detokenizationRequest) throws InterruptedException {
+    public DetokenizeResponse detokenize(@RequestPayload DetokenizeRequest detokenizationRequest,
+                                         @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+        EWSUtils.getAuthentication(auth);
+
         DetokenizeResponse answer = new DetokenizeResponse();
 
         String requestId = EWSUtils.randomReqId();
@@ -260,7 +263,10 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "OrderDeregistrationRequest")
     @ResponsePayload
-    public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest orderDeregistrationRequest) throws InterruptedException {
+    public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest orderDeregistrationRequest,
+                                                           @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+        EWSUtils.getAuthentication(auth);
+
         OrderDeregistrationResponse answer = new OrderDeregistrationResponse();
 
         answer.setRequestId(EWSUtils.randomReqId());
@@ -308,7 +314,9 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "DeregistrationRequest")
     @ResponsePayload
-    public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest deregistrationRequest) throws InterruptedException {
+    public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest deregistrationRequest,
+                                                 @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+        EWSUtils.getAuthentication(auth);
         DeregistrationResponse answer = new DeregistrationResponse();
         String regId = deregistrationRequest.getRegId();
         String PAN = EWSUtils.getPANThroughRegId(regId);
