@@ -30,10 +30,10 @@ build/
 .project
 .settings/
 .idea/
-EWSSimulator.iml
+ews-simulator.iml
 out/
-EWSSimulator/nohup.out
-EWSSimulator/gradle.properties
-EWSSimulator/classes/
+nohup.out
+gradle.properties
+classes/
 
 
