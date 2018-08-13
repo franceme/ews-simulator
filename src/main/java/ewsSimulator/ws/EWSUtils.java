@@ -6,17 +6,27 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.transport.context.TransportContext;
+import org.springframework.ws.transport.context.TransportContextHolder;
+import org.springframework.ws.transport.http.HttpServletConnection;
 import org.w3c.dom.Node;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 public class EWSUtils {
+
+    public static String defaultCorrelationId = "64f231d1-e122-4693-af76-5652d4e37441";
+    public static String acceptInput = "gzip,deflate";
+    public static String correlationHeader = "v_CorrelationId";
+    public static String acceptHeader = "Accept-Encoding";
 
     public static String randomReqId() {
         return UUID.randomUUID().toString();
@@ -25,6 +35,17 @@ public class EWSUtils {
     public static String getRegId(String primaryAccountNumber) {
 
         return Long.toString(Long.parseLong(primaryAccountNumber) + 99999);
+    }
+
+    public static void customizeHttpResponseHeader(){
+        String headerValue = getHttpHeaderValue(correlationHeader);
+
+        if(headerValue == null) {
+            addResponseHttpHeader(correlationHeader,defaultCorrelationId);
+        } else {
+            addResponseHttpHeader(correlationHeader,headerValue);
+        }
+        setResponseHttpHeaderValue(acceptHeader,acceptInput);
     }
 
     public static String generateProperty(String input) {
@@ -68,42 +89,32 @@ public class EWSUtils {
         }
     }
 
-    public static void getAuthentication(SoapHeaderElement header){
+    private static HttpServletRequest getHttpServletRequest() {
+        TransportContext ctx = TransportContextHolder.getTransportContext();
+        return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletRequest() : null;
+    }
 
-        if(header == null) {
-            throw new SecurityErrorException("TID:20531165.Rejected by policy.");
-        }
+    private static String getHttpHeaderValue( String headerName ) {
+        HttpServletRequest httpServletRequest = getHttpServletRequest();
+        return ( null != httpServletRequest ) ? httpServletRequest.getHeader( headerName ) : null;
+    }
 
-        try {
-            JAXBContext context = JAXBContext.newInstance(SecurityHeaderType.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            JAXBElement<SecurityHeaderType> root = unmarshaller.unmarshal(header.getSource(), SecurityHeaderType.class);
+    private static HttpServletResponse getHttpServletResponse() {
+        TransportContext ctx = TransportContextHolder.getTransportContext();
+        return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletResponse() : null;
+    }
 
-            List<Object> securityAttributeList = root.getValue().getAny();
+    private static void addResponseHttpHeader(String headerName,String headerValue) {
 
-            if(securityAttributeList.size() == 1) {
-                ElementNSImpl userNameTokenAttribute = (ElementNSImpl)securityAttributeList.get(0);
+        HttpServletResponse httpServletResponse = getHttpServletResponse();
+        httpServletResponse.addHeader(headerName, headerValue);
+    }
 
-                if(userNameTokenAttribute.getFirstChild() == null) {
-                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
-                }
+    private static void setResponseHttpHeaderValue(String headerName,String headerValue) {
 
-                Node userNameNode = userNameTokenAttribute.getFirstChild();
+        HttpServletResponse httpServletResponse = getHttpServletResponse();
+        httpServletResponse.setHeader(headerName, headerValue);
 
-                if(!userNameNode.getLocalName().equals("Username")) {
-                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
-                }
-
-                if(userNameNode.getNextSibling() == null || !userNameNode.getNextSibling().getLocalName().equals("Password")) {
-                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
-                }
-            } else {
-                throw new SecurityErrorException("TID:20531165.Rejected by policy.");
-            }
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
     }
 
     public static String generateRandomNumber(int length){

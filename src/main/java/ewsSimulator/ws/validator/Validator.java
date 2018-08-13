@@ -1,7 +1,14 @@
 package ewsSimulator.ws.validator;
 
+import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 import ewsSimulator.ws.*;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.w3c.dom.Node;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import java.util.List;
 
 import static ewsSimulator.ws.validator.ValidatorUtils.*;
@@ -40,6 +47,44 @@ public class Validator {
     public static final String TERMINAL_NOT_FOUND = "Error: Terminal not found";
     public static final String CRYPTO_NOT_FOUND = "Error: Both VerifoneCryptogram and VoltageCryptogram not found";
     public static final String ACCOUNT_NOT_FOUND = "Error: Account not found";
+
+    public static void validateSoapHeader(SoapHeaderElement header){
+
+        if(header == null) {
+            throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+        }
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(SecurityHeaderType.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            JAXBElement<SecurityHeaderType> root = unmarshaller.unmarshal(header.getSource(), SecurityHeaderType.class);
+
+            List<Object> securityAttributeList = root.getValue().getAny();
+
+            if(securityAttributeList.size() == 1) {
+                ElementNSImpl userNameTokenAttribute = (ElementNSImpl)securityAttributeList.get(0);
+
+                if(userNameTokenAttribute.getFirstChild() == null) {
+                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                }
+
+                Node userNameNode = userNameTokenAttribute.getFirstChild();
+
+                if(!userNameNode.getLocalName().equals("Username")) {
+                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                }
+
+                if(userNameNode.getNextSibling() == null || !userNameNode.getNextSibling().getLocalName().equals("Password")) {
+                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                }
+            } else {
+                throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+            }
+
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void validateCard(List<Card> cards, int LIMIT){
 
@@ -174,7 +219,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_PAN);
 
         if(!isStringEmpty(request.getCardSecurityCode()))
-            if(isValidCVV(request.getCardSecurityCode()))
+            if(!isValidCVV(request.getCardSecurityCode()))
                 handleException(INVALID_REQ,INVALID_SECURITY_CODE);
 
 
@@ -185,7 +230,7 @@ public class Validator {
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
 
-        if(isValidToken(request.getToken()))
+        if(!isValidToken(request.getToken()))
             handleException(INVALID_REQ,INVALID_TOKEN);
 
     }
@@ -229,7 +274,7 @@ public class Validator {
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
 
-        if(isValidRegId(request.getRegId()))
+        if(!isValidRegId(request.getRegId()))
             handleException(INVALID_REQ,INVALID_REG_ID);
     }
 
