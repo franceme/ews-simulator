@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -74,23 +75,21 @@ public class EWSSimulatorEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest registrationRequest,
-                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth,
-                                             MessageContext messageContext) throws InterruptedException, JAXBException, TransformerException {
+                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException, TransformerException {
 
         EWSUtils.getAuthentication(auth);
-        String test = getHttpHeaderValue("v_CorrelationId");
-        SaajSoapMessage soapRequest = (SaajSoapMessage) messageContext.getRequest();
-        org.springframework.ws.soap.SoapHeader reqheader = soapRequest.getSoapHeader();
-        SaajSoapMessage soapResponse = (SaajSoapMessage) messageContext.getResponse();
-        org.springframework.ws.soap.SoapHeader respheader = soapResponse.getSoapHeader();
-        TransformerFactory transformerFactory = TransformerFactory
-                .newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        Iterator<SoapHeaderElement> itr = reqheader.examineAllHeaderElements();
-        while (itr.hasNext()) {
-            SoapHeaderElement ele = itr.next();
-            transformer.transform(ele.getSource(), respheader.getResult());
+        String defaultCorrelationId = "64f231d1-e122-4693-af76-5652d4e37441";
+        String acceptInput = "gzip,deflate";
+        String headerName = "v_CorrelationId";
+        String headerValue = getHttpHeaderValue(headerName);
+
+        if(headerValue == null) {
+            addResponseHttpHeader(headerName,defaultCorrelationId);
+        } else {
+            addResponseHttpHeader(headerName,headerValue);
         }
+
+        setResponseHttpHeaderValue("Accept-Encoding",acceptInput);
 
         RegistrationResponse response = new RegistrationResponse();
 
@@ -119,6 +118,24 @@ public class EWSSimulatorEndpoint {
     protected String getHttpHeaderValue( final String headerName ) {
         HttpServletRequest httpServletRequest = getHttpServletRequest();
         return ( null != httpServletRequest ) ? httpServletRequest.getHeader( headerName ) : null;
+    }
+
+    protected HttpServletResponse getHttpServletResponse() {
+        TransportContext ctx = TransportContextHolder.getTransportContext();
+        return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletResponse() : null;
+    }
+
+    protected void addResponseHttpHeader(String headerName,String headerValue) {
+
+        HttpServletResponse httpServletResponse = getHttpServletResponse();
+        httpServletResponse.addHeader(headerName, headerValue);
+    }
+
+    protected void setResponseHttpHeaderValue(String headerName,String headerValue) {
+
+        HttpServletResponse httpServletResponse = getHttpServletResponse();
+        httpServletResponse.setHeader(headerName, headerValue);
+
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")
