@@ -12,8 +12,11 @@ import ewsSimulator.ws.EWSUtils;
 import ewsSimulator.ws.MerchantType;
 import ewsSimulator.ws.OrderDeregistrationRequest;
 import ewsSimulator.ws.OrderDeregistrationResponse;
+import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.util.List;
+
+import javax.smartcardio.Card;
 
 
 public class TestEWSSimulatorEndpoint {
@@ -211,25 +214,26 @@ public class TestEWSSimulatorEndpoint {
         assertNotNull(response.getRequestId());
     }
 
-    @Test
-    public void testTokenize_Exception() {
-        TokenizeRequest request = new TokenizeRequest();
-        request.setMerchantRefId("112233002");
-        MerchantType merchant = new MerchantType();
-        merchant.setRollupId(rollupId);
-        request.setMerchant(merchant);
-        request.setPrimaryAccountNumber("615348948648468");
+//    @Test
+//    public void testTokenize_Exception() {
+//        TokenizeRequest request = new TokenizeRequest();
+//        request.setMerchantRefId("112233002");
+//        MerchantType merchant = new MerchantType();
+//        merchant.setRollupId(rollupId);
+//        request.setMerchant(merchant);
+//        request.setPrimaryAccountNumber("615348948648468");
+//
+//        try{
+//            TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+//            fail("ServerFaultException expected. None thrown");
+//        } catch (ServerFaultException ex) {
+//            ServerFault serverFault = ex.getServerFault();
+//            assertEquals(2, (int) serverFault.getId());
+//            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
+//            assertEquals("an unspecified error occurred.", serverFault.getMessage());
+//        }
+//    }
 
-        try{
-            TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
-            fail("ServerFaultException expected. None thrown");
-        } catch (ServerFaultException ex) {
-            ServerFault serverFault = ex.getServerFault();
-            assertEquals(2, (int) serverFault.getId());
-            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
-            assertEquals("an unspecified error occurred.", serverFault.getMessage());
-        }
-    }
     @Test
     public void testDeregistration_returnCvv2IfAsked() throws InterruptedException {
         DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
@@ -266,51 +270,120 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(expirationDate,testResponse.getExpirationDate());
     }
 
-
     @Test
-
-    public void testTokenInquiry() {
-        TokenInquiryRequest request = new TokenInquiryRequest();
+    public void testDeregistration_DPAN_ANDROID() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        request.setMerchant(merchant);
-        List<Card> cards = request.getCard();
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId("615348948648641");
+        deregistrationRequest.setCardSecurityCodeRequested(false);
 
-        Card card1 = new Card();
-        card1.setPrimaryAccountNumber("1234567891011123");
-        cards.add(card1);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
 
-        Card card2 = new Card();
-        card2.setPrimaryAccountNumber("1234567891011000");
-        cards.add(card2);
-
-        TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
-        List<Token> tokens = response.getToken();
-        assertNotNull(tokens.get(0));
-        assertNull(tokens.get(1));
+        assertNotNull(testResponse.getRequestId());
+        assertEquals("468498435161468",testResponse.getToken());
+        assertEquals("615348948641468",testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+        assertEquals(ANDROID,testResponse.getWalletType().value());
+        assertEquals("01",testResponse.getElectronicCommerceIndicator());
+        assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
     }
 
     @Test
-    public void testTokenInquiry_Exception() {
-        TokenInquiryRequest request = new TokenInquiryRequest();
-        request.setMerchantRefId("112233002");
+    public void testDeregistration_DPAN_APPLE() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        request.setMerchant(merchant);
-        List<Card> cards = request.getCard();
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId("615348948648642");
+        deregistrationRequest.setCardSecurityCodeRequested(false);
 
-        Card card1 = new Card();
-        card1.setPrimaryAccountNumber("1234567891011123");
-        cards.add(card1);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
 
-        try {
-            TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
-            fail("ServerFaultException expected. None thrown");
-        } catch (ServerFaultException ex) {
-            ServerFault serverFault = ex.getServerFault();
-            assertEquals(2, (int) serverFault.getId());
-            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
-            assertEquals("an unspecified error occurred.", serverFault.getMessage());
-        }
+        assertNotNull(testResponse.getRequestId());
+        assertEquals("468498435162468",testResponse.getToken());
+        assertEquals("615348948642468",testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+        assertEquals(APPLE,testResponse.getWalletType().value());
+        assertEquals("02",testResponse.getElectronicCommerceIndicator());
+        assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
     }
+
+
+    @Test
+    public void testDeregistration_DPAN_SAMSUNG() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId("615348948648643");
+        deregistrationRequest.setCardSecurityCodeRequested(false);
+
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals("468498435163468",testResponse.getToken());
+        assertEquals("615348948643468",testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+        assertEquals(SAMSUNG,testResponse.getWalletType().value());
+        assertEquals("03",testResponse.getElectronicCommerceIndicator());
+        assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
+    }
+
+
+//    @Test
+//
+//    public void testTokenInquiry() {
+//        TokenInquiryRequest request = new TokenInquiryRequest();
+//        MerchantType merchant = new MerchantType();
+//        merchant.setRollupId(rollupId);
+//        request.setMerchant(merchant);
+//        List<Card> cards = request.getCard();
+//
+//        Card card1 = new Card();
+//        card1.setPrimaryAccountNumber("1234567891011123");
+//        cards.add(card1);
+//
+//        Card card2 = new Card();
+//        card2.setPrimaryAccountNumber("1234567891011000");
+//        cards.add(card2);
+//
+//        TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
+//        List<Token> tokens = response.getToken();
+//        assertNotNull(tokens.get(0));
+//        assertNull(tokens.get(1));
+//    }
+//
+//
+//
+//    @Test
+//    public void testTokenInquiry_Exception() {
+//        TokenInquiryRequest request = new TokenInquiryRequest();
+//        request.setMerchantRefId("112233002");
+//        MerchantType merchant = new MerchantType();
+//        merchant.setRollupId(rollupId);
+//        request.setMerchant(merchant);
+//        List<Card> cards = request.getCard();
+//
+//        Card card1 = new Card();
+//        card1.setPrimaryAccountNumber("1234567891011123");
+//        cards.add(card1);
+//
+//        try {
+//            TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
+//            fail("ServerFaultException expected. None thrown");
+//        } catch (ServerFaultException ex) {
+//            ServerFault serverFault = ex.getServerFault();
+//            assertEquals(2, (int) serverFault.getId());
+//            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
+//            assertEquals("an unspecified error occurred.", serverFault.getMessage());
+//        }
+//    }
 }

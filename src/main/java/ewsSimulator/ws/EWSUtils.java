@@ -58,11 +58,13 @@ public class EWSUtils {
 
 
     public static void delayInResponse(String primaryAccountNumber) throws InterruptedException {
-        int lengthPAM = primaryAccountNumber.length();
+        if(primaryAccountNumber != null) {
+            int lengthPAM = primaryAccountNumber.length();
 
-        if(lengthPAM > 2 && primaryAccountNumber.substring(0, 2).equals("00")) {
-            int time = Integer.parseInt(primaryAccountNumber.substring(2,3));
-            sleep(time * 1000);
+            if (lengthPAM > 2 && primaryAccountNumber.substring(0, 2).equals("00")) {
+                int time = Integer.parseInt(primaryAccountNumber.substring(2, 3));
+                sleep(time * 1000);
+            }
         }
     }
 
@@ -172,15 +174,20 @@ public class EWSUtils {
 
 
     public static String getPANThroughRegId(String regId) {
-        return Long.toString(Long.parseLong(regId) - 99999);
+        int lengthInput = regId.length();
+
+        if(lengthInput > 3) {
+            StringBuilder sb = new StringBuilder(regId.substring(0, lengthInput - 4));
+            StringBuilder lastFour = new StringBuilder(regId.substring(lengthInput - 4));
+            return sb.append(lastFour.reverse().toString()).toString();
+        } else {
+            return regId;
+        }
     }
 
     public static String getCVVThroughToken(String token) {
         return token.substring(token.length() - 3, token.length());
     }
 
-    public static int getWallet(String CVV){
-        return Integer.parseInt(CVV.charAt(2)+"");
-    }
 
 }
