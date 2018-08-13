@@ -3,18 +3,33 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import ewsSimulator.ws.DeregistrationRequest;
+import ewsSimulator.ws.DeregistrationResponse;
+import ewsSimulator.ws.DetokenizeRequest;
+import ewsSimulator.ws.DetokenizeResponse;
+import ewsSimulator.ws.EWSSimulatorEndpoint;
+import ewsSimulator.ws.EWSUtils;
+import ewsSimulator.ws.MerchantType;
+import ewsSimulator.ws.OrderDeregistrationRequest;
+import ewsSimulator.ws.OrderDeregistrationResponse;
+
+import java.util.List;
 
 
 public class TestEWSSimulatorEndpoint {
 
     EWSSimulatorEndpoint ewsSimulatorEndpoint;
-    private EWSUtils testUtils;
     private String requestId;
     private String token;
     private String PAN;
     private String CVV;
     private String expirationDate;
     private String rollupId;
+    private String APPLE;
+    private String ANDROID;
+    private String SAMSUNG;
+    private String CRYPTOGRAM;
+    private String registrationId;
 
 
     @Before
@@ -26,6 +41,11 @@ public class TestEWSSimulatorEndpoint {
         CVV = "468";
         expirationDate = "2308";
         rollupId = "1123";
+        APPLE = "APPLE";
+        ANDROID = "ANDROID";
+        SAMSUNG = "SAMSUNG";
+        CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
+        registrationId = "615348948648648";
     }
 
     @Test
@@ -163,10 +183,12 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
     }
 
-
     @Test
     public void testTokenize_simple() {
         TokenizeRequest request = new TokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
         request.setPrimaryAccountNumber(PAN);
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
 
@@ -178,6 +200,9 @@ public class TestEWSSimulatorEndpoint {
     @Test
     public void testTokenize_PANLast3digitsZero() {
         TokenizeRequest request = new TokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
         request.setPrimaryAccountNumber("615348948648000");
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
 
@@ -189,10 +214,97 @@ public class TestEWSSimulatorEndpoint {
     @Test
     public void testTokenize_Exception() {
         TokenizeRequest request = new TokenizeRequest();
-        request.setPrimaryAccountNumber("615348948648002");
+        request.setMerchantRefId("112233002");
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setPrimaryAccountNumber("615348948648468");
 
         try{
             TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+            fail("ServerFaultException expected. None thrown");
+        } catch (ServerFaultException ex) {
+            ServerFault serverFault = ex.getServerFault();
+            assertEquals(2, (int) serverFault.getId());
+            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
+            assertEquals("an unspecified error occurred.", serverFault.getMessage());
+        }
+    }
+    @Test
+    public void testDeregistration_returnCvv2IfAsked() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId(registrationId);
+        deregistrationRequest.setCardSecurityCodeRequested(true);
+
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(token,testResponse.getToken());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertEquals(CVV,testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+    }
+
+    @Test
+    public void testDeregistration_returnCvv2OnlyIfAsked() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId(registrationId);
+        deregistrationRequest.setCardSecurityCodeRequested(false);
+
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(token,testResponse.getToken());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+    }
+
+
+    @Test
+
+    public void testTokenInquiry() {
+        TokenInquiryRequest request = new TokenInquiryRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        List<Card> cards = request.getCard();
+
+        Card card1 = new Card();
+        card1.setPrimaryAccountNumber("1234567891011123");
+        cards.add(card1);
+
+        Card card2 = new Card();
+        card2.setPrimaryAccountNumber("1234567891011000");
+        cards.add(card2);
+
+        TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
+        List<Token> tokens = response.getToken();
+        assertNotNull(tokens.get(0));
+        assertNull(tokens.get(1));
+    }
+
+    @Test
+    public void testTokenInquiry_Exception() {
+        TokenInquiryRequest request = new TokenInquiryRequest();
+        request.setMerchantRefId("112233002");
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        List<Card> cards = request.getCard();
+
+        Card card1 = new Card();
+        card1.setPrimaryAccountNumber("1234567891011123");
+        cards.add(card1);
+
+        try {
+            TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
             fail("ServerFaultException expected. None thrown");
         } catch (ServerFaultException ex) {
             ServerFault serverFault = ex.getServerFault();
