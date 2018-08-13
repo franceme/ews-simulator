@@ -86,9 +86,14 @@ public class EWSSimulatorEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")
     @ResponsePayload
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest) {
+        Validator.validate(tokenizeRequest);
+
         TokenizeResponse tokenizeResponse = new TokenizeResponse();
+        String merchantRefId = tokenizeRequest.getMerchantRefId();
+        if (merchantRefId != null)
+            tokenizeResponse.setMerchantRefId(merchantRefId);
         String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
-        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
+//        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
         int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getToken(primaryAccountNumber));
 
@@ -160,6 +165,9 @@ public class EWSSimulatorEndpoint {
         Validator.validate(tokenInquiryRequest);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
+        String merchantRefId = tokenInquiryRequest.getMerchantRefId();
+        if (merchantRefId != null)
+            tokenInquiryResponse.setMerchantRefId(merchantRefId);
 
         for (Card card: tokenInquiryRequest.getCard()) {
             String primaryAccountNumber = card.getPrimaryAccountNumber();

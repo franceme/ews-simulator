@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 
 public class TestEWSSimulatorEndpoint {
 
@@ -167,6 +169,9 @@ public class TestEWSSimulatorEndpoint {
     @Test
     public void testTokenize_simple() {
         TokenizeRequest request = new TokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
         request.setPrimaryAccountNumber(PAN);
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
 
@@ -178,6 +183,9 @@ public class TestEWSSimulatorEndpoint {
     @Test
     public void testTokenize_PANLast3digitsZero() {
         TokenizeRequest request = new TokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
         request.setPrimaryAccountNumber("615348948648000");
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
 
@@ -189,6 +197,9 @@ public class TestEWSSimulatorEndpoint {
     @Test
     public void testTokenize_Exception() {
         TokenizeRequest request = new TokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
         request.setPrimaryAccountNumber("615348948648002");
 
         try{
@@ -200,5 +211,28 @@ public class TestEWSSimulatorEndpoint {
             assertEquals("UNKNOWN_ERROR", serverFault.getCode());
             assertEquals("an unspecified error occurred.", serverFault.getMessage());
         }
+    }
+
+    @Test
+
+    public void testTokenInquiry() {
+        TokenInquiryRequest request = new TokenInquiryRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        List<Card> cards = request.getCard();
+
+        Card card1 = new Card();
+        card1.setPrimaryAccountNumber("1234567891011123");
+        cards.add(card1);
+
+        Card card2 = new Card();
+        card2.setPrimaryAccountNumber("1234567891011000");
+        cards.add(card2);
+
+        TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request);
+        List<Token> tokens = response.getToken();
+        assertNotNull(tokens.get(0));
+        assertNull(tokens.get(1));
     }
 }
