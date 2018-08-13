@@ -42,6 +42,8 @@ import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 
 import java.util.UUID;
 
+import static ewsSimulator.ws.validator.ValidateAndSimulate.validateAndSimulate;
+
 
 @Endpoint
 public class EWSSimulatorEndpoint {
@@ -145,10 +147,10 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "OrderRegistrationRequest")
     @ResponsePayload
-    public OrderRegistrationResponse orderRegistration(@RequestPayload OrderRegistrationRequest orderRegistrationRequest){
+    public OrderRegistrationResponse orderRegistration(@RequestPayload OrderRegistrationRequest orderRegistrationRequest) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        Validator.validate(orderRegistrationRequest);
+        validateAndSimulate(orderRegistrationRequest);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
         String cvv = orderRegistrationRequest.getCardSecurityCode();
@@ -165,10 +167,10 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchTokenizeRequest")
     @ResponsePayload
-    public BatchTokenizeResponse batchTokenize(@RequestPayload BatchTokenizeRequest batchTokenizeRequest){
+    public BatchTokenizeResponse batchTokenize(@RequestPayload BatchTokenizeRequest batchTokenizeRequest) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        Validator.validate(batchTokenizeRequest);
+        validateAndSimulate(batchTokenizeRequest);
 
         //if pan ends with even number token is newly generated (true)
         //if pan ends with odd number token is not newly generated (false)
@@ -197,8 +199,8 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenInquiryRequest")
     @ResponsePayload
-    public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest) {
-        Validator.validate(tokenInquiryRequest);
+    public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest) throws InterruptedException {
+        validateAndSimulate(tokenInquiryRequest);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
         String merchantRefId = tokenInquiryRequest.getMerchantRefId();
