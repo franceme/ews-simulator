@@ -3,18 +3,31 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import ewsSimulator.ws.DeregistrationRequest;
+import ewsSimulator.ws.DeregistrationResponse;
+import ewsSimulator.ws.DetokenizeRequest;
+import ewsSimulator.ws.DetokenizeResponse;
+import ewsSimulator.ws.EWSSimulatorEndpoint;
+import ewsSimulator.ws.EWSUtils;
+import ewsSimulator.ws.MerchantType;
+import ewsSimulator.ws.OrderDeregistrationRequest;
+import ewsSimulator.ws.OrderDeregistrationResponse;
 
 
 public class TestEWSSimulatorEndpoint {
 
     EWSSimulatorEndpoint ewsSimulatorEndpoint;
-    private EWSUtils testUtils;
     private String requestId;
     private String token;
     private String PAN;
     private String CVV;
     private String expirationDate;
     private String rollupId;
+    private String APPLE;
+    private String ANDROID;
+    private String SAMSUNG;
+    private String CRYPTOGRAM;
+    private String registrationId;
 
 
     @Before
@@ -26,6 +39,11 @@ public class TestEWSSimulatorEndpoint {
         CVV = "468";
         expirationDate = "2308";
         rollupId = "1123";
+        APPLE = "APPLE";
+        ANDROID = "ANDROID";
+        SAMSUNG = "SAMSUNG";
+        CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
+        registrationId = "615348948648648";
     }
 
     @Test
@@ -163,7 +181,6 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
     }
 
-
     @Test
     public void testTokenize_simple() {
         TokenizeRequest request = new TokenizeRequest();
@@ -201,4 +218,40 @@ public class TestEWSSimulatorEndpoint {
             assertEquals("an unspecified error occurred.", serverFault.getMessage());
         }
     }
+    @Test
+    public void testDeregistration_returnCvv2IfAsked() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId(registrationId);
+        deregistrationRequest.setCardSecurityCodeRequested(true);
+
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(token,testResponse.getToken());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertEquals(CVV,testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+    }
+
+    @Test
+    public void testDeregistration_returnCvv2OnlyIfAsked() throws InterruptedException {
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId(registrationId);
+        deregistrationRequest.setCardSecurityCodeRequested(false);
+
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(token,testResponse.getToken());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+    }
+
 }
