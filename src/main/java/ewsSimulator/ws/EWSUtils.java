@@ -2,58 +2,26 @@ package ewsSimulator.ws;
 
 import static java.lang.Thread.sleep;
 
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.transport.context.TransportContext;
-import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.HttpServletConnection;
-import org.w3c.dom.Node;
-
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-
 public class EWSUtils {
-
-    public static String defaultCorrelationId = "64f231d1-e122-4693-af76-5652d4e37441";
-    public static String acceptInput = "gzip,deflate";
-    public static String correlationHeader = "v_CorrelationId";
-    public static String acceptHeader = "Accept-Encoding";
 
     public static String randomReqId() {
         return UUID.randomUUID().toString();
     }
 
-    public static String getRegId(String primaryAccountNumber) {
-        int lengthInput = primaryAccountNumber.length();
+    public static String getRegId(String input) {
+        int lengthInput = input.length();
 
         if(lengthInput > 3) {
-            StringBuilder sb = new StringBuilder(primaryAccountNumber.substring(0, lengthInput - 4));
-            StringBuilder lastFour = new StringBuilder(primaryAccountNumber.substring(lengthInput - 4));
+            StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
+            StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
             return sb.append(lastFour.reverse().toString()).toString();
         } else {
-            return primaryAccountNumber;
+            return input;
         }
     }
 
-    public static void customizeHttpResponseHeader(){
-        String headerValue = getHttpHeaderValue(correlationHeader);
-
-        if(headerValue == null) {
-            addResponseHttpHeader(correlationHeader,defaultCorrelationId);
-        } else {
-            addResponseHttpHeader(correlationHeader,headerValue);
-        }
-        setResponseHttpHeaderValue(acceptHeader,acceptInput);
-    }
 
     public static String generateProperty(String input) {
 
@@ -75,9 +43,7 @@ public class EWSUtils {
     }
 
     public static String getToken(String primaryAccountNumber) {
-
         return generateProperty(primaryAccountNumber);
-
     }
 
     public static String getPAN(String token) {
@@ -88,7 +54,6 @@ public class EWSUtils {
             return "3000100011118566";
         }
     }
-
 
 
     public static void delayInResponse(String primaryAccountNumber) throws InterruptedException {
@@ -102,33 +67,6 @@ public class EWSUtils {
         }
     }
 
-    private static HttpServletRequest getHttpServletRequest() {
-        TransportContext ctx = TransportContextHolder.getTransportContext();
-        return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletRequest() : null;
-    }
-
-    private static String getHttpHeaderValue( String headerName ) {
-        HttpServletRequest httpServletRequest = getHttpServletRequest();
-        return ( null != httpServletRequest ) ? httpServletRequest.getHeader( headerName ) : null;
-    }
-
-    private static HttpServletResponse getHttpServletResponse() {
-        TransportContext ctx = TransportContextHolder.getTransportContext();
-        return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletResponse() : null;
-    }
-
-    private static void addResponseHttpHeader(String headerName,String headerValue) {
-
-        HttpServletResponse httpServletResponse = getHttpServletResponse();
-        httpServletResponse.addHeader(headerName, headerValue);
-    }
-
-    private static void setResponseHttpHeaderValue(String headerName,String headerValue) {
-
-        HttpServletResponse httpServletResponse = getHttpServletResponse();
-        httpServletResponse.setHeader(headerName, headerValue);
-
-    }
 
     public static String generateRandomNumber(int length){
         Random rnd = new Random();
@@ -235,6 +173,7 @@ public class EWSUtils {
         return token.substring(token.length() - 3, token.length());
     }
 
+
     public static AccountType getAccountType(String AccNum){
         int last2Digits = Integer.parseInt(AccNum.substring(AccNum.length()-2,AccNum.length()));
         switch (last2Digits % 4){
@@ -249,9 +188,13 @@ public class EWSUtils {
         }
     }
 
-    public static String getRoutingNumber(String AccNum){
-        return AccNum.substring(0,6);
+    public static String getRoutingNumber(String AccNum) {
+        return AccNum.substring(0, 6);
     }
 
 
+    public static String decrypt(String input) {
+        StringBuilder sb = new StringBuilder(input);
+        return sb.reverse().toString();
+    }
 }
