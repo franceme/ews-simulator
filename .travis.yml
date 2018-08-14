@@ -1,0 +1,11 @@
+language: java
+notifications:
+  email:
+    recipients:
+      - sdksupport@vantiv.com
+    on_success: always
+    on_failure: always
+script:
+ - gradle -Dorg.gradle.warning.mode=summary build 
+after_success:
+ - bash <(curl -s https://codecov.io/bash)

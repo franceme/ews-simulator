@@ -1,6 +1,8 @@
 buildscript {
     repositories {
-        mavenCentral()
+        maven  {
+        url "http://repo1.maven.org/maven2"
+    		}
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE")
@@ -17,13 +19,23 @@ configurations {
     jaxb
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated"
+        }
+    }
+}
+
 bootJar {
-    baseName = 'gs-producing-web-service'
-    version =  '0.1.0'
+    baseName = 'worldpay-ews-simulator'
+    version =  '4.3.0'
 }
 
 repositories {
-    mavenCentral()
+    maven  {
+        url "http://repo1.maven.org/maven2"
+    }
 }
 
 
