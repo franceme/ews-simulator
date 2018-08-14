@@ -1,9 +1,7 @@
 package com.worldpay.simulator.validator;
 
 import com.worldpay.simulator.exceptions.ClientFaultException;
-
-import java.text.NumberFormat;
-import java.text.ParsePosition;
+import java.util.regex.Pattern;
 
 public class ValidatorUtils {
 
@@ -21,18 +19,17 @@ public class ValidatorUtils {
     public static final int ORDER_LVT_LENGTH = 18;
     public static final int EXPIRY_DATE_LENGTH = 4;
 
+    public static Pattern numberPattern = Pattern.compile("[^0-9]",Pattern.CASE_INSENSITIVE);
+
     public static boolean isStringEmpty(String value) {
-        return (value == null || value.isEmpty() || value.equalsIgnoreCase("?"));
+        return (value == null || value.isEmpty());
     }
 
     public static boolean isStringValidInteger(String str) {
         if (isStringEmpty(str))
             return false;
 
-        NumberFormat formatter = NumberFormat.getInstance();
-        ParsePosition pos = new ParsePosition(0);
-        formatter.parse(str, pos);
-        return str.length() == pos.getIndex();
+        return !numberPattern.matcher(str).find();
     }
 
     public static boolean isValidPAN(String PAN) {
