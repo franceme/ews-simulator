@@ -14,6 +14,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.ws.soap.SoapHeaderElement;
@@ -495,5 +496,18 @@ public class TestEWSSimulatorEndpoint {
         ValidateAndSimulate.validateAndSimulate(request, header);
         verifyStatic();
         HttpHeaderUtils.customizeHttpResponseHeader();
+    }
+
+    @Test
+    public void testEchoRequest() throws Exception {
+        EchoRequest echoRequest = new EchoRequest();
+        String test = "asdahfiuahofo";
+        echoRequest.setTest(test);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",echoRequest,header);
+
+        EchoResponse echoResponse = ewsSimulatorEndpoint.echo(echoRequest,header);
+
+        assertEquals(test,echoResponse.getResponse());
     }
 }

@@ -98,5 +98,9 @@ public class ValidateAndSimulate {
         simulate(request.getMerchantRefId());
     }
 
+    public static void validateAndSimulate(EchoRequest request,SoapHeaderElement header) {
+        validateSoapHeader(header);
+    }
+
 
 }
