@@ -1,9 +1,6 @@
 package com.worldpay.simulator.validator;
 
 import com.worldpay.simulator.exceptions.ClientFaultException;
-
-import java.text.NumberFormat;
-import java.text.ParsePosition;
 import java.util.regex.Pattern;
 
 public class ValidatorUtils {
