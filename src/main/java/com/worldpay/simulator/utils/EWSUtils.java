@@ -1,5 +1,8 @@
 package com.worldpay.simulator.utils;
 
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 import static java.lang.Thread.sleep;
 
 import java.util.Random;
@@ -18,13 +21,26 @@ public class EWSUtils {
         return UUID.randomUUID().toString();
     }
 
-    public static String getRegId(String input) {
+    public static String getRegIdFromPAN(String input) {
         int lengthInput = input.length();
 
         if(lengthInput > 3) {
             StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
             StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
             return sb.append(lastFour.reverse().toString()).toString();
+        } else {
+            return input;
+        }
+    }
+
+
+    public static String getRegIdFromToken(String input) {
+        int lengthInput = input.length();
+
+        if(lengthInput > 3) {
+            StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
+            StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
+            return sb.reverse().append(lastFour.reverse().toString()).toString();
         } else {
             return input;
         }
@@ -56,11 +72,15 @@ public class EWSUtils {
 
     public static String getPAN(String token) {
 
-        try {
-            return generateProperty(token);
-        } catch(NumberFormatException ex) {
+        if(!isValidPAN(generateProperty(token)))
             return "3000100011118566";
-        }
+        return generateProperty(token);
+    }
+
+    public static String getAccountNumber(String token){
+        if(!isValidAccount(getPAN(token)))
+            return "3000100011118566";
+        return getPAN(token);
     }
 
 
@@ -178,6 +198,9 @@ public class EWSUtils {
     }
 
     public static String getCVVThroughToken(String token) {
+        if(token.length() < 3){
+            return "566";
+        }
         return token.substring(token.length() - 3, token.length());
     }
 
@@ -197,6 +220,8 @@ public class EWSUtils {
     }
 
     public static String getRoutingNumber(String AccNum) {
+        if(AccNum.length() < 6)
+            return "123456";
         return AccNum.substring(0, 6);
     }
 

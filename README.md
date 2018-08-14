@@ -1,5 +1,6 @@
 
-![Travis (.org)](https://img.shields.io/travis/vantiv/ews-simulator.svg) [![GitHub](https://img.shields.io/github/license/vantiv/ews-simulator.svg)](https://github.com/Vantiv/ews-simulator/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/vantiv/ews-simulator.svg)](https://github.com/Vantiv/ews-simulator/issues) ![Github All Releases](https://img.shields.io/github/downloads/vantiv/ews-simulator/total.svg)
+[![Build Status](https://travis-ci.org/Vantiv/ews-simulator.svg?branch=master)](https://travis-ci.org/Vantiv/ews-simulator) [![codecov](https://codecov.io/gh/Vantiv/ews-simulator/branch/master/graph/badge.svg)](https://codecov.io/gh/Vantiv/ews-simulator)
+ [![GitHub](https://img.shields.io/github/license/vantiv/ews-simulator.svg)](https://github.com/Vantiv/ews-simulator/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/vantiv/ews-simulator.svg)](https://github.com/Vantiv/ews-simulator/issues) ![Github All Releases](https://img.shields.io/github/downloads/vantiv/ews-simulator/total.svg)
 
 
 # Encryption Web Services Simulator
@@ -19,40 +20,60 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-Gradle v4.0 and above
-Follow the steps mentioned at [Gradle | Installation](https://gradle.org/install/)
-
+- Gradle v4.0 and above. To install, follow the steps mentioned at [Gradle | Installation](https://gradle.org/install/)
 
 
 ### Installing
 
-Step 1: Step description
+1. Get the latest code from the repo using the command below:
 
 ```
-Give the example
+git clone https://github.com/Vantiv/ews-simulator.git
 ```
 
-Step 2: Step description
+2. Run the gradle build:
 
 ```
-Give the example
+gradle build
+```
+
+3. The gradle build should create the Spring boot jar as below:
+
+```
+build/libs/worldpay-ews-simulator-X.X.X.jar
 ```
 
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+Tests are run as part of the build steps above, but to run them manually you can run the command:
 
 ```
-Give an example
+gradle test
 ```
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+To start the spring server for a given port use the below command:
 
 ```
-Commands to execute
+java -jar -Dserver.port=XXXX build/libs/worldpay-ews-simulator-X.X.X.jar
+```
+
+## Shutdown
+
+To stop the server, use the below command:
+
+```
+curl -X POST localhost:port/actuator/shutdown 
+```
+
+## Status
+
+To get the current health of the server, use the below command:
+
+```
+curl -X GET localhost:port/actuator/health
 ```
 
 ## Built With
@@ -75,4 +96,4 @@ See also the list of [contributors](https://github.com/vantiv/ews-simulator/cont
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

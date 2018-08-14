@@ -11,7 +11,9 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 
 import static com.worldpay.simulator.utils.EWSUtils.*;
+import static com.worldpay.simulator.utils.HttpHeaderUtils.customizeHttpResponseHeader;
 import static com.worldpay.simulator.validator.ValidateAndSimulate.validateAndSimulate;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
@@ -22,16 +24,10 @@ public class EWSSimulatorEndpoint {
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
     private static final String HEADER_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
-    private static final String DEFAULTPAN= "4266841015771878";
     private static final String DEMOBYTE = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=\n" +
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
 
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "EchoRequest")
-    @ResponsePayload
-    public EchoResponse echo(@RequestPayload EchoRequest echoRequest) {
-        return new EchoResponse();
-    }
 
     /**
      *
@@ -43,19 +39,16 @@ public class EWSSimulatorEndpoint {
     public RegistrationResponse registration(@RequestPayload RegistrationRequest request,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException, TransformerException {
 
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
-
-
 
         RegistrationResponse response = new RegistrationResponse();
 
         String primaryAccountNumber = request.getPrimaryAccountNumber();
-        EWSUtils.delayInResponse(primaryAccountNumber);
-        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
         int lengthPAN = primaryAccountNumber.length();
+        addMerchantRefId(request, response);
         response.setRequestId(EWSUtils.randomReqId());
-        response.setRegId(EWSUtils.getRegId(primaryAccountNumber));
+        response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getToken(primaryAccountNumber));
 
         if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
@@ -73,7 +66,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest,
                                      @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(tokenizeRequest,auth);
 
 
@@ -100,18 +93,16 @@ public class EWSSimulatorEndpoint {
                                                        @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
         String cvv = request.getCardSecurityCode();
         String orderLVT = "3";
 
-        if(!EWSUtils.isSecurityCodeEmpty(cvv))
-            response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
-
+        response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
         response.setRequestId(EWSUtils.randomReqId());
-
+        addMerchantRefId(request,response);
         return response;
 
     }
@@ -121,7 +112,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public TokenRegistrationResponse tokenRegistration(@RequestPayload TokenRegistrationRequest tokenRegistrationRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(tokenRegistrationRequest, auth);
 
         TokenRegistrationResponse tokenRegistrationResponse = new TokenRegistrationResponse();
@@ -129,7 +120,7 @@ public class EWSSimulatorEndpoint {
         tokenRegistrationResponse.setRequestId(EWSUtils.randomReqId());
 
         String token = tokenRegistrationRequest.getToken();
-        tokenRegistrationResponse.setRegId(EWSUtils.getRegId(token));
+        tokenRegistrationResponse.setRegId(EWSUtils.getRegIdFromToken(token));
 
         return tokenRegistrationResponse;
     }
@@ -140,7 +131,7 @@ public class EWSSimulatorEndpoint {
                                                @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         BatchTokenizeResponse response = new BatchTokenizeResponse();
@@ -161,6 +152,7 @@ public class EWSSimulatorEndpoint {
             response.getToken().add(token);
 
         }
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -170,7 +162,7 @@ public class EWSSimulatorEndpoint {
                                                @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         BatchDetokenizeResponse response = new BatchDetokenizeResponse();
@@ -191,6 +183,7 @@ public class EWSSimulatorEndpoint {
 
         }
 
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -200,7 +193,7 @@ public class EWSSimulatorEndpoint {
                                                    @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         ECheckTokenizeResponse response = new ECheckTokenizeResponse();
@@ -217,7 +210,9 @@ public class EWSSimulatorEndpoint {
             token.setTokenValue(EWSUtils.getToken(AccNum));
             token.setTokenNewlyGenerated(AccNum.endsWith("000")?true:false);
         }
+        response.setToken(token);
 
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -227,7 +222,7 @@ public class EWSSimulatorEndpoint {
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
@@ -242,6 +237,7 @@ public class EWSSimulatorEndpoint {
 
         response.setAccount(account);
 
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -250,7 +246,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(tokenInquiryRequest,auth);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
@@ -280,7 +276,8 @@ public class EWSSimulatorEndpoint {
     public DetokenizeResponse detokenize(@RequestPayload DetokenizeRequest request,
                                          @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
+
         validateAndSimulate(request,auth);
 
         DetokenizeResponse answer = new DetokenizeResponse();
@@ -289,8 +286,6 @@ public class EWSSimulatorEndpoint {
         answer.setRequestId(requestId);
 
         String token = request.getToken();
-
-        EWSUtils.handleDesiredExceptions(token);
 
         String primaryAccountNumber = EWSUtils.getPAN(token);
 
@@ -317,7 +312,8 @@ public class EWSSimulatorEndpoint {
     public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest request,
                                                            @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
+
         validateAndSimulate(request,auth);
 
         OrderDeregistrationResponse answer = new OrderDeregistrationResponse();
@@ -328,6 +324,8 @@ public class EWSSimulatorEndpoint {
 
         String token = request.getToken();
 
+        if(!isValidToken(token) || token.length()<3) token = "3000100011118566";
+
         String PAN = EWSUtils.getPAN(token);
 
         EWSUtils.handleDesiredExceptions(PAN);
@@ -335,7 +333,6 @@ public class EWSSimulatorEndpoint {
         answer.setPrimaryAccountNumber(PAN);
 
 
-        if(LVT.startsWith("3")) {
             // check position 2 for '6', '7', '8' or '9' to simulate error
             if (LVT.charAt(2) == '6') {
                 VError error = new VError();
@@ -359,9 +356,8 @@ public class EWSSimulatorEndpoint {
                 answer.getError().add(error);
             } else {
                 EWSUtils.delayInResponse(request.merchantRefId);
-                answer.setCardSecurityCode(LVT);
+                answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
             }
-        }
         return answer;
     }
 
@@ -369,7 +365,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         DeregistrationResponse answer = new DeregistrationResponse();
@@ -416,7 +412,7 @@ public class EWSSimulatorEndpoint {
     public DecryptResponse decrypt(@RequestPayload DecryptRequest decryptRequest,
                                    @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
-        HttpHeaderUtils.customizeHttpResponseHeader();
+        customizeHttpResponseHeader();
         validateAndSimulate(decryptRequest, auth);
 
         DecryptResponse decryptResponse = new DecryptResponse();
@@ -476,5 +472,20 @@ public class EWSSimulatorEndpoint {
             String encryptedTrack2 = encryptedCard.getTrack2();
             decryptedCard.setTrack2(EWSUtils.decrypt(encryptedTrack2));
         }
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "EchoRequest")
+    @ResponsePayload
+    public EchoResponse echo(@RequestPayload EchoRequest request,
+                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) {
+
+        customizeHttpResponseHeader();
+
+        validateAndSimulate(request,auth);
+
+        EchoResponse answer = new EchoResponse();
+        String test = request.getTest();
+        answer.setResponse(test);
+        return answer;
     }
 }

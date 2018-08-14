@@ -13,14 +13,20 @@ public class TestEWSUtils {
   private String reqId2;
   private String PAN1;
   private String PAN2;
+  private String PAN3;
   private String regId1;
   private String regId2;
   private String property1;
   private String property2;
+  private String property3;
   private String invalidProperty;
   private String defaultPAN;
   private String cvv;
   private String token;
+  private AccountType CHECKING;
+  private AccountType SAVINGS;
+  private AccountType CORPORATE_CHECKING;
+  private AccountType CORPORATE_SAVINGS;
 
 
 
@@ -28,14 +34,20 @@ public class TestEWSUtils {
   public void setUp(){
     PAN1 = "123513521231";
     PAN2 = "251";
+    PAN3 = "7123513521231";
     regId1 = "123513521321";
     regId2 = "251";
     property1 = "253153211231";
     property2 = "251";
+    property3 = "2531532171231";
     invalidProperty = "asd21132";
     defaultPAN = "3000100011118566";
     cvv = "688";
     token = "1252645696785667688";
+    SAVINGS = AccountType.SAVINGS;
+    CHECKING = AccountType.CHECKING;
+    CORPORATE_CHECKING = AccountType.CORPORATE_CHECKING;
+    CORPORATE_SAVINGS = AccountType.CORPORATE_SAVINGS;
 
   }
 
@@ -51,9 +63,9 @@ public class TestEWSUtils {
 
   @Test
   public void testGetRegId(){
-    String temp = EWSUtils.getRegId(PAN1);
+    String temp = EWSUtils.getRegIdFromPAN(PAN1);
     assertEquals(regId1,temp);
-    temp = EWSUtils.getRegId(PAN2);
+    temp = EWSUtils.getRegIdFromPAN(PAN2);
     assertEquals(regId2,temp);
   }
 
@@ -77,11 +89,9 @@ public class TestEWSUtils {
 
   @Test
   public void testGetPAN(){
-    String temp = EWSUtils.getPAN(property1);
-    assertEquals(PAN1,temp);
+    String temp = EWSUtils.getPAN(property3);
+    assertEquals(PAN3,temp);
     temp = EWSUtils.getPAN(property2);
-    assertEquals(PAN2,temp);
-    temp = EWSUtils.getPAN(invalidProperty);
     assertEquals(defaultPAN,temp);
   }
 
@@ -172,7 +182,23 @@ public class TestEWSUtils {
     assertEquals(cvv,EWSUtils.getCVVThroughToken(token));
   }
 
+  @Test
+  public void testGetAccountType(){
+    assertEquals(CHECKING,EWSUtils.getAccountType("120"));
+    assertEquals(SAVINGS,EWSUtils.getAccountType("121"));
+    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("122"));
+    assertEquals(CORPORATE_SAVINGS,EWSUtils.getAccountType("123"));
+  }
 
+  @Test
+  public void testGetRoutingNumber(){
+    assertEquals("300010",EWSUtils.getRoutingNumber(defaultPAN));
+  }
+
+  @Test
+  public void testDecrypt(){
+    assertEquals("132125315321",EWSUtils.decrypt(PAN1));
+  }
 
 
 }
