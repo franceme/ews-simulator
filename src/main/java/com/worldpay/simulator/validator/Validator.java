@@ -37,10 +37,10 @@ public class Validator {
     public static final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
     public static final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
 
-    public static final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry (or) any one of Track Numbers)";
+    public static final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry Date (or) any one of Track Numbers)";
+    public static final String INVALID_VOLTAGE_CARD = "Error: Card details is invalid (Must either contain PAN and Security Code (or) any one of Track Numbers)";
     public static final String INVALID_ROUTING_NUM = "Error: Routing Number is invalid";
     public static final String INVALID_ACCOUNT_NUM = "Error: Account Number is invalid";
-    public static final String INVALID_ORDER_LVT = "Error: OrderLVT is invalid";
 
     public static final String MERCHANT_NOT_FOUND = "Error: Merchant not found";
     public static final String MERCHANT_KEY_NOT_FOUND = "Error: MerchantKeyType not found";
@@ -104,6 +104,9 @@ public class Validator {
 
     public static void validateVerifoneCard(Card card){
 
+        if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getExpirationDate()))
+            handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
+
         if(!isStringEmpty(card.getTrack1()))
             if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getExpirationDate()) || !isStringEmpty(card.getTrack2()))
                 handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
@@ -115,6 +118,25 @@ public class Validator {
         if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getExpirationDate()))
             if( !isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
                 handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
+
+    }
+
+    public static void validateVoltageCard(Card card){
+
+        if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getSecurityCode()))
+            handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
+
+        if(!isStringEmpty(card.getTrack1()))
+            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getSecurityCode()) || !isStringEmpty(card.getTrack2()))
+                handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
+
+        if(!isStringEmpty(card.getTrack2()))
+            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getSecurityCode()) || !isStringEmpty(card.getTrack1()))
+                handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
+
+        if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getSecurityCode()))
+            if( !isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
+                handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
 
     }
 
@@ -207,8 +229,7 @@ public class Validator {
         if(voltage.getEncryptedCard() == null)
             handleException(INVALID_REQ, CARD_NOT_FOUND);
 
-        if(!isValidPAN(voltage.getEncryptedCard().getPrimaryAccountNumber()) || !isValidCVV(voltage.getEncryptedCard().getSecurityCode()))
-            handleException(INVALID_REQ, INVALID_CARD_DETAILS);
+        validateVoltageCard(voltage.getEncryptedCard());
     }
 
     public static void validateCryptogram(VerifoneCryptogram verifone, VoltageCryptogram voltage){
