@@ -1,8 +1,8 @@
 import ewsSimulator.ws.*;
+import ewsSimulator.ws.validator.Validator;
 import org.junit.Before;
 import org.junit.Test;
 
-import static ewsSimulator.ws.EWSUtils.getAuthentication;
 import static org.junit.Assert.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.will;
@@ -91,8 +91,7 @@ public class TestEWSSimulatorEndpoint {
         detokenizeRequest.setCVV2Requested(true);
         detokenizeRequest.setExpirationDateRequested(true);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",detokenizeRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",detokenizeRequest,header);
 
         DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(detokenizeRequest,header);
 
@@ -112,8 +111,7 @@ public class TestEWSSimulatorEndpoint {
         detokenizeRequest.setCVV2Requested(false);
         detokenizeRequest.setExpirationDateRequested(false);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",detokenizeRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",detokenizeRequest,header);
 
         DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(detokenizeRequest,header);
 
@@ -132,8 +130,7 @@ public class TestEWSSimulatorEndpoint {
         orderDeregistrationRequest.setOrderLVT(CVV);
         orderDeregistrationRequest.setToken(token);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest,header);
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
 
@@ -150,8 +147,7 @@ public class TestEWSSimulatorEndpoint {
         orderDeregistrationRequest.setOrderLVT("303");
         orderDeregistrationRequest.setToken(token);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest,header);
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
 
@@ -169,8 +165,7 @@ public class TestEWSSimulatorEndpoint {
         orderDeregistrationRequest.setOrderLVT("306");
         orderDeregistrationRequest.setToken(token);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest,header);
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
 
@@ -189,8 +184,7 @@ public class TestEWSSimulatorEndpoint {
         orderDeregistrationRequest.setOrderLVT("307");
         orderDeregistrationRequest.setToken(token);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest,header);
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
 
@@ -209,8 +203,7 @@ public class TestEWSSimulatorEndpoint {
         orderDeregistrationRequest.setOrderLVT("308");
         orderDeregistrationRequest.setToken(token);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest,header);
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
 
@@ -229,8 +222,7 @@ public class TestEWSSimulatorEndpoint {
         orderDeregistrationRequest.setOrderLVT("309");
         orderDeregistrationRequest.setToken(token);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",orderDeregistrationRequest,header);
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
 
@@ -297,8 +289,7 @@ public class TestEWSSimulatorEndpoint {
         deregistrationRequest.setRegId(registrationId);
         deregistrationRequest.setCardSecurityCodeRequested(true);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest,header);
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
 
@@ -318,8 +309,7 @@ public class TestEWSSimulatorEndpoint {
         deregistrationRequest.setRegId(registrationId);
         deregistrationRequest.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest,header);
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
 
@@ -339,8 +329,7 @@ public class TestEWSSimulatorEndpoint {
         deregistrationRequest.setRegId("615348948648641");
         deregistrationRequest.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest,header);
 
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
@@ -365,8 +354,7 @@ public class TestEWSSimulatorEndpoint {
         deregistrationRequest.setRegId("615348948648642");
         deregistrationRequest.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest,header);
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
 
@@ -391,8 +379,7 @@ public class TestEWSSimulatorEndpoint {
         deregistrationRequest.setRegId("615348948648643");
         deregistrationRequest.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateSoapHeader",header);
-        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest);
+        PowerMockito.doNothing().when(ValidateAndSimulate.class,"validateAndSimulate",deregistrationRequest,header);
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
 
@@ -456,4 +443,7 @@ public class TestEWSSimulatorEndpoint {
 //            assertEquals("an unspecified error occurred.", serverFault.getMessage());
 //        }
 //    }
+
+
+
 }

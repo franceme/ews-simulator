@@ -33,8 +33,15 @@ public class EWSUtils {
     }
 
     public static String getRegId(String primaryAccountNumber) {
+        int lengthInput = primaryAccountNumber.length();
 
-        return Long.toString(Long.parseLong(primaryAccountNumber) + 99999);
+        if(lengthInput > 3) {
+            StringBuilder sb = new StringBuilder(primaryAccountNumber.substring(0, lengthInput - 4));
+            StringBuilder lastFour = new StringBuilder(primaryAccountNumber.substring(lengthInput - 4));
+            return sb.append(lastFour.reverse().toString()).toString();
+        } else {
+            return primaryAccountNumber;
+        }
     }
 
     public static void customizeHttpResponseHeader(){
@@ -51,6 +58,12 @@ public class EWSUtils {
     public static String generateProperty(String input) {
 
         int lengthInput = input.length();
+
+        try{
+            Long temp = Long.parseLong(input);
+        }catch (Exception e){
+            throw new NumberFormatException();
+        }
 
         if(lengthInput > 3) {
             StringBuffer sb = new StringBuffer(input.substring(0, lengthInput - 4));
@@ -131,7 +144,7 @@ public class EWSUtils {
         if(cvv == null)
             return true;
 
-        if((cvv.charAt(0) == '?' || cvv.charAt(0) == ' ') && cvv.length() == 1)
+        if(cvv.length() == 1 && (cvv.charAt(0) == '?' || cvv.charAt(0) == ' ') )
             return true;
 
         if(cvv.equalsIgnoreCase(""))
@@ -141,12 +154,13 @@ public class EWSUtils {
     }
 
     public static boolean isSecurityCodeValid(String cvv){
+        if(cvv == null || cvv.length() < 3)
+            return false;
 
         if(cvv.charAt(0) == '?' || cvv.charAt(0) == ' ')
             return true;
 
-        if(cvv.length() < 3)
-            return false;
+
 
         return true;
     }

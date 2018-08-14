@@ -222,7 +222,8 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public DetokenizeResponse detokenize(@RequestPayload DetokenizeRequest request,
                                          @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+//        customizeHttpResponseHeader();
+
         validateAndSimulate(request,auth);
 
         DetokenizeResponse answer = new DetokenizeResponse();
@@ -258,7 +259,8 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest request,
                                                            @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+//        customizeHttpResponseHeader();
+
         validateAndSimulate(request,auth);
 
         OrderDeregistrationResponse answer = new OrderDeregistrationResponse();
@@ -310,7 +312,8 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+//        customizeHttpResponseHeader();
+
         validateAndSimulate(request,auth);
         DeregistrationResponse answer = new DeregistrationResponse();
         String regId = request.getRegId();
