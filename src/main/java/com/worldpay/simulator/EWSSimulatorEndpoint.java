@@ -326,7 +326,7 @@ public class EWSSimulatorEndpoint {
 
         String token = request.getToken();
 
-        if(!isValidToken(token)) token = "3000100011118566";
+        if(!isValidToken(token) || token.length()<3) token = "3000100011118566";
 
         String PAN = EWSUtils.getPAN(token);
 
