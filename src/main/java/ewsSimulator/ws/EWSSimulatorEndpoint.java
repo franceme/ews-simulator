@@ -55,11 +55,11 @@ public class EWSSimulatorEndpoint {
     private static final String DEFAULTPAN= "4266841015771878";
     private static final String DEMOBYTE = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=\n" +
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchDetokenizeRequest")
+  /*  @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchDetokenizeRequest")
     @ResponsePayload
     public BatchDetokenizeResponse batchDetokenize(@RequestPayload BatchDetokenizeRequest batchDetokenizeRequest) {
         return new BatchDetokenizeResponse();
-    }
+    }*/
 
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "EchoRequest")
