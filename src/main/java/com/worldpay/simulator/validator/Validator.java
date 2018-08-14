@@ -103,6 +103,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_PAN);
     }
 
+
     public static void validateVerifoneCard(Card card){
 
         if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getExpirationDate()))
@@ -153,6 +154,7 @@ public class Validator {
 
     }
 
+
     public static void validateToken(List<Token> tokens, int LIMIT){
 
         if(tokens.size() > LIMIT || tokens.size() == EMPTY)
@@ -188,11 +190,6 @@ public class Validator {
     public static void validateMerchantKeyType(VerifoneMerchantKeyType merchantKeyType){
         if(merchantKeyType == null)
             handleException(INVALID_REQ,MERCHANT_KEY_NOT_FOUND);
-
-        if(!merchantKeyType.value().equalsIgnoreCase("SHARED")
-                || !merchantKeyType.value().equalsIgnoreCase("UNIQUE"))
-            handleException(INVALID_REQ,INVALID_MERCHANT_KEY_TYPE);
-
     }
 
     public static void validateVerifoneTerminal(VerifoneTerminal terminal){

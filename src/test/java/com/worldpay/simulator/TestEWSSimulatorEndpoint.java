@@ -558,6 +558,10 @@ public class TestEWSSimulatorEndpoint {
         HttpHeaderUtils.customizeHttpResponseHeader();
     }
 
+//    @Test
+//    public void testDecrypt_VerifoneWithPAN() {
+//
+//    }
     @Test
     public void testEchoRequest() throws Exception {
         EchoRequest echoRequest = new EchoRequest();
