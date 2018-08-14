@@ -160,7 +160,7 @@ public class TestEWSSimulatorEndpoint {
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
-        assertEquals("303",testResponse.getCardSecurityCode());
+        assertEquals("468",testResponse.getCardSecurityCode());
 
         verifyStatic();
         ValidateAndSimulate.validateAndSimulate(orderDeregistrationRequest, header);
