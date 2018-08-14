@@ -1,4 +1,4 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator;
 
 import java.util.List;
 import java.util.Properties;
@@ -18,6 +18,11 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
+
+import com.worldpay.simulator.exceptions.ClientFaultException;
+import com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver;
+import com.worldpay.simulator.exceptions.SecurityErrorException;
+import com.worldpay.simulator.exceptions.ServerFaultException;
 
 @EnableWs
 @Configuration

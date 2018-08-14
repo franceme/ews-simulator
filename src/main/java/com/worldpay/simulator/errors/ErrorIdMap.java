@@ -1,4 +1,4 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.errors;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

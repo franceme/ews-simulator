@@ -1,9 +1,17 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.utils;
 
 import static java.lang.Thread.sleep;
 
 import java.util.Random;
 import java.util.UUID;
+
+import com.worldpay.simulator.AccountType;
+import com.worldpay.simulator.errors.EWSError;
+import com.worldpay.simulator.errors.ErrorIdMap;
+import com.worldpay.simulator.VError;
+import com.worldpay.simulator.exceptions.ClientFaultException;
+import com.worldpay.simulator.exceptions.ServerFaultException;
+
 public class EWSUtils {
 
     public static String randomReqId() {

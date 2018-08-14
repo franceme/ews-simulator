@@ -1,17 +1,18 @@
-package ewsSimulator.ws.validator;
+package com.worldpay.simulator.validator;
 
 import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-import ewsSimulator.ws.*;
+import com.worldpay.simulator.*;
+import com.worldpay.simulator.exceptions.SecurityErrorException;
+
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.w3c.dom.Node;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.util.List;
 
-import static ewsSimulator.ws.validator.ValidatorUtils.*;
+import static com.worldpay.simulator.validator.ValidatorUtils.*;
 
 /**
  * Validator class:-

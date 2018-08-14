@@ -1,19 +1,13 @@
-import ewsSimulator.ws.*;
-import ewsSimulator.ws.validator.Validator;
+package com.worldpay.simulator;
+
+import com.worldpay.simulator.utils.HttpHeaderUtils;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import ewsSimulator.ws.DeregistrationRequest;
-import ewsSimulator.ws.DeregistrationResponse;
-import ewsSimulator.ws.DetokenizeRequest;
-import ewsSimulator.ws.DetokenizeResponse;
-import ewsSimulator.ws.EWSSimulatorEndpoint;
-import ewsSimulator.ws.MerchantType;
-import ewsSimulator.ws.OrderDeregistrationRequest;
-import ewsSimulator.ws.OrderDeregistrationResponse;
-import ewsSimulator.ws.validator.ValidateAndSimulate;
+import com.worldpay.simulator.validator.ValidateAndSimulate;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 

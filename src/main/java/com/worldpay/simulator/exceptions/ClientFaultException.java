@@ -1,4 +1,9 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.exceptions;
+
+import com.worldpay.simulator.errors.EWSError;
+import com.worldpay.simulator.utils.EWSUtils;
+import com.worldpay.simulator.errors.ErrorIdMap;
+import com.worldpay.simulator.RequestValidationFault;
 
 public class ClientFaultException extends RuntimeException{
 

@@ -1,4 +1,4 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.exceptions;
 
 
 import javax.xml.bind.JAXBContext;
@@ -7,6 +7,9 @@ import javax.xml.bind.Marshaller;
 
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
+
+import com.worldpay.simulator.RequestValidationFault;
+import com.worldpay.simulator.ServerFault;
 
 public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMappingExceptionResolver {
 
@@ -24,7 +27,7 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
     private void addFaultDetail(Object customFault, SoapFault fault) {
         fault.addFaultDetail();
         try {
-            JAXBContext context = JAXBContext.newInstance("ewsSimulator.ws");
+            JAXBContext context = JAXBContext.newInstance("com.worldpay.simulator");
             Marshaller marshaller = context.createMarshaller();
             marshaller.marshal(customFault, fault.getFaultDetail().getResult());
         }

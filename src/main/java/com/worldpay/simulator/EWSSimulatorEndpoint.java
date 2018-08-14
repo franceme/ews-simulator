@@ -1,4 +1,4 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 
@@ -10,8 +10,11 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 
-import static ewsSimulator.ws.EWSUtils.*;
-import static ewsSimulator.ws.validator.ValidateAndSimulate.validateAndSimulate;
+import static com.worldpay.simulator.utils.EWSUtils.*;
+import static com.worldpay.simulator.validator.ValidateAndSimulate.validateAndSimulate;
+
+import com.worldpay.simulator.utils.EWSUtils;
+import com.worldpay.simulator.utils.HttpHeaderUtils;
 
 
 @Endpoint

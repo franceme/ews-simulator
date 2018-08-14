@@ -1,4 +1,4 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.utils;
 
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;

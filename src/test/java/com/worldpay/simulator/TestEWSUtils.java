@@ -1,6 +1,9 @@
-import ewsSimulator.ws.EWSUtils;
-import ewsSimulator.ws.ServerFaultException;
-import ewsSimulator.ws.ClientFaultException;
+package com.worldpay.simulator;
+
+import com.worldpay.simulator.exceptions.ServerFaultException;
+import com.worldpay.simulator.exceptions.ClientFaultException;
+import com.worldpay.simulator.utils.EWSUtils;
+
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

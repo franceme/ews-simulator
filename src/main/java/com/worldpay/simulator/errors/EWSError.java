@@ -1,4 +1,4 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.errors;
 
 public class EWSError {
 

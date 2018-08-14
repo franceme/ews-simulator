@@ -1,11 +1,13 @@
-package ewsSimulator.ws.validator;
+package com.worldpay.simulator.validator;
 
-import ewsSimulator.ws.*;
+import com.worldpay.simulator.*;
+import com.worldpay.simulator.utils.EWSUtils;
+
 import org.springframework.ws.soap.SoapHeaderElement;
 
-import static ewsSimulator.ws.validator.Validator.validate;
-import static ewsSimulator.ws.validator.Validator.validateSoapHeader;
-import static ewsSimulator.ws.validator.ValidatorUtils.isValidMerchantRefId;
+import static com.worldpay.simulator.validator.Validator.validate;
+import static com.worldpay.simulator.validator.Validator.validateSoapHeader;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidMerchantRefId;
 
 public class ValidateAndSimulate {
 

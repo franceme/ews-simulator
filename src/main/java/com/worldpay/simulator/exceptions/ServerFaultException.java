@@ -1,4 +1,8 @@
-package ewsSimulator.ws;
+package com.worldpay.simulator.exceptions;
+
+import com.worldpay.simulator.errors.EWSError;
+import com.worldpay.simulator.errors.ErrorIdMap;
+import com.worldpay.simulator.ServerFault;
 
 public class ServerFaultException extends RuntimeException {
 
