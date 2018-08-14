@@ -55,6 +55,9 @@ public class EWSSimulatorEndpoint {
     private static final String DEFAULTPAN= "4266841015771878";
     private static final String DEMOBYTE = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=\n" +
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
+
+
+
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchDetokenizeRequest")
     @ResponsePayload
     public BatchDetokenizeResponse batchDetokenize(@RequestPayload BatchDetokenizeRequest batchDetokenizeRequest) {
@@ -78,7 +81,7 @@ public class EWSSimulatorEndpoint {
     public RegistrationResponse registration(@RequestPayload RegistrationRequest request,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException, TransformerException {
 
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
 
@@ -108,7 +111,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest,
                                      @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(tokenizeRequest,auth);
 
 
@@ -135,7 +138,7 @@ public class EWSSimulatorEndpoint {
                                                        @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
@@ -151,13 +154,31 @@ public class EWSSimulatorEndpoint {
 
     }
 
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenRegistrationRequest")
+    @ResponsePayload
+    public TokenRegistrationResponse tokenRegistration(@RequestPayload TokenRegistrationRequest tokenRegistrationRequest,
+                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+        HttpHeaderUtils.customizeHttpResponseHeader();
+        validateAndSimulate(tokenRegistrationRequest, auth);
+
+        TokenRegistrationResponse tokenRegistrationResponse = new TokenRegistrationResponse();
+        addMerchantRefId(tokenRegistrationRequest, tokenRegistrationResponse);
+        tokenRegistrationResponse.setRequestId(EWSUtils.randomReqId());
+
+        String token = tokenRegistrationRequest.getToken();
+        tokenRegistrationResponse.setRegId(EWSUtils.getRegId(token));
+
+        return tokenRegistrationResponse;
+    }
+
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchTokenizeRequest")
     @ResponsePayload
     public BatchTokenizeResponse batchTokenize(@RequestPayload BatchTokenizeRequest request,
                                                @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         //if pan ends with even number token is newly generated (true)
@@ -189,7 +210,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(tokenInquiryRequest,auth);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
@@ -214,13 +235,11 @@ public class EWSSimulatorEndpoint {
     }
 
 
-
-
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "DetokenizeRequest")
     @ResponsePayload
     public DetokenizeResponse detokenize(@RequestPayload DetokenizeRequest request,
                                          @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         DetokenizeResponse answer = new DetokenizeResponse();
@@ -256,7 +275,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest request,
                                                            @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
         OrderDeregistrationResponse answer = new OrderDeregistrationResponse();
@@ -308,7 +327,7 @@ public class EWSSimulatorEndpoint {
     @ResponsePayload
     public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
-        customizeHttpResponseHeader();
+        HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
         DeregistrationResponse answer = new DeregistrationResponse();
         String regId = request.getRegId();
@@ -349,10 +368,70 @@ public class EWSSimulatorEndpoint {
         }return answer;
     }
 
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "DecryptRequest")
+    @ResponsePayload
+    public DecryptResponse decrypt(@RequestPayload DecryptRequest decryptRequest,
+                                   @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+
+        HttpHeaderUtils.customizeHttpResponseHeader();
+        validateAndSimulate(decryptRequest, auth);
+
+        DecryptResponse decryptResponse = new DecryptResponse();
+        addMerchantRefId(decryptRequest, decryptResponse);
+
+        if (decryptRequest.getVerifoneCryptogram() != null) {
+            handleVerifoneCryptogram(decryptRequest, decryptResponse);
+        } else {
+            handleVoltageCryptogram(decryptRequest, decryptResponse);
+        }
+
+        return decryptResponse;
+    }
+
 
     public void addMerchantRefId(EncryptionRequest request, EncryptionResponse response) {
         String merchantRefId = request.getMerchantRefId();
         if (merchantRefId != null)
             response.setMerchantRefId(merchantRefId);
+    }
+
+    public void handleVerifoneCryptogram(DecryptRequest decryptRequest, DecryptResponse decryptResponse) {
+        VerifoneCryptogram verifoneCryptogram = decryptRequest.getVerifoneCryptogram();
+        Card encryptedCard = verifoneCryptogram.getEncryptedCard();
+        Card decryptedCard = new Card();
+
+        String encryptedPAN = encryptedCard.getPrimaryAccountNumber();
+        if (encryptedPAN != null){
+            decryptedCard.setPrimaryAccountNumber(EWSUtils.decrypt(encryptedPAN));
+            decryptedCard.setExpirationDate(encryptedCard.getExpirationDate());
+        } else {
+            handleCardWithTrack(encryptedCard, decryptedCard);
+        }
+        decryptResponse.setDecryptedCard(decryptedCard);
+    }
+
+    public void handleVoltageCryptogram(DecryptRequest decryptRequest, DecryptResponse decryptResponse) {
+        VoltageCryptogram voltageCryptogram = decryptRequest.getVoltageCryptogram();
+        Card encryptedCard = voltageCryptogram.getEncryptedCard();
+        Card decryptedCard = new Card();
+
+        String encryptedPAN = encryptedCard.getPrimaryAccountNumber();
+        if (encryptedPAN != null){
+            decryptedCard.setPrimaryAccountNumber(EWSUtils.decrypt(encryptedPAN));
+            decryptedCard.setSecurityCode(encryptedCard.getSecurityCode());
+        } else {
+            handleCardWithTrack(encryptedCard, decryptedCard);
+        }
+        decryptResponse.setDecryptedCard(decryptedCard);
+    }
+
+    public void handleCardWithTrack(Card encryptedCard, Card decryptedCard) {
+        String encryptedTrack1;
+        if ((encryptedTrack1 = encryptedCard.getTrack1()) != null) {
+            decryptedCard.setTrack1(EWSUtils.decrypt(encryptedTrack1));
+        } else {
+            String encryptedTrack2 = encryptedCard.getTrack2();
+            decryptedCard.setTrack2(EWSUtils.decrypt(encryptedTrack2));
+        }
     }
 }
