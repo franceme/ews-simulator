@@ -23,7 +23,6 @@ public class EWSSimulatorEndpoint {
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
     private static final String HEADER_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
-    private static final String DEFAULTPAN= "4266841015771878";
     private static final String DEMOBYTE = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=\n" +
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
 
@@ -45,11 +44,10 @@ public class EWSSimulatorEndpoint {
         RegistrationResponse response = new RegistrationResponse();
 
         String primaryAccountNumber = request.getPrimaryAccountNumber();
-        EWSUtils.delayInResponse(primaryAccountNumber);
-        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
         int lengthPAN = primaryAccountNumber.length();
+        addMerchantRefId(request, response);
         response.setRequestId(EWSUtils.randomReqId());
-        response.setRegId(EWSUtils.getRegId(primaryAccountNumber));
+        response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getToken(primaryAccountNumber));
 
         if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
@@ -121,7 +119,7 @@ public class EWSSimulatorEndpoint {
         tokenRegistrationResponse.setRequestId(EWSUtils.randomReqId());
 
         String token = tokenRegistrationRequest.getToken();
-        tokenRegistrationResponse.setRegId(EWSUtils.getRegId(token));
+        tokenRegistrationResponse.setRegId(EWSUtils.getRegIdFromToken(token));
 
         return tokenRegistrationResponse;
     }

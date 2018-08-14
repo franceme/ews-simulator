@@ -39,6 +39,7 @@ public class TestEWSSimulatorEndpoint {
     private String CRYPTOGRAM;
     private String registrationId;
     private SoapHeaderElement header;
+    private String merchantRefId;
 
 
     @Before
@@ -58,14 +59,64 @@ public class TestEWSSimulatorEndpoint {
         mockStatic(ValidateAndSimulate.class);
         mockStatic(HttpHeaderUtils.class);
         header = null;
+        merchantRefId = "00012445653000";
     }
 
     @Test
-    public void testRegistration() {
-        RegistrationRequest request = new RegistrationRequest();
-        request.setPrimaryAccountNumber("00012445653000");
-        request.setWalletType(WalletType.fromValue("ANDROID"));
+    public void testRegistration() throws Exception {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
 
+        RegistrationRequest request = new RegistrationRequest();
+        request.setMerchantRefId(merchantRefId);
+        request.setPrimaryAccountNumber(PAN);
+        request.setWalletType(WalletType.fromValue(ANDROID));
+        request.setCryptogram(CRYPTOGRAM.getBytes());
+        request.setMerchant(merchant);
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
+
+        assertEquals("468498435168468", response.getToken());
+        assertEquals("615348948648648", response.getRegId());
+        assertEquals(false, response.isTokenNewlyGenerated());
+        assertNotNull(response.getRequestId());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+
+    }
+
+    @Test
+    public void testRegistration_PANLast3digitsZero() throws Exception {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        RegistrationRequest request = new RegistrationRequest();
+        request.setMerchantRefId(merchantRefId);
+        request.setPrimaryAccountNumber("615348948648000");
+        request.setWalletType(WalletType.fromValue(ANDROID));
+        request.setCryptogram(CRYPTOGRAM.getBytes());
+        request.setMerchant(merchant);
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
+
+        assertEquals("468498435168000", response.getToken());
+        assertEquals("615348948640008", response.getRegId());
+        assertEquals(true, response.isTokenNewlyGenerated());
+        assertNotNull(response.getRequestId());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
 
     }
 
@@ -73,7 +124,7 @@ public class TestEWSSimulatorEndpoint {
     public void testDetokenize_success_with_ExpirationDateRequested_CVV2Requested() throws Exception {
         DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
         MerchantType merchant = new MerchantType();
-        merchant.setRollupId(requestId);
+        merchant.setRollupId(rollupId);
         detokenizeRequest.setMerchant(merchant);
         detokenizeRequest.setToken(token);
         detokenizeRequest.setCVV2Requested(true);

@@ -59,9 +59,9 @@ public class TestEWSUtils {
 
   @Test
   public void testGetRegId(){
-    String temp = EWSUtils.getRegId(PAN1);
+    String temp = EWSUtils.getRegIdFromPAN(PAN1);
     assertEquals(regId1,temp);
-    temp = EWSUtils.getRegId(PAN2);
+    temp = EWSUtils.getRegIdFromPAN(PAN2);
     assertEquals(regId2,temp);
   }
 

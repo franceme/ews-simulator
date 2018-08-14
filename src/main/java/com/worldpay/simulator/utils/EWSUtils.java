@@ -19,13 +19,26 @@ public class EWSUtils {
         return UUID.randomUUID().toString();
     }
 
-    public static String getRegId(String input) {
+    public static String getRegIdFromPAN(String input) {
         int lengthInput = input.length();
 
         if(lengthInput > 3) {
             StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
             StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
             return sb.append(lastFour.reverse().toString()).toString();
+        } else {
+            return input;
+        }
+    }
+
+
+    public static String getRegIdFromToken(String input) {
+        int lengthInput = input.length();
+
+        if(lengthInput > 3) {
+            StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
+            StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
+            return sb.reverse().append(lastFour.reverse().toString()).toString();
         } else {
             return input;
         }
