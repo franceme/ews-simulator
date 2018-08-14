@@ -519,4 +519,114 @@ public class TestEWSSimulatorEndpoint {
 
         assertEquals(test,echoResponse.getResponse());
     }
+
+    @Test
+    public void testOrderRegistration() throws Exception {
+
+        OrderRegistrationRequest request = new OrderRegistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setCardSecurityCode("123");
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
+        assertNotNull(response.getOrderLVT());
+        assertEquals(true,response.getOrderLVT().startsWith("3"));
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+
+    }
+
+    @Test
+    public void testBatchTokenize() throws Exception {
+
+        BatchTokenizeRequest request = new BatchTokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        Card card = new Card();
+        card.setPrimaryAccountNumber(PAN);
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        BatchTokenizeResponse response = ewsSimulatorEndpoint.batchTokenize(request,header);
+        assertNotNull(response.getToken());
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+
+    }
+
+    @Test
+    public void testBatchDetokenize() throws Exception {
+        BatchDetokenizeRequest request = new BatchDetokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        Token batchtoken = new Token();
+        batchtoken.setTokenValue(token);
+        request.getToken().add(batchtoken);
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        BatchDetokenizeResponse response = ewsSimulatorEndpoint.batchDetokenize(request,header);
+        assertEquals( true,response.getCard().size() > 0);
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+    }
+
+    @Test
+    public void testECheckTokenize() throws Exception {
+        ECheckTokenizeRequest request = new ECheckTokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        Account account = new Account();
+        account.setAccountNumber("1234567890123");
+        account.setAccountType(AccountType.CHECKING);
+        account.setRoutingNumber("123456");
+        request.setAccount(account);
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        ECheckTokenizeResponse response = ewsSimulatorEndpoint.echeckTokenize(request,header);
+        assertEquals( true,response.getToken().getTokenValue().length() > 0);
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+    }
+
+    @Test
+    public void testECheckDetokenize() throws Exception {
+        ECheckDetokenizeRequest request = new ECheckDetokenizeRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        ECheckToken batchtoken = new ECheckToken();
+        batchtoken.setTokenValue(token);
+        request.setToken(batchtoken);
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        ECheckDetokenizeResponse response = ewsSimulatorEndpoint.eCheckDetokenizeResponse(request,header);
+        assertEquals( true,response.getAccount().getAccountNumber().length() > 0);
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+    }
 }
