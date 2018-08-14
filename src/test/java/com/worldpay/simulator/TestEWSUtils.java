@@ -21,6 +21,10 @@ public class TestEWSUtils {
   private String defaultPAN;
   private String cvv;
   private String token;
+  private AccountType CHECKING;
+  private AccountType SAVINGS;
+  private AccountType CORPORATE_CHECKING;
+  private AccountType CORPORATE_SAVINGS;
 
 
 
@@ -36,6 +40,10 @@ public class TestEWSUtils {
     defaultPAN = "3000100011118566";
     cvv = "688";
     token = "1252645696785667688";
+    SAVINGS = AccountType.SAVINGS;
+    CHECKING = AccountType.CHECKING;
+    CORPORATE_CHECKING = AccountType.CORPORATE_CHECKING;
+    CORPORATE_SAVINGS = AccountType.CORPORATE_SAVINGS;
 
   }
 
@@ -172,7 +180,23 @@ public class TestEWSUtils {
     assertEquals(cvv,EWSUtils.getCVVThroughToken(token));
   }
 
+  @Test
+  public void testGetAccountType(){
+    assertEquals(CHECKING,EWSUtils.getAccountType("120"));
+    assertEquals(SAVINGS,EWSUtils.getAccountType("121"));
+    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("122"));
+    assertEquals(CORPORATE_SAVINGS,EWSUtils.getAccountType("123"));
+  }
 
+  @Test
+  public void testGetRoutingNumber(){
+    assertEquals("300010",EWSUtils.getRoutingNumber(defaultPAN));
+  }
+
+  @Test
+  public void testDecrypt(){
+    assertEquals("132125315321",EWSUtils.decrypt(PAN1));
+  }
 
 
 }
