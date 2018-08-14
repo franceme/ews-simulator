@@ -19,6 +19,7 @@ public class ValidatorUtils {
     public static final int TOKEN_LENGTH = 50;
     public static final int ROLLUP_ID_LENGTH = 6;
     public static final int ORDER_LVT_LENGTH = 18;
+    public static final int EXPIRY_DATE_LENGTH = 4;
 
     public static boolean isStringEmpty(String value) {
         return (value == null || value.isEmpty() || value.equalsIgnoreCase("?"));
@@ -63,11 +64,15 @@ public class ValidatorUtils {
     }
 
     public static boolean isValidRoutingNumber(String routingNum) {
-        return (!isStringEmpty(routingNum) && routingNum.length() != ROUTING_LENGTH);
+        return (!isStringEmpty(routingNum) && routingNum.length() == ROUTING_LENGTH);
     }
 
     public static boolean isValidMerchantRefId(String merchantRefId) {
         return (merchantRefId == null || merchantRefId.length() > 16 || isStringEmpty(merchantRefId));
+    }
+
+    public static boolean isValidExpiryDate(String expiryDate){
+        return (isStringValidInteger(expiryDate) && expiryDate.length() == EXPIRY_DATE_LENGTH);
     }
 
     public static void handleException(int ERR_ID, String ERR_MSG) {

@@ -36,7 +36,8 @@ public class Validator {
     public static final String INVALID_LANE_ID = "Error: LaneId is invalid";
     public static final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
     public static final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
-    public static final String INVALID_ACCOUNT_TYPE = "Error: MerchantId is invalid";
+
+    public static final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry (or) any one of Track Numbers)";
     public static final String INVALID_ROUTING_NUM = "Error: Routing Number is invalid";
     public static final String INVALID_ACCOUNT_NUM = "Error: Account Number is invalid";
     public static final String INVALID_ORDER_LVT = "Error: OrderLVT is invalid";
@@ -99,6 +100,22 @@ public class Validator {
     public static void validateCard(Card card){
         if(!isValidPAN(card.getPrimaryAccountNumber()))
             handleException(INVALID_REQ,INVALID_PAN);
+    }
+
+    public static void validateVerifoneCard(Card card){
+
+        if(!isStringEmpty(card.getTrack1()))
+            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getExpirationDate()) || !isStringEmpty(card.getTrack2()))
+                handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
+
+        if(!isStringEmpty(card.getTrack2()))
+            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getExpirationDate()) || !isStringEmpty(card.getTrack1()))
+                handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
+
+        if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getExpirationDate()))
+            if( !isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
+                handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
+
     }
 
     public static void validateToken(List<Token> tokens, int LIMIT){
@@ -166,7 +183,7 @@ public class Validator {
         if(verifone.getEncryptedCard() == null)
             handleException(INVALID_REQ, CARD_NOT_FOUND);
 
-        validateCard(verifone.getEncryptedCard());
+        validateVerifoneCard(verifone.getEncryptedCard());
 
         validateMerchantKeyType(verifone.getMerchantKeyType());
 
@@ -189,6 +206,9 @@ public class Validator {
     public static void validateVoltageCryptogram(VoltageCryptogram voltage){
         if(voltage.getEncryptedCard() == null)
             handleException(INVALID_REQ, CARD_NOT_FOUND);
+
+        if(!isValidPAN(voltage.getEncryptedCard().getPrimaryAccountNumber()) || !isValidCVV(voltage.getEncryptedCard().getSecurityCode()))
+            handleException(INVALID_REQ, INVALID_CARD_DETAILS);
     }
 
     public static void validateCryptogram(VerifoneCryptogram verifone, VoltageCryptogram voltage){
