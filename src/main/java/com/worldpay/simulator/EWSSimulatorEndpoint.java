@@ -290,8 +290,6 @@ public class EWSSimulatorEndpoint {
 
         String token = request.getToken();
 
-        EWSUtils.handleDesiredExceptions(token);
-
         String primaryAccountNumber = EWSUtils.getPAN(token);
 
         EWSUtils.delayInResponse(request.merchantRefId);
