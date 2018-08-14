@@ -13,6 +13,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 import static com.worldpay.simulator.utils.EWSUtils.*;
 import static com.worldpay.simulator.utils.HttpHeaderUtils.customizeHttpResponseHeader;
 import static com.worldpay.simulator.validator.ValidateAndSimulate.validateAndSimulate;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
@@ -286,8 +287,6 @@ public class EWSSimulatorEndpoint {
 
         String token = request.getToken();
 
-        EWSUtils.handleDesiredExceptions(token);
-
         String primaryAccountNumber = EWSUtils.getPAN(token);
 
         EWSUtils.delayInResponse(request.merchantRefId);
@@ -325,6 +324,8 @@ public class EWSSimulatorEndpoint {
 
         String token = request.getToken();
 
+        if(!isValidToken(token) || token.length()<3) token = "3000100011118566";
+
         String PAN = EWSUtils.getPAN(token);
 
         EWSUtils.handleDesiredExceptions(PAN);
@@ -332,7 +333,6 @@ public class EWSSimulatorEndpoint {
         answer.setPrimaryAccountNumber(PAN);
 
 
-        if(LVT.startsWith("3")) {
             // check position 2 for '6', '7', '8' or '9' to simulate error
             if (LVT.charAt(2) == '6') {
                 VError error = new VError();
@@ -356,9 +356,8 @@ public class EWSSimulatorEndpoint {
                 answer.getError().add(error);
             } else {
                 EWSUtils.delayInResponse(request.merchantRefId);
-                answer.setCardSecurityCode(LVT);
+                answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
             }
-        }
         return answer;
     }
 

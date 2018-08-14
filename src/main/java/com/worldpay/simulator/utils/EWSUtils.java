@@ -1,6 +1,8 @@
 package com.worldpay.simulator.utils;
 
 import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 import static java.lang.Thread.sleep;
 
 import java.util.Random;
@@ -70,11 +72,9 @@ public class EWSUtils {
 
     public static String getPAN(String token) {
 
-        try {
-            return generateProperty(token);
-        } catch(NumberFormatException ex) {
+        if(!isValidPAN(generateProperty(token)))
             return "3000100011118566";
-        }
+        return generateProperty(token);
     }
 
     public static String getAccountNumber(String token){
@@ -198,6 +198,9 @@ public class EWSUtils {
     }
 
     public static String getCVVThroughToken(String token) {
+        if(token.length() < 3){
+            return "566";
+        }
         return token.substring(token.length() - 3, token.length());
     }
 

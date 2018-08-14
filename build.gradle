@@ -57,6 +57,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-web-services")
     compile group: 'org.jacoco', name: 'org.jacoco.agent', version: '0.8.1'
+    compile("org.springframework.boot:spring-boot-starter-actuator")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     compile group: 'wsdl4j', name: 'wsdl4j', version: '1.6.1'
     jaxb group:'com.sun.xml.bind', name:'jaxb-core', version:'2.2.7'

@@ -13,10 +13,12 @@ public class TestEWSUtils {
   private String reqId2;
   private String PAN1;
   private String PAN2;
+  private String PAN3;
   private String regId1;
   private String regId2;
   private String property1;
   private String property2;
+  private String property3;
   private String invalidProperty;
   private String defaultPAN;
   private String cvv;
@@ -32,10 +34,12 @@ public class TestEWSUtils {
   public void setUp(){
     PAN1 = "123513521231";
     PAN2 = "251";
+    PAN3 = "7123513521231";
     regId1 = "123513521321";
     regId2 = "251";
     property1 = "253153211231";
     property2 = "251";
+    property3 = "2531532171231";
     invalidProperty = "asd21132";
     defaultPAN = "3000100011118566";
     cvv = "688";
@@ -85,11 +89,9 @@ public class TestEWSUtils {
 
   @Test
   public void testGetPAN(){
-    String temp = EWSUtils.getPAN(property1);
-    assertEquals(PAN1,temp);
+    String temp = EWSUtils.getPAN(property3);
+    assertEquals(PAN3,temp);
     temp = EWSUtils.getPAN(property2);
-    assertEquals(PAN2,temp);
-    temp = EWSUtils.getPAN(invalidProperty);
     assertEquals(defaultPAN,temp);
   }
 
