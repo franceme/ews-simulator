@@ -160,27 +160,105 @@ public class EWSSimulatorEndpoint {
         customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
-        //if pan ends with even number token is newly generated (true)
-        //if pan ends with odd number token is not newly generated (false)
-
         BatchTokenizeResponse response = new BatchTokenizeResponse();
 
         for(Card card : request.getCard()){
             String PAN = card.getPrimaryAccountNumber();
             Token token = new Token();
 
-            VError error = card.getError();
+            VError error = getError(PAN);
             if(error != null){
                 token.setError(error);
                 response.getToken().add(token);
                 break;
             }else{
                 token.setTokenValue(EWSUtils.getToken(PAN));
-                token.setTokenNewlyGenerated(PAN.length() == 13 ? true:false);
+                token.setTokenNewlyGenerated(PAN.endsWith("000") ? true:false);
             }
             response.getToken().add(token);
 
         }
+        return response;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchDetokenizeRequest")
+    @ResponsePayload
+    public BatchDetokenizeResponse batchDetokenize(@RequestPayload BatchDetokenizeRequest request,
+                                               @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+
+        //handle default validator based on the merchantID or PAN
+        customizeHttpResponseHeader();
+        validateAndSimulate(request,auth);
+
+        BatchDetokenizeResponse response = new BatchDetokenizeResponse();
+
+        for(Token token : request.getToken()){
+            String tokenValue = token.getTokenValue();
+            Card card = new Card();
+
+            VError error = getError(tokenValue);
+            if(error != null){
+                card.setError(error);
+                response.getCard().add(card);
+                break;
+            }else{
+                card.setPrimaryAccountNumber(EWSUtils.getPAN(tokenValue));
+            }
+            response.getCard().add(card);
+
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "ECheckTokenizeRequest")
+    @ResponsePayload
+    public ECheckTokenizeResponse echeckTokenize(@RequestPayload ECheckTokenizeRequest request,
+                                                   @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+
+        //handle default validator based on the merchantID or PAN
+        customizeHttpResponseHeader();
+        validateAndSimulate(request,auth);
+
+        ECheckTokenizeResponse response = new ECheckTokenizeResponse();
+
+        String AccNum = request.getAccount().getAccountNumber();
+
+        ECheckToken token = new ECheckToken();
+
+        VError error = getError(AccNum);
+        if(error != null){
+            token.setError(error);
+            response.setToken(token);
+        }else{
+            token.setTokenValue(EWSUtils.getToken(AccNum));
+            token.setTokenNewlyGenerated(AccNum.endsWith("000")?true:false);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "ECheckDetokenizeRequest")
+    @ResponsePayload
+    public ECheckDetokenizeResponse eCheckDetokenizeResponse(@RequestPayload ECheckDetokenizeRequest request,
+                                                 @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+
+        //handle default validator based on the merchantID or PAN
+        customizeHttpResponseHeader();
+        validateAndSimulate(request,auth);
+
+        ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
+        String token = request.getToken().getTokenValue();
+        String PAN = EWSUtils.getPAN(token);
+
+        Account account = new Account();
+
+        account.setAccountNumber(PAN);
+        account.setAccountType(getAccountType(PAN));
+        account.setRoutingNumber(getRoutingNumber(PAN));
+
+        response.setAccount(account);
+
         return response;
     }
 

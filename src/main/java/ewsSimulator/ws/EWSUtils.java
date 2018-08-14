@@ -165,6 +165,27 @@ public class EWSUtils {
         return true;
     }
 
+    public static VError getError(String PAN){
+        int last3Digits = Integer.parseInt(PAN.substring(PAN.length()-3,PAN.length()));
+
+        if(isServerFaultError(last3Digits))
+            return null;
+
+        EWSError validError = ErrorIdMap.getError(last3Digits);
+
+        if(validError != null){
+            VError error = new VError();
+            error.setId(last3Digits);
+            error.setCode(validError.getErrorCode());
+            error.setMessage(validError.getErrorMessage());
+
+            return error;
+        }
+
+        return null;
+
+    }
+
     public static void handleDesiredExceptions(String input) {
         String inputLast3;
         if (input.length() >= 3) {
@@ -212,6 +233,24 @@ public class EWSUtils {
 
     public static String getCVVThroughToken(String token) {
         return token.substring(token.length() - 3, token.length());
+    }
+
+    public static AccountType getAccountType(String AccNum){
+        int last2Digits = Integer.parseInt(AccNum.substring(AccNum.length()-2,AccNum.length()));
+        switch (last2Digits % 4){
+            case 0:
+                return AccountType.CHECKING;
+            case 1:
+                return AccountType.SAVINGS;
+            case 2:
+                return AccountType.CORPORATE_CHECKING;
+            default:
+                return AccountType.CORPORATE_SAVINGS;
+        }
+    }
+
+    public static String getRoutingNumber(String AccNum){
+        return AccNum.substring(0,6);
     }
 
 
