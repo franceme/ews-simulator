@@ -63,7 +63,7 @@ public class ValidatorUtils {
     }
 
     public static boolean isValidRoutingNumber(String routingNum) {
-        return (!isStringEmpty(routingNum) && routingNum.length() == ROUTING_LENGTH);
+        return (!isStringEmpty(routingNum) && routingNum.length() != ROUTING_LENGTH);
     }
 
     public static boolean isValidMerchantRefId(String merchantRefId) {

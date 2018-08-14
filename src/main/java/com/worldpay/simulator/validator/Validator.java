@@ -37,8 +37,8 @@ public class Validator {
     public static final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
     public static final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
     public static final String INVALID_ACCOUNT_TYPE = "Error: MerchantId is invalid";
-    public static final String INVALID_ROUTING_NUM = "Error: MerchantId is invalid";
-    public static final String INVALID_ACCOUNT_NUM = "Error: MerchantId is invalid";
+    public static final String INVALID_ROUTING_NUM = "Error: Routing Number is invalid";
+    public static final String INVALID_ACCOUNT_NUM = "Error: Account Number is invalid";
     public static final String INVALID_ORDER_LVT = "Error: OrderLVT is invalid";
 
     public static final String MERCHANT_NOT_FOUND = "Error: Merchant not found";
@@ -178,18 +178,10 @@ public class Validator {
         if(account == null)
             handleException(INVALID_REQ, ACCOUNT_NOT_FOUND);
 
-        String accountType = account.getAccountType().value();
-
-        if(!(accountType.equalsIgnoreCase("CHECKING")
-                || accountType.equalsIgnoreCase("SAVINGS")
-                || accountType.equalsIgnoreCase("CORPORATE_CHECKING")
-                || accountType.equalsIgnoreCase("CORPORATE_SAVINGS")))
-            handleException(INVALID_REQ, INVALID_ACCOUNT_TYPE);
-
         if(!isValidAccount(account.getAccountNumber()))
             handleException(INVALID_REQ, INVALID_ACCOUNT_NUM);
 
-        if(!isValidAccount(account.getRoutingNumber()))
+        if(!isValidRoutingNumber(account.getRoutingNumber()))
             handleException(INVALID_REQ, INVALID_ROUTING_NUM);
 
     }

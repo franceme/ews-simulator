@@ -1,5 +1,6 @@
 package com.worldpay.simulator.utils;
 
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
 import static java.lang.Thread.sleep;
 
 import java.util.Random;
@@ -61,6 +62,12 @@ public class EWSUtils {
         } catch(NumberFormatException ex) {
             return "3000100011118566";
         }
+    }
+
+    public static String getAccountNumber(String token){
+        if(!isValidAccount(getPAN(token)))
+            return "3000100011118566";
+        return getPAN(token);
     }
 
 
@@ -197,6 +204,8 @@ public class EWSUtils {
     }
 
     public static String getRoutingNumber(String AccNum) {
+        if(AccNum.length() < 6)
+            return "123456";
         return AccNum.substring(0, 6);
     }
 

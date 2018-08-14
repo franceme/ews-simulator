@@ -107,11 +107,9 @@ public class EWSSimulatorEndpoint {
         String cvv = request.getCardSecurityCode();
         String orderLVT = "3";
 
-        if(!EWSUtils.isSecurityCodeEmpty(cvv))
-            response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
-
+        response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
         response.setRequestId(EWSUtils.randomReqId());
-
+        addMerchantRefId(request,response);
         return response;
 
     }
@@ -161,6 +159,7 @@ public class EWSSimulatorEndpoint {
             response.getToken().add(token);
 
         }
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -191,6 +190,7 @@ public class EWSSimulatorEndpoint {
 
         }
 
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -217,7 +217,9 @@ public class EWSSimulatorEndpoint {
             token.setTokenValue(EWSUtils.getToken(AccNum));
             token.setTokenNewlyGenerated(AccNum.endsWith("000")?true:false);
         }
+        response.setToken(token);
 
+        addMerchantRefId(request,response);
         return response;
     }
 
@@ -242,6 +244,7 @@ public class EWSSimulatorEndpoint {
 
         response.setAccount(account);
 
+        addMerchantRefId(request,response);
         return response;
     }
 
