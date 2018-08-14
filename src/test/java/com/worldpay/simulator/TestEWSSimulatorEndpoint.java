@@ -496,4 +496,9 @@ public class TestEWSSimulatorEndpoint {
         verifyStatic();
         HttpHeaderUtils.customizeHttpResponseHeader();
     }
+
+//    @Test
+//    public void testDecrypt_VerifoneWithPAN() {
+//
+//    }
 }

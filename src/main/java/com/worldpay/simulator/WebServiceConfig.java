@@ -31,17 +31,11 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
         PayloadValidatingInterceptor validatingInterceptor = new PayloadValidatingInterceptor();
-//        PayloadValidatingInterceptor secutiryInterceptor = new PayloadValidatingInterceptor();
         validatingInterceptor.setValidateRequest(true);
         validatingInterceptor.setValidateResponse(true);
         validatingInterceptor.setXsdSchema(encryptionSchema());
 
-//        secutiryInterceptor.setValidateRequest(true);
-//        secutiryInterceptor.setValidateResponse(true);
-//        secutiryInterceptor.setXsdSchema(encryptionSchema());
-
         interceptors.add(validatingInterceptor);
-//        interceptors.add(secutiryInterceptor);
 
     }
 
@@ -57,9 +51,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
 
         Properties errorMappings = new Properties();
-        errorMappings.setProperty(Exception.class.getName(), SoapFaultDefinition.SERVER.toString());
         errorMappings.setProperty(ServerFaultException.class.getName(), SoapFaultDefinition.SERVER.toString());
-        errorMappings.setProperty(RuntimeException.class.getName(), SoapFaultDefinition.SERVER.toString());
         errorMappings.setProperty(ClientFaultException.class.getName(), SoapFaultDefinition.CLIENT.toString());
         errorMappings.setProperty(SecurityErrorException.class.getName(), SoapFaultDefinition.CLIENT.toString());
         exceptionResolver.setExceptionMappings(errorMappings);
