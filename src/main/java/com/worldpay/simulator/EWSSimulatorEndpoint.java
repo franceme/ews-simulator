@@ -358,7 +358,7 @@ public class EWSSimulatorEndpoint {
                 answer.getError().add(error);
             } else {
                 EWSUtils.delayInResponse(request.merchantRefId);
-                answer.setCardSecurityCode(LVT);
+                answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
             }
         return answer;
     }
