@@ -25,19 +25,19 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-1. Get the latest code from the repo
+1. Get the latest code from the repo using the command below:
 
 ```
 git clone https://github.com/Vantiv/ews-simulator.git
 ```
 
-2. Run the gradle build
+2. Run the gradle build:
 
 ```
 gradle build
 ```
 
-The gradle build should create the Spring boot jar in the below folder
+3. The gradle build should create the Spring boot jar as below:
 
 ```
 build/libs/worldpay-ews-simulator-X.X.X.jar
@@ -46,7 +46,7 @@ build/libs/worldpay-ews-simulator-X.X.X.jar
 
 ## Running the tests
 
-Tests are run as part of the build steps above, but to run them manually you can
+Tests are run as part of the build steps above, but to run them manually you can run the command:
 
 ```
 gradle test
@@ -70,7 +70,7 @@ curl -X POST localhost:port/actuator/shutdown
 
 ## Status
 
-To get the current health of the server, use the below command
+To get the current health of the server, use the below command:
 
 ```
 curl -X GET localhost:port/actuator/health
