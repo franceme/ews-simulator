@@ -4,9 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.will;
-import static org.mockito.Mockito.doNothing;
 
 import ewsSimulator.ws.DeregistrationRequest;
 import ewsSimulator.ws.DeregistrationResponse;
@@ -24,25 +21,10 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ws.soap.SoapHeaderElement;
-
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
 
-import java.sql.DriverManager;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import javax.smartcardio.Card;
-
 @RunWith(PowerMockRunner.class)
-@PowerMockRunnerDelegate(SpringRunner.class)
 @PrepareForTest({ValidateAndSimulate.class})
 public class TestEWSSimulatorEndpoint {
 
@@ -231,15 +213,18 @@ public class TestEWSSimulatorEndpoint {
         assertNotNull(testResponse.getRequestId());
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
     }
-//
+
 //    @Test
-//    public void testTokenize_simple() {
+//    public void testTokenize_simple() throws Exception {
 //        TokenizeRequest request = new TokenizeRequest();
 //        MerchantType merchant = new MerchantType();
 //        merchant.setRollupId(rollupId);
 //        request.setMerchant(merchant);
 //        request.setPrimaryAccountNumber(PAN);
-//        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+//
+//        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+//
+//        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
 //
 //        assertEquals("468498435168468", response.getToken());
 //        assertEquals(false, response.isTokenNewlyGenerated());
@@ -247,37 +232,20 @@ public class TestEWSSimulatorEndpoint {
 //    }
 //
 //    @Test
-//    public void testTokenize_PANLast3digitsZero() {
+//    public void testTokenize_PANLast3digitsZero() throws Exception {
 //        TokenizeRequest request = new TokenizeRequest();
 //        MerchantType merchant = new MerchantType();
 //        merchant.setRollupId(rollupId);
 //        request.setMerchant(merchant);
 //        request.setPrimaryAccountNumber("615348948648000");
-//        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
+//
+//        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+//
+//        TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
 //
 //        assertEquals("468498435168000", response.getToken());
 //        assertEquals(true, response.isTokenNewlyGenerated());
 //        assertNotNull(response.getRequestId());
-//    }
-
-//    @Test
-//    public void testTokenize_Exception() {
-//        TokenizeRequest request = new TokenizeRequest();
-//        request.setMerchantRefId("112233002");
-//        MerchantType merchant = new MerchantType();
-//        merchant.setRollupId(rollupId);
-//        request.setMerchant(merchant);
-//        request.setPrimaryAccountNumber("615348948648468");
-//
-//        try{
-//            TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request);
-//            fail("ServerFaultException expected. None thrown");
-//        } catch (ServerFaultException ex) {
-//            ServerFault serverFault = ex.getServerFault();
-//            assertEquals(2, (int) serverFault.getId());
-//            assertEquals("UNKNOWN_ERROR", serverFault.getCode());
-//            assertEquals("an unspecified error occurred.", serverFault.getMessage());
-//        }
 //    }
 
     @Test

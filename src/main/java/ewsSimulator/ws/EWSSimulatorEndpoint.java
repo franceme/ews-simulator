@@ -106,18 +106,16 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")
     @ResponsePayload
-    public TokenizeResponse tokenize(@RequestPayload TokenizeRequest request,
+    public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest,
                                      @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateAndSimulate(tokenizeRequest,auth);
 
 
         TokenizeResponse tokenizeResponse = new TokenizeResponse();
-        String merchantRefId = request.getMerchantRefId();
-        if (merchantRefId != null)
-            tokenizeResponse.setMerchantRefId(merchantRefId);
-        String primaryAccountNumber = request.getPrimaryAccountNumber();
-//        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
+        addMerchantRefId(tokenizeRequest, tokenizeResponse);
+
+        String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
         int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getToken(primaryAccountNumber));
 
@@ -189,17 +187,17 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenInquiryRequest")
     @ResponsePayload
-    public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest request,
+    public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateAndSimulate(tokenInquiryRequest,auth);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
-        String merchantRefId = request.getMerchantRefId();
+        String merchantRefId = tokenInquiryRequest.getMerchantRefId();
         if (merchantRefId != null)
             tokenInquiryResponse.setMerchantRefId(merchantRefId);
 
-        for (Card card: request.getCard()) {
+        for (Card card: tokenInquiryRequest.getCard()) {
             String primaryAccountNumber = card.getPrimaryAccountNumber();
             int lengthPAN = primaryAccountNumber.length();
 
@@ -352,5 +350,12 @@ public class EWSSimulatorEndpoint {
             byte[] cryptogramBytes = new Base64().decode(DEMOBYTE.getBytes());
             answer.setCryptogram(cryptogramBytes);
         }return answer;
+    }
+
+
+    public void addMerchantRefId(EncryptionRequest request, EncryptionResponse response) {
+        String merchantRefId = request.getMerchantRefId();
+        if (merchantRefId != null)
+            response.setMerchantRefId(merchantRefId);
     }
 }
