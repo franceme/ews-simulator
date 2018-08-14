@@ -46,8 +46,6 @@ public class EWSSimulatorEndpoint {
         HttpHeaderUtils.customizeHttpResponseHeader();
         validateAndSimulate(request,auth);
 
-
-
         RegistrationResponse response = new RegistrationResponse();
 
         String primaryAccountNumber = request.getPrimaryAccountNumber();

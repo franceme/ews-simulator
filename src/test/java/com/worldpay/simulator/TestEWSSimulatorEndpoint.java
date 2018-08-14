@@ -60,6 +60,15 @@ public class TestEWSSimulatorEndpoint {
     }
 
     @Test
+    public void testRegistration() {
+        RegistrationRequest request = new RegistrationRequest();
+        request.setPrimaryAccountNumber("00012445653000");
+        request.setWalletType(WalletType.fromValue("ANDROID"));
+
+
+    }
+
+    @Test
     public void testDetokenize_success_with_ExpirationDateRequested_CVV2Requested() throws Exception {
         DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
         MerchantType merchant = new MerchantType();
