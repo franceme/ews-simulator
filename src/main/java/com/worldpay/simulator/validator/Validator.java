@@ -36,6 +36,7 @@ public class Validator {
     public static final String INVALID_LANE_ID = "Error: LaneId is invalid";
     public static final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
     public static final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
+    public static final String INVALID_EXPIRY_DATE = "Error: Expiry Date is invalid (YYMM)";
 
     public static final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry Date (or) any one of Track Numbers)";
     public static final String INVALID_VOLTAGE_CARD = "Error: Card details is invalid (Must either contain PAN and Security Code (or) any one of Track Numbers)";
@@ -115,9 +116,15 @@ public class Validator {
             if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getExpirationDate()) || !isStringEmpty(card.getTrack1()))
                 handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
 
-        if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getExpirationDate()))
+        if(isValidPAN(card.getPrimaryAccountNumber()) && isValidExpiryDate(card.getExpirationDate()))
             if( !isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
                 handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
+
+        if(!isValidPAN(card.getPrimaryAccountNumber()))
+            handleException(INVALID_REQ,INVALID_PAN);
+
+        if(!isValidExpiryDate(card.getExpirationDate()))
+            handleException(INVALID_REQ,INVALID_EXPIRY_DATE);
 
     }
 
@@ -127,16 +134,22 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
 
         if(!isStringEmpty(card.getTrack1()))
-            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getSecurityCode()) || !isStringEmpty(card.getTrack2()))
+            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidCVV(card.getSecurityCode()) || !isStringEmpty(card.getTrack2()))
                 handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
 
         if(!isStringEmpty(card.getTrack2()))
-            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getSecurityCode()) || !isStringEmpty(card.getTrack1()))
+            if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidCVV(card.getSecurityCode()) || !isStringEmpty(card.getTrack1()))
                 handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
 
-        if(!isStringEmpty(card.getPrimaryAccountNumber()) || !isValidExpiryDate(card.getSecurityCode()))
+        if(isValidPAN(card.getPrimaryAccountNumber()) && isValidCVV(card.getSecurityCode()))
             if( !isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
                 handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
+
+        if(!isValidPAN(card.getPrimaryAccountNumber()))
+            handleException(INVALID_REQ,INVALID_PAN);
+
+        if(!isValidCVV(card.getSecurityCode()))
+            handleException(INVALID_REQ,INVALID_SECURITY_CODE);
 
     }
 
