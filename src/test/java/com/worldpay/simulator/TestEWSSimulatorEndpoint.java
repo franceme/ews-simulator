@@ -196,6 +196,29 @@ public class TestEWSSimulatorEndpoint {
     }
 
     @Test
+    public void testOrderDeregistration_InvalidToken() throws Exception {
+        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        orderDeregistrationRequest.setMerchant(merchant);
+        orderDeregistrationRequest.setOrderLVT(CVV);
+        orderDeregistrationRequest.setToken("12");
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", orderDeregistrationRequest, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+
+        assertEquals("1111000100038566",testResponse.getPrimaryAccountNumber());
+        assertNotNull(testResponse.getRequestId());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(orderDeregistrationRequest, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+    }
+
+    @Test
     public void testOrderDeregistration_CVVInitial3() throws Exception {
         OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();

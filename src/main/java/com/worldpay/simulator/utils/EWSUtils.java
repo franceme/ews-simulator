@@ -104,33 +104,6 @@ public class EWSUtils {
         return sb.toString();
     }
 
-
-    public static boolean isSecurityCodeEmpty(String cvv){
-
-        if(cvv == null)
-            return true;
-
-        if(cvv.length() == 1 && (cvv.charAt(0) == '?' || cvv.charAt(0) == ' ') )
-            return true;
-
-        if(cvv.equalsIgnoreCase(""))
-            return true;
-
-        return false;
-    }
-
-    public static boolean isSecurityCodeValid(String cvv){
-        if(cvv == null || cvv.length() < 3)
-            return false;
-
-        if(cvv.charAt(0) == '?' || cvv.charAt(0) == ' ')
-            return true;
-
-
-
-        return true;
-    }
-
     public static VError getError(String PAN){
         int last3Digits = Integer.parseInt(PAN.substring(PAN.length()-3,PAN.length()));
 

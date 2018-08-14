@@ -27,6 +27,7 @@ public class TestEWSUtils {
   private AccountType SAVINGS;
   private AccountType CORPORATE_CHECKING;
   private AccountType CORPORATE_SAVINGS;
+  private VError error1;
 
 
 
@@ -48,6 +49,10 @@ public class TestEWSUtils {
     CHECKING = AccountType.CHECKING;
     CORPORATE_CHECKING = AccountType.CORPORATE_CHECKING;
     CORPORATE_SAVINGS = AccountType.CORPORATE_SAVINGS;
+    error1 = new VError();
+    error1.setId(4);
+    error1.setCode("INVALID_REQUEST");
+    error1.setMessage("Invalid request (syntax error).");
 
   }
 
@@ -70,11 +75,22 @@ public class TestEWSUtils {
   }
 
   @Test
+  public void testGetRegIdFromToken(){
+    assertEquals("251",EWSUtils.getRegIdFromToken(property2));
+    assertEquals("6658769654625218867",EWSUtils.getRegIdFromToken(token));
+  }
+
+  @Test
   public void testGenerateProperty(){
     String temp = EWSUtils.generateProperty(PAN1);
     assertEquals(property1,temp);
     temp = EWSUtils.generateProperty(PAN2);
     assertEquals(property2,temp);
+  }
+
+  @Test(expected = NumberFormatException.class)
+  public void testGenerateProperty_with_exception(){
+    EWSUtils.generateProperty("asdas");
   }
 
   @Test
@@ -102,28 +118,14 @@ public class TestEWSUtils {
     assertNotEquals(temp1,temp2);
   }
 
-  @Test
-  public void testIsSecurityCodeEmpty(){
-    assertTrue(EWSUtils.isSecurityCodeEmpty(null));
-    assertTrue(EWSUtils.isSecurityCodeEmpty("?"));
-    assertTrue(EWSUtils.isSecurityCodeEmpty(" "));
-    assertTrue(EWSUtils.isSecurityCodeEmpty(""));
-    assertFalse(EWSUtils.isSecurityCodeEmpty("123"));
-  }
-
-  @Test
-  public void testIsSecurityCodeValid(){
-    assertFalse(EWSUtils.isSecurityCodeValid(null));
-    assertFalse(EWSUtils.isSecurityCodeValid("?"));
-    assertFalse(EWSUtils.isSecurityCodeValid(" "));
-    assertFalse(EWSUtils.isSecurityCodeValid(""));
-    assertFalse(EWSUtils.isSecurityCodeValid("12"));
-    assertTrue(EWSUtils.isSecurityCodeValid("123"));
-  }
-
   @Test(expected = Exception.class)
   public void handleDesiredExceptions_throwException(){
     EWSUtils.handleDesiredExceptions("1003");
+  }
+
+  @Test
+  public void handleDesiredExceptions_throwException_lastThreeAreNotNumber(){
+    EWSUtils.handleDesiredExceptions("1003asd");
   }
 
   @Test
@@ -180,6 +182,7 @@ public class TestEWSUtils {
   @Test
   public void testGetCVVThroughToken(){
     assertEquals(cvv,EWSUtils.getCVVThroughToken(token));
+    assertEquals("566",EWSUtils.getCVVThroughToken("12"));
   }
 
   @Test
@@ -193,6 +196,7 @@ public class TestEWSUtils {
   @Test
   public void testGetRoutingNumber(){
     assertEquals("300010",EWSUtils.getRoutingNumber(defaultPAN));
+    assertEquals("123456",EWSUtils.getRoutingNumber("123"));
   }
 
   @Test
@@ -200,5 +204,20 @@ public class TestEWSUtils {
     assertEquals("132125315321",EWSUtils.decrypt(PAN1));
   }
 
+  @Test
+  public void testGetAccountNumber(){
+    assertEquals(defaultPAN,EWSUtils.getAccountNumber("123456789123456789"));
+    assertEquals("219876543213456",EWSUtils.getAccountNumber("123456789123456"));
+  }
+
+  @Test
+  public void testGetError(){
+    assertNull(EWSUtils.getError("001"));
+    VError tempError = EWSUtils.getError("004");
+    assertEquals(error1.getId(),tempError.getId());
+    assertEquals(error1.getCode(),tempError.getCode());
+    assertEquals(error1.getMessage(),tempError.getMessage());
+
+  }
 
 }
