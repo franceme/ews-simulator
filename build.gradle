@@ -17,6 +17,14 @@ configurations {
     jaxb
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated"
+        }
+    }
+}
+
 bootJar {
     baseName = 'gs-producing-web-service'
     version =  '0.1.0'
