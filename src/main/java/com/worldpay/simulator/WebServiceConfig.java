@@ -67,15 +67,6 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         return new ServletRegistrationBean(servlet, "/etws/v4/*");
     }
 
-//    @Bean(name = "EWSSimulator")
-//    public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema encryptionSchema) {
-//        DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-//        wsdl11Definition.setPortTypeName("EncryptionWebServiceV4");
-//        wsdl11Definition.setLocationUri("/etws/v4");
-//        wsdl11Definition.setTargetNamespace("urn:com:vantiv:types:encryption:transactions:v1");
-//        wsdl11Definition.setSchema(encryptionSchema);
-//        return wsdl11Definition;
-//    }
 
     @Bean
     public XsdSchema encryptionSchema() {
