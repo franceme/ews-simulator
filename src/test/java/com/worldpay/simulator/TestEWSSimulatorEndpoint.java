@@ -574,10 +574,7 @@ public class TestEWSSimulatorEndpoint {
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
-    //    @Test
-//    public void testDecrypt_VerifoneWithPAN() {
-//
-//    }
+
     @Test
     public void testEchoRequest() throws Exception {
         EchoRequest echoRequest = new EchoRequest();
@@ -742,7 +739,7 @@ public class TestEWSSimulatorEndpoint {
     }
 
 
-    @Test
+    /*@Test
     public void testOrderRegistration() throws Exception {
 
         OrderRegistrationRequest request = new OrderRegistrationRequest();
@@ -761,5 +758,5 @@ public class TestEWSSimulatorEndpoint {
         ValidateAndSimulate.validateAndSimulate(request, header);
         verifyStatic();
         HttpHeaderUtils.customizeHttpResponseHeader();
-    }
+    }*/
 }
