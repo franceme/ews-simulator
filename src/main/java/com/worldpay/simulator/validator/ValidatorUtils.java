@@ -22,7 +22,7 @@ public class ValidatorUtils {
     public static Pattern numberPattern = Pattern.compile("[^0-9]",Pattern.CASE_INSENSITIVE);
 
     /**
-     * 
+     *
      * @param value
      * @return
      */
