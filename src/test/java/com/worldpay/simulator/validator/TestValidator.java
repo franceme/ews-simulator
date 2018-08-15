@@ -291,5 +291,5 @@ public class TestValidator {
         Validator.validateCryptogram(verifone,null);
         Validator.validateCryptogram(null,voltage);
     }
-    
+
 }
