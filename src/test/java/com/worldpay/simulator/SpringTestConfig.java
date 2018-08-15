@@ -8,7 +8,7 @@ import com.worldpay.simulator.utils.HttpHeaderUtils;
 @ContextConfiguration
 public class SpringTestConfig {
 
-    @Bean
+    @Bean(name = "testHttpHeaders")
     public HttpHeaderUtils httpHeaderUtils(){
         HttpHeaderUtils httpHeaderUtils = new HttpHeaderUtils();
         return httpHeaderUtils;

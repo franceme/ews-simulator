@@ -27,28 +27,28 @@ public class HttpHeaderUtils {
         setResponseHttpHeaderValue(acceptHeader,acceptInput);
     }
 
-    private HttpServletRequest getHttpServletRequest() {
+    public HttpServletRequest getHttpServletRequest() {
         TransportContext ctx = TransportContextHolder.getTransportContext();
         return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletRequest() : null;
     }
 
-    private String getHttpHeaderValue( String headerName ) {
+    public String getHttpHeaderValue(String headerName) {
         HttpServletRequest httpServletRequest = getHttpServletRequest();
         return ( null != httpServletRequest ) ? httpServletRequest.getHeader( headerName ) : null;
     }
 
-    private HttpServletResponse getHttpServletResponse() {
+    public HttpServletResponse getHttpServletResponse() {
         TransportContext ctx = TransportContextHolder.getTransportContext();
         return ( null != ctx ) ? ((HttpServletConnection) ctx.getConnection()).getHttpServletResponse() : null;
     }
 
-    private void addResponseHttpHeader(String headerName,String headerValue) {
+    public void addResponseHttpHeader(String headerName,String headerValue) {
 
         HttpServletResponse httpServletResponse = getHttpServletResponse();
         httpServletResponse.addHeader(headerName, headerValue);
     }
 
-    private void setResponseHttpHeaderValue(String headerName,String headerValue) {
+    public void setResponseHttpHeaderValue(String headerName,String headerValue) {
 
         HttpServletResponse httpServletResponse = getHttpServletResponse();
         httpServletResponse.setHeader(headerName, headerValue);
