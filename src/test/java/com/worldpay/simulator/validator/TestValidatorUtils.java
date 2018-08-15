@@ -1,4 +1,4 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.validator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,10 +6,11 @@ import static org.junit.Assert.*;
 
 import javax.validation.constraints.AssertTrue;
 
+import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.validator.Validator;
 import com.worldpay.simulator.validator.ValidatorUtils;
 
-public class testValidatorUtils {
+public class TestValidatorUtils {
     private String PAN1;
     private String PAN2;
     private String PAN3;
@@ -145,9 +146,9 @@ public class testValidatorUtils {
         assertFalse(ValidatorUtils.isValidExpiryDate(PAN2));
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = ClientFaultException.class)
     public void testHandleException_throw_exception(){
-        ValidatorUtils.handleException(1,"some message");
+        ValidatorUtils.handleException(4,"Invalid request (syntax error).");
     }
 
 }

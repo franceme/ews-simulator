@@ -11,8 +11,6 @@ import static com.worldpay.simulator.validator.ValidatorUtils.isValidMerchantRef
 
 public class ValidateAndSimulate {
 
-
-
     public static void simulate(String merchantRefId) throws InterruptedException {
         if(!isValidMerchantRefId(merchantRefId)){
             EWSUtils.delayInResponse(merchantRefId);
