@@ -63,7 +63,7 @@ public class TestValidateAndSimulate {
         CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
         CVV = "468";
         registrationId = "615348948648648";
-
+        ValidateAndSimulate temp = new ValidateAndSimulate();
         mockStatic(Validator.class);
     }
 

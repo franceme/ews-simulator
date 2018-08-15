@@ -42,13 +42,6 @@ import jdk.nashorn.internal.runtime.arrays.ContinuousArrayData;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Validator.class,JAXBContext.class,Unmarshaller.class,JAXBElement.class,ElementNSImpl.class})
 public class TestValidator {
-    private SoapHeaderElement header;
-    private  JAXBContext context;
-    private Unmarshaller unmarshaller;
-    private JAXBElement<SecurityHeaderType> root;
-    private ElementNSImpl userNameTokenAttribute;
-    private Source source;
-    private List<Object> securityAttributeList;
     private Card card1;
     private Card card2;
     private Token token1;
@@ -65,14 +58,7 @@ public class TestValidator {
         mockStatic(JAXBContext.class);
         mockStatic(Unmarshaller.class);
         mockStatic(JAXBElement.class);
-        header = null;
-        context = null;
-        unmarshaller = null;
-        root = null;
-        userNameTokenAttribute = null;
-        source = null;
-        securityAttributeList = new LinkedList<>();
-        ((LinkedList<Object>) securityAttributeList).addFirst(new Object());
+
         card1 = new Card();
         card2 = new Card();
         token1 = new Token();
@@ -82,6 +68,7 @@ public class TestValidator {
         verifone = new VerifoneCryptogram();
         account = new Account();
         voltage = new VoltageCryptogram();
+        Validator temp = new Validator();
 
     }
 //
