@@ -731,4 +731,26 @@ public class TestEWSSimulatorEndpoint {
         verifyStatic();
         HttpHeaderUtils.customizeHttpResponseHeader();
     }
+
+
+    @Test
+    public void testOrderRegistration() throws Exception {
+
+        OrderRegistrationRequest request = new OrderRegistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setCardSecurityCode("123");
+
+
+        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
+
+        OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
+        assertEquals( true,response.getOrderLVT().startsWith("3"));
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verifyStatic();
+        HttpHeaderUtils.customizeHttpResponseHeader();
+    }
 }
