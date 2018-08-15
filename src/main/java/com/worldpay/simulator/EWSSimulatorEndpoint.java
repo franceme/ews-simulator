@@ -30,11 +30,7 @@ public class EWSSimulatorEndpoint {
 
 
 
-    /**
-     *
-     * @param request
-     * @return
-     */
+
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest request,
