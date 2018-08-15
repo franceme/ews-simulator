@@ -101,6 +101,9 @@ public class TestValidator {
 //    }
 
 
+    /**
+     * 
+     */
     @Test
     public void testValidateCards(){
         List<Card> cards = new ArrayList<>();
