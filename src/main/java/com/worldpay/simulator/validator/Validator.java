@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+
 import java.util.List;
 
 import static com.worldpay.simulator.validator.ValidatorUtils.*;
@@ -116,7 +118,7 @@ public class Validator {
         }
 
         if(!isStringEmpty(card.getTrack2())) {
-            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getExpirationDate()) || !isStringEmpty(card.getTrack1()))
+            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getExpirationDate()))
                 handleException(INVALID_REQ, INVALID_VERIFONE_CARD);
             return;
         }
@@ -146,7 +148,7 @@ public class Validator {
         }
 
         if(!isStringEmpty(card.getTrack2())) {
-            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getSecurityCode()) || !isStringEmpty(card.getTrack1()))
+            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getSecurityCode()))
                 handleException(INVALID_REQ, INVALID_VOLTAGE_CARD);
             return;
         }

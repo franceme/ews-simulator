@@ -18,6 +18,7 @@ import com.worldpay.simulator.BatchDetokenizeRequest;
 import com.worldpay.simulator.BatchTokenizeRequest;
 import com.worldpay.simulator.Card;
 import com.worldpay.simulator.DecryptRequest;
+import com.worldpay.simulator.DeregistrationRequest;
 import com.worldpay.simulator.DetokenizeRequest;
 import com.worldpay.simulator.ECheckDetokenizeRequest;
 import com.worldpay.simulator.ECheckToken;
@@ -25,6 +26,7 @@ import com.worldpay.simulator.ECheckTokenizeRequest;
 import com.worldpay.simulator.EchoRequest;
 import com.worldpay.simulator.MerchantType;
 import com.worldpay.simulator.OrderDeregistrationRequest;
+import com.worldpay.simulator.OrderRegistrationRequest;
 import com.worldpay.simulator.RegistrationRequest;
 import com.worldpay.simulator.Token;
 import com.worldpay.simulator.TokenInquiryRequest;
@@ -47,6 +49,7 @@ public class TestValidateAndSimulate {
     private String ANDROID;
     private String CRYPTOGRAM;
     private String CVV;
+    private String registrationId;
 
     @Before
     public void setUp(){
@@ -59,6 +62,7 @@ public class TestValidateAndSimulate {
         ANDROID = "ANDROID";
         CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
         CVV = "468";
+        registrationId = "615348948648648";
 
         mockStatic(Validator.class);
     }
@@ -70,8 +74,16 @@ public class TestValidateAndSimulate {
     }
 
     @Test
-    public void testValidateAndSimulateOrderRegistrationRequest(){
+    public void testValidateAndSimulateOrderRegistrationRequest() throws Exception {
+        OrderRegistrationRequest request = new OrderRegistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setCardSecurityCode("123");
 
+        request.setMerchantRefId(validMerchantRfId);
+        doNothing().when(Validator.class, "validateSoapHeader", header);
+        ValidateAndSimulate.validateAndSimulate(request,header);
     }
 
     @Test
@@ -197,16 +209,16 @@ public class TestValidateAndSimulate {
 
     @Test
     public void testValidateAndSimulateDeregistrationRequest() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT(CVV);
-        orderDeregistrationRequest.setToken(token);
+        deregistrationRequest.setMerchant(merchant);
+        deregistrationRequest.setRegId(registrationId);
+        deregistrationRequest.setCardSecurityCodeRequested(true);
 
-        orderDeregistrationRequest.setMerchantRefId(validMerchantRfId);
+        deregistrationRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(orderDeregistrationRequest,header);
+        ValidateAndSimulate.validateAndSimulate(deregistrationRequest,header);
     }
 
     @Test
