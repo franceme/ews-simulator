@@ -6,6 +6,8 @@ notifications:
     on_success: always
     on_failure: always
 script:
- - gradle -Dorg.gradle.warning.mode=summary build 
+ - gradle -Dorg.gradle.warning.mode=summary build jacocoTestReport
 after_success:
  - bash <(curl -s https://codecov.io/bash)
+ 
+ https://github.com/Vantiv-eCommerce/cnp-sandbox-spring.git 
