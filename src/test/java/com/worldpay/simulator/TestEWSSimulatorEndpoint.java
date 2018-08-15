@@ -574,6 +574,199 @@ public class TestEWSSimulatorEndpoint {
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
+    @Test
+    public void testDecrypt_VerifoneWithPAN() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(merchantRefId);
+
+        VerifoneCryptogram cryptogram = new VerifoneCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setPrimaryAccountNumber("123456789101112");
+        encryptedCard.setExpirationDate("0818");
+        cryptogram.setEncryptedCard(encryptedCard);
+        cryptogram.setMerchantKeyType(VerifoneMerchantKeyType.SHARED);
+
+        VerifoneTerminal terminal = new VerifoneTerminal();
+        terminal.setRegisterId("1234");
+        terminal.setLaneId("1234");
+        terminal.setChainCode("1234");
+        terminal.setMerchantId("1234");
+        cryptogram.setTerminal(terminal);
+
+        request.setVerifoneCryptogram(cryptogram);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
+        assertEquals(merchantRefId, response.getMerchantRefId());
+        assertEquals("211101987654321", response.getDecryptedCard().getPrimaryAccountNumber());
+        assertEquals("0818", response.getDecryptedCard().getExpirationDate());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+
+    @Test
+    public void testDecrypt_VerifoneWithTrack1() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(merchantRefId);
+
+        VerifoneCryptogram cryptogram = new VerifoneCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setTrack1("123456");
+        cryptogram.setEncryptedCard(encryptedCard);
+        cryptogram.setMerchantKeyType(VerifoneMerchantKeyType.SHARED);
+
+        VerifoneTerminal terminal = new VerifoneTerminal();
+        terminal.setRegisterId("1234");
+        terminal.setLaneId("1234");
+        terminal.setChainCode("1234");
+        terminal.setMerchantId("1234");
+        cryptogram.setTerminal(terminal);
+
+        request.setVerifoneCryptogram(cryptogram);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
+        assertEquals(merchantRefId, response.getMerchantRefId());
+        assertEquals("654321", response.getDecryptedCard().getTrack1());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+
+    @Test
+    public void testDecrypt_VerifoneWithTrack2() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(merchantRefId);
+
+        VerifoneCryptogram cryptogram = new VerifoneCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setTrack2("123456");
+        cryptogram.setEncryptedCard(encryptedCard);
+        cryptogram.setMerchantKeyType(VerifoneMerchantKeyType.SHARED);
+
+        VerifoneTerminal terminal = new VerifoneTerminal();
+        terminal.setRegisterId("1234");
+        terminal.setLaneId("1234");
+        terminal.setChainCode("1234");
+        terminal.setMerchantId("1234");
+        cryptogram.setTerminal(terminal);
+
+        request.setVerifoneCryptogram(cryptogram);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
+        assertEquals(merchantRefId, response.getMerchantRefId());
+        assertEquals("654321", response.getDecryptedCard().getTrack2());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+    @Test
+    public void testDecrypt_VoltageWithPAN() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(merchantRefId);
+
+        VoltageCryptogram cryptogram = new VoltageCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setPrimaryAccountNumber("123456789101112");
+        encryptedCard.setSecurityCode("123");
+        cryptogram.setEncryptedCard(encryptedCard);
+
+        request.setVoltageCryptogram(cryptogram);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
+        assertEquals(merchantRefId, response.getMerchantRefId());
+        assertEquals("211101987654321", response.getDecryptedCard().getPrimaryAccountNumber());
+        assertEquals("123", response.getDecryptedCard().getSecurityCode());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+
+    @Test
+    public void testDecrypt_VoltageWithTrack1() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(merchantRefId);
+
+        VoltageCryptogram cryptogram = new VoltageCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setTrack1("123456");
+        cryptogram.setEncryptedCard(encryptedCard);
+
+        request.setVoltageCryptogram(cryptogram);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
+        assertEquals(merchantRefId, response.getMerchantRefId());
+        assertEquals("654321", response.getDecryptedCard().getTrack1());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+
+    @Test
+    public void testDecrypt_VoltageWithTrack2() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(merchantRefId);
+
+        VoltageCryptogram cryptogram = new VoltageCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setTrack2("123456");
+        cryptogram.setEncryptedCard(encryptedCard);
+
+        request.setVoltageCryptogram(cryptogram);
+
+        PowerMockito.doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
+        assertEquals(merchantRefId, response.getMerchantRefId());
+        assertEquals("654321", response.getDecryptedCard().getTrack2());
+
+        verifyStatic();
+        ValidateAndSimulate.validateAndSimulate(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
 
     @Test
     public void testEchoRequest() throws Exception {
@@ -737,26 +930,4 @@ public class TestEWSSimulatorEndpoint {
         ValidateAndSimulate.validateAndSimulate(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
-
-
-    /*@Test
-    public void testOrderRegistration() throws Exception {
-
-        OrderRegistrationRequest request = new OrderRegistrationRequest();
-        MerchantType merchant = new MerchantType();
-        merchant.setRollupId(rollupId);
-        request.setMerchant(merchant);
-        request.setCardSecurityCode("123");
-
-
-        doNothing().when(ValidateAndSimulate.class, "validateAndSimulate", request, header);
-        doNothing().when(HttpHeaderUtils.class, "customizeHttpResponseHeader");
-
-        OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
-        assertEquals( true,response.getOrderLVT().startsWith("3"));
-        verifyStatic();
-        ValidateAndSimulate.validateAndSimulate(request, header);
-        verifyStatic();
-        HttpHeaderUtils.customizeHttpResponseHeader();
-    }*/
 }
