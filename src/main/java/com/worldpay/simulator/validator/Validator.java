@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+
 import java.util.List;
 
 import static com.worldpay.simulator.validator.ValidatorUtils.*;
@@ -105,7 +107,6 @@ public class Validator {
 
 
     public static void validateVerifoneCard(Card card){
-
         if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getExpirationDate()))
             handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
 
@@ -116,14 +117,10 @@ public class Validator {
         }
 
         if(!isStringEmpty(card.getTrack2())) {
-            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getExpirationDate()) || !isStringEmpty(card.getTrack1()))
+            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getExpirationDate()))
                 handleException(INVALID_REQ, INVALID_VERIFONE_CARD);
             return;
         }
-
-        if(isValidPAN(card.getPrimaryAccountNumber()) && isValidExpiryDate(card.getExpirationDate()))
-            if (!isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
-                handleException(INVALID_REQ, INVALID_VERIFONE_CARD);
 
 
         if(!isValidPAN(card.getPrimaryAccountNumber()))
@@ -146,7 +143,7 @@ public class Validator {
         }
 
         if(!isStringEmpty(card.getTrack2())) {
-            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getSecurityCode()) || !isStringEmpty(card.getTrack1()))
+            if (!isStringEmpty(card.getPrimaryAccountNumber()) || !isStringEmpty(card.getSecurityCode()))
                 handleException(INVALID_REQ, INVALID_VOLTAGE_CARD);
             return;
         }

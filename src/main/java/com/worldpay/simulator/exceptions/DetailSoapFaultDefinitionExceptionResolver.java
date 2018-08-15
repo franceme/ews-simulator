@@ -1,10 +1,11 @@
 package com.worldpay.simulator.exceptions;
 
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
@@ -16,6 +17,8 @@ import com.worldpay.simulator.utils.EWSUtils;
 
 public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMappingExceptionResolver {
 
+    private static final Logger logger = LoggerFactory.getLogger(DetailSoapFaultDefinitionExceptionResolver.class);
+
     @Override
     protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
         if (ex instanceof ServerFaultException) {
@@ -25,6 +28,7 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
             RequestValidationFault requestValidationFault = ((ClientFaultException) ex).getRequestValidationFault();
             addFaultDetail(requestValidationFault, fault);
         } else {
+            logger.error("Runtime exception:\n" + ex);
             ServerFault serverFault = new ServerFault();
             serverFault.setRequestId(EWSUtils.randomReqId());
             serverFault.setId(2);
@@ -46,8 +50,4 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
             throw new RuntimeException(e);
         }
     }
-
-
 }
-
-

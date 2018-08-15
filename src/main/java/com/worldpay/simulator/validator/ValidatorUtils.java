@@ -42,7 +42,7 @@ public class ValidatorUtils {
     }
 
     public static boolean isValidRegId(String regId) {
-        return (isStringValidInteger(regId) && REG_LENGTH_1 <= regId.length() && regId.length() <= REG_LENGTH_2);
+        return (isStringValidInteger(regId) && regId.length() <= REG_LENGTH_2);
     }
 
     public static boolean isValidRollupId(String rollupId) {

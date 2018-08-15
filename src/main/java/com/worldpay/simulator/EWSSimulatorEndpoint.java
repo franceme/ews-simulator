@@ -30,11 +30,7 @@ public class EWSSimulatorEndpoint {
 
 
 
-    /**
-     *
-     * @param request
-     * @return
-     */
+
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest request,
@@ -251,9 +247,7 @@ public class EWSSimulatorEndpoint {
         validateAndSimulate(tokenInquiryRequest,auth);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
-        String merchantRefId = tokenInquiryRequest.getMerchantRefId();
-        if (merchantRefId != null)
-            tokenInquiryResponse.setMerchantRefId(merchantRefId);
+        addMerchantRefId(tokenInquiryRequest, tokenInquiryResponse);
 
         for (Card card: tokenInquiryRequest.getCard()) {
             String primaryAccountNumber = card.getPrimaryAccountNumber();

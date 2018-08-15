@@ -48,6 +48,7 @@ public class TestValidatorUtils {
         LVT2 = "321456789123456789";
         token = "123456789012345678901234567890123456789012345678901";
         account = "1234567890123456";
+        ValidatorUtils temp = new ValidatorUtils();
 
     }
 
