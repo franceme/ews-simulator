@@ -107,7 +107,6 @@ public class Validator {
 
 
     public static void validateVerifoneCard(Card card){
-
         if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getExpirationDate()))
             handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
 
@@ -122,10 +121,6 @@ public class Validator {
                 handleException(INVALID_REQ, INVALID_VERIFONE_CARD);
             return;
         }
-
-        if(isValidPAN(card.getPrimaryAccountNumber()) && isValidExpiryDate(card.getExpirationDate()))
-            if (!isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
-                handleException(INVALID_REQ, INVALID_VERIFONE_CARD);
 
 
         if(!isValidPAN(card.getPrimaryAccountNumber()))
