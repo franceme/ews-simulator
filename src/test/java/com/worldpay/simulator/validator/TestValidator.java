@@ -1,20 +1,11 @@
 package com.worldpay.simulator.validator;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,9 +14,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.ws.soap.SoapHeaderElement;
-
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
 import com.worldpay.simulator.Account;
 import com.worldpay.simulator.BatchDetokenizeRequest;
 import com.worldpay.simulator.BatchTokenizeRequest;
@@ -40,7 +28,6 @@ import com.worldpay.simulator.MerchantType;
 import com.worldpay.simulator.OrderDeregistrationRequest;
 import com.worldpay.simulator.OrderRegistrationRequest;
 import com.worldpay.simulator.RegistrationRequest;
-import com.worldpay.simulator.SecurityHeaderType;
 import com.worldpay.simulator.Token;
 import com.worldpay.simulator.TokenInquiryRequest;
 import com.worldpay.simulator.TokenRegistrationRequest;
@@ -49,10 +36,6 @@ import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
-import com.worldpay.simulator.exceptions.ClientFaultException;
-import com.worldpay.simulator.utils.EWSUtils;
-
-import jdk.nashorn.internal.runtime.arrays.ContinuousArrayData;
 
 
 @RunWith(PowerMockRunner.class)
