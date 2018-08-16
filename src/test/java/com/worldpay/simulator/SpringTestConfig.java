@@ -19,4 +19,10 @@ public class SpringTestConfig {
         EWSSimulatorEndpoint eWSSimulatorEndpoint = new EWSSimulatorEndpoint();
         return eWSSimulatorEndpoint;
     }
+
+    @Bean(name = "testFilterConfig")
+    public TestFilterConfiguration testFilterConfiguration() {
+        TestFilterConfiguration testFilterConfiguration = new TestFilterConfiguration();
+        return testFilterConfiguration;
+    }
 }

@@ -9,10 +9,14 @@ public class FilterConfiguration {
 
     @Bean
     public RequestLogFilter requestLoggingFilter() {
-        RequestLogFilter loggingFilter = new RequestLogFilter();
+        RequestLogFilter loggingFilter = loggingFilterInstance();
         loggingFilter.setIncludeClientInfo(true);
         loggingFilter.setIncludeQueryString(true);
         loggingFilter.setIncludeHeaders(true);
         return loggingFilter;
+    }
+
+    public RequestLogFilter loggingFilterInstance() {
+        return new RequestLogFilter();
     }
 }

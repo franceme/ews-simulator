@@ -1,5 +1,9 @@
 package com.worldpay.simulator.validator;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -7,13 +11,22 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.ws.transport.context.TransportContextHolder;
+
 import com.worldpay.simulator.Account;
 import com.worldpay.simulator.BatchDetokenizeRequest;
 import com.worldpay.simulator.BatchTokenizeRequest;
@@ -28,6 +41,7 @@ import com.worldpay.simulator.MerchantType;
 import com.worldpay.simulator.OrderDeregistrationRequest;
 import com.worldpay.simulator.OrderRegistrationRequest;
 import com.worldpay.simulator.RegistrationRequest;
+import com.worldpay.simulator.SecurityHeaderType;
 import com.worldpay.simulator.Token;
 import com.worldpay.simulator.TokenInquiryRequest;
 import com.worldpay.simulator.TokenRegistrationRequest;
@@ -36,6 +50,7 @@ import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
+import com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver;
 
 
 @RunWith(PowerMockRunner.class)
@@ -44,6 +59,12 @@ public class TestValidator {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
+
+    @Mock
+    JAXBContext jaxbContextMock;
+
+    @Mock
+    Unmarshaller unmarshallerMock;
 
     private Card card1;
     private Card card2;
@@ -62,13 +83,16 @@ public class TestValidator {
     private static String INVALID_TOKEN;
     private static String TOKEN_NOT_FOUND;
     private String rollupId;
+    private Validator validatorSpy;
+    private Validator validator;
 
 
     @Before
-    public void setUp(){
+    public void setUp() {
 
         mockStatic(ValidatorUtils.class);
-
+        validator = new Validator();
+        validatorSpy = spy(validator);
         card1 = new Card();
         card2 = new Card();
         token1 = new Token();

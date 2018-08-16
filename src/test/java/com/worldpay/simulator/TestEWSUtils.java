@@ -181,7 +181,10 @@ public class TestEWSUtils {
 
   @Test
   public void testDelayInResponse() throws InterruptedException {
-    EWSUtils.delayInResponse("0012222222333");
+    final long startTime = System.nanoTime();
+    EWSUtils.delayInResponse("0032222222333");
+    final long duration = System.nanoTime() - startTime;
+    assertEquals(300,duration/10000000);
   }
 
   @Test
