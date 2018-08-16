@@ -53,7 +53,7 @@ public class TestEWSUtils {
     error1.setId(4);
     error1.setCode("INVALID_REQUEST");
     error1.setMessage("Invalid request (syntax error).");
-
+    EWSUtils tempUtils = new EWSUtils();
   }
 
 
