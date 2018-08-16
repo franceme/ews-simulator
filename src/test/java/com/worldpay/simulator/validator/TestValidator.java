@@ -122,21 +122,24 @@ public class TestValidator {
         tokens.add(token2);
         Validator.validateToken(tokens,1);
         Validator.validateToken(tokens,2);
-        Validator.validateCard(new ArrayList<Card>(),1);
+        tokens = new ArrayList<>();
+        Validator.validateToken(tokens,1);
     }
 
     @Test
     public void testValidateCard() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidPAN","123456789011123");
         card1.setPrimaryAccountNumber("");
         Validator.validateCard(card1);
-        card1.setPrimaryAccountNumber("1234567891011123");
+        card1.setPrimaryAccountNumber("123456789011123");
         Validator.validateCard(card1);
     }
 
     @Test
     public void testValidateToken() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidToken","12312312");
         token1.setTokenValue("");
         Validator.validateToken(token1);
         token1.setTokenValue("12312312");
@@ -196,6 +199,7 @@ public class TestValidator {
         doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
         doReturn(true).when(ValidatorUtils.class,"isValidExpiryDate",expDate);
         doReturn(true).when(ValidatorUtils.class,"isValidPAN",PAN1);
+        doReturn(true).when(ValidatorUtils.class,"isValidCVV",expDate);
 
         card1.setTrack1("");
         card1.setTrack2("");
@@ -249,6 +253,7 @@ public class TestValidator {
     @Test
     public void testValidateECheckToken() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,TOKEN_NOT_FOUND);
+        doReturn(true).when(ValidatorUtils.class,"isValidToken","123");
         ECheckToken tempToken = new ECheckToken();
         tempToken.setTokenValue("");
         Validator.validateToken((ECheckToken)tempToken);
@@ -265,6 +270,7 @@ public class TestValidator {
     @Test
     public void testValidateMerchant() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidRollupId","1123");
         merchant.setRollupId("");
         Validator.validateMerchant(merchant);
         merchant.setRollupId("1123");
@@ -334,6 +340,9 @@ public class TestValidator {
     @Test
     public void testValidateAccount() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidAccount","12345");
+        doReturn(true).when(ValidatorUtils.class,"isValidRoutingNumber","123456789");
+
         account.setAccountNumber("");
         account.setRoutingNumber("");
         Validator.validateAccount(account);
@@ -398,12 +407,19 @@ public class TestValidator {
     @Test
     public void testValidateTokenizeRequest() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidPAN",PAN1);
+        doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
+        doReturn(false).when(ValidatorUtils.class,"isStringEmpty","1");
+        doReturn(false).when(ValidatorUtils.class,"isStringEmpty","123");
+        doReturn(true).when(ValidatorUtils.class,"isValidCVV","123");
         TokenizeRequest tokenizeRequest = new TokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         tokenizeRequest.setMerchant(merchant);
         tokenizeRequest.setPrimaryAccountNumber("");
         tokenizeRequest.setCardSecurityCode("");
+        Validator.validate(tokenizeRequest);
+        tokenizeRequest.setPrimaryAccountNumber(PAN1);
         Validator.validate(tokenizeRequest);
         tokenizeRequest.setCardSecurityCode("1");
         Validator.validate(tokenizeRequest);
@@ -414,6 +430,7 @@ public class TestValidator {
     @Test
     public void testValidateDetokenizeRequest() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidToken","468498435168468");
         DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -482,6 +499,7 @@ public class TestValidator {
     @Test
     public void testValidateDeregistrationRequest() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidRegId","123456");
         DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -519,6 +537,7 @@ public class TestValidator {
     @Test
     public void testValidateTokenRegistrationRequest() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidToken","468498435168468");
         TokenRegistrationRequest tokenRegistrationRequest = new TokenRegistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -562,6 +581,7 @@ public class TestValidator {
     @Test
     public void testValidateOrderRegistrationRequest() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidCVV","123");
         OrderRegistrationRequest orderRegistrationRequest = new OrderRegistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -576,6 +596,7 @@ public class TestValidator {
     @Test
     public void testValidateOrderDeregistrationRequest() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isValidOrderLVT","312456789123456789");
         OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
