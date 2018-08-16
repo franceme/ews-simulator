@@ -148,10 +148,6 @@ public class Validator {
             return;
         }
 
-        if(isValidPAN(card.getPrimaryAccountNumber()) && isValidCVV(card.getSecurityCode()))
-            if( !isStringEmpty(card.getTrack2()) || !isStringEmpty(card.getTrack1()))
-                handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
-
         if(!isValidPAN(card.getPrimaryAccountNumber()))
             handleException(INVALID_REQ,INVALID_PAN);
 

@@ -180,6 +180,11 @@ public class TestEWSUtils {
   }
 
   @Test
+  public void testDelayInResponse() throws InterruptedException {
+    EWSUtils.delayInResponse("0012222222333");
+  }
+
+  @Test
   public void testGetCVVThroughToken(){
     assertEquals(cvv,EWSUtils.getCVVThroughToken(token));
     assertEquals("566",EWSUtils.getCVVThroughToken("12"));

@@ -10,12 +10,14 @@ public class TestErrorIdMap {
 
     private int errorValue = 1;
     private int nonErrorValue = 11;
+    private ErrorIdMap errorIdMap;
 
 
 
 
     @Before
     public void setUp(){
+        errorIdMap = new ErrorIdMap();
 
     }
 
