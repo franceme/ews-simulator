@@ -45,11 +45,7 @@ public class TestFilterConfiguration {
 
     @Test
     public void testLoggingFilterInstance() {
-
-        willReturn(requestLogFilterMock).given(filterConfigurationSpy).loggingFilterInstance();
-
         filterConfigurationSpy.loggingFilterInstance();
-
     }
 
 }
