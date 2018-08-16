@@ -71,6 +71,11 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
     }
 
     public void logRuntimeError(Exception ex) {
+        Logger logger = getLogger();
         logger.error("Runtime exception:\n" + ex);
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 }

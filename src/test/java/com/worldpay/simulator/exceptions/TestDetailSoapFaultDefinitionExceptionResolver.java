@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 
@@ -165,5 +166,25 @@ public class TestDetailSoapFaultDefinitionExceptionResolver {
         JAXBContext context = exceptionResolverSpy.createJAXBContext();
 
         assertEquals(expectedContext.toString(), context.toString());
+    }
+
+    @Test
+    public void testLogRuntimeError() {
+        Logger logger = mock(Logger.class);
+        Exception ex = new RuntimeException();
+
+        doReturn(logger).when(exceptionResolverSpy).getLogger();
+        doNothing().when(logger).error("Runtime exception:\n" + ex);
+
+        exceptionResolverSpy.logRuntimeError(ex);
+
+        verify(exceptionResolverSpy, times(1)).getLogger();
+        verify(logger, times(1)).error("Runtime exception:\n" + ex);
+    }
+
+    @Test
+    public void testGetLogger() {
+        Logger logger = exceptionResolverSpy.getLogger();
+        assertEquals("com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver", logger.getName());
     }
 }
