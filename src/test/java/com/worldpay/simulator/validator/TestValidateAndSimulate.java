@@ -32,6 +32,9 @@ import com.worldpay.simulator.Token;
 import com.worldpay.simulator.TokenInquiryRequest;
 import com.worldpay.simulator.TokenRegistrationRequest;
 import com.worldpay.simulator.TokenizeRequest;
+import com.worldpay.simulator.VerifoneCryptogram;
+import com.worldpay.simulator.VerifoneMerchantKeyType;
+import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.WalletType;
 
 
@@ -69,8 +72,30 @@ public class TestValidateAndSimulate {
 
 
     @Test
-    public void testValidateAndSimulateDecryptRequest(){
+    public void testValidateAndSimulateDecryptRequest() throws Exception {
+        DecryptRequest request = new DecryptRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setMerchantRefId(validMerchantRfId);
 
+        VerifoneCryptogram cryptogram = new VerifoneCryptogram();
+        Card encryptedCard = new Card();
+        encryptedCard.setPrimaryAccountNumber("123456789101112");
+        encryptedCard.setExpirationDate("0818");
+        cryptogram.setEncryptedCard(encryptedCard);
+        cryptogram.setMerchantKeyType(VerifoneMerchantKeyType.SHARED);
+
+        VerifoneTerminal terminal = new VerifoneTerminal();
+        terminal.setRegisterId("1234");
+        terminal.setLaneId("1234");
+        terminal.setChainCode("1234");
+        terminal.setMerchantId("1234");
+        cryptogram.setTerminal(terminal);
+
+        request.setVerifoneCryptogram(cryptogram);
+        doNothing().when(Validator.class, "validateSoapHeader", header);
+        ValidateAndSimulate.validateAndSimulate(request,header);
     }
 
     @Test
