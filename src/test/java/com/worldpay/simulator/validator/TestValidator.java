@@ -63,6 +63,9 @@ public class TestValidator {
     private String PAN1;
     private String PAN2;
     private String expDate;
+    public static String INVALID_TOKEN;
+    public static String TOKEN_NOT_FOUND;
+
 
     @Before
     public void setUp(){
@@ -84,6 +87,8 @@ public class TestValidator {
         PAN1 = "1234567891011123";
         PAN2= "1234567891011000";
         expDate = "2308";
+        INVALID_TOKEN = "Error: Token not found";
+        TOKEN_NOT_FOUND = "Error: Token not found";
 
     }
 
@@ -111,32 +116,35 @@ public class TestValidator {
         Validator.validateCard(new ArrayList<Card>(),1);
     }
 
-//    @Test(expected = Exception.class)
-//    public void testValidateTokens(){
-//        List<Token> tokens = new ArrayList<>();
-//        tokens.add(token1);
-//        tokens.add(token2);
-//        Validator.validateToken(tokens,1);
-//        Validator.validateToken(tokens,2);
-//        Validator.validateCard(new ArrayList<Card>(),1);
-//    }
-//
-//    @Test(expected = Exception.class)
-//    public void testValidateCard(){
-//        card1.setPrimaryAccountNumber("");
-//        Validator.validateCard(card1);
-//        card1.setPrimaryAccountNumber("1234567891011123");
-//        Validator.validateCard(card1);
-//    }
-//
-//    @Test(expected = Exception.class)
-//    public void testValidateToken(){
-//        token1.setTokenValue("");
-//        Validator.validateToken(token1);
-//        token1.setTokenValue("12312312");
-//        Validator.validateToken(token1);
-//    }
-//
+    @Test
+    public void testValidateTokens() throws Exception {
+        doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        List<Token> tokens = new ArrayList<>();
+        tokens.add(token1);
+        tokens.add(token2);
+        Validator.validateToken(tokens,1);
+        Validator.validateToken(tokens,2);
+        Validator.validateCard(new ArrayList<Card>(),1);
+    }
+
+    @Test
+    public void testValidateCard() throws Exception {
+        doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        card1.setPrimaryAccountNumber("");
+        Validator.validateCard(card1);
+        card1.setPrimaryAccountNumber("1234567891011123");
+        Validator.validateCard(card1);
+    }
+
+    @Test
+    public void testValidateToken() throws Exception {
+        doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        token1.setTokenValue("");
+        Validator.validateToken(token1);
+        token1.setTokenValue("12312312");
+        Validator.validateToken(token1);
+    }
+
     @Test
     public void testValidateVerifoneCard() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
@@ -182,59 +190,69 @@ public class TestValidator {
         card1.setPrimaryAccountNumber("");
         Validator.validateVerifoneCard(card1);
     }
-//
-//    @Test(expected = Exception.class)
-//    public void testValidateVoltageCard(){
-//        card1.setTrack1("");
-//        card1.setTrack2("");
-//        card1.setPrimaryAccountNumber("");
-//        card1.setExpirationDate("");
-//        Validator.validateVerifoneCard(card1);
-//
-//        card1.setTrack1("1");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setTrack2("2");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setSecurityCode("2308");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setPrimaryAccountNumber("1234567891011123");
-//        Validator.validateVerifoneCard(card1);
-//
-//        card1.setTrack1("");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setPrimaryAccountNumber("");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setSecurityCode("");
-//        Validator.validateVerifoneCard(card1);
-//
-//        card1.setTrack2("");
-//        card1.setPrimaryAccountNumber("1234567891011123");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setSecurityCode("2308");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setTrack1("1");
-//        Validator.validateVerifoneCard(card1);
-//        card1.setTrack2("2");
-//        Validator.validateVerifoneCard(card1);
-//
-//        card1.setTrack1("");
-//        card1.setTrack2("");
-//        card1.setPrimaryAccountNumber("");
-//        Validator.validateVerifoneCard(card1);
-//    }
-//
-//    @Test(expected = Exception.class)
-//    public void testValidateECheckToken(){
+
+    @Test
+    public void testValidateVoltageCard() throws Exception {
+        doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
+        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",null);
+        doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
+        doReturn(true).when(ValidatorUtils.class,"isValidExpiryDate",expDate);
+        doReturn(true).when(ValidatorUtils.class,"isValidPAN",PAN1);
+
+        card1.setTrack1("");
+        card1.setTrack2("");
+        card1.setPrimaryAccountNumber("");
+        card1.setExpirationDate("");
+        Validator.validateVoltageCard(card1);
+
+        card1.setTrack1("1");
+        Validator.validateVoltageCard(card1);
+        card1.setTrack2("2");
+        Validator.validateVoltageCard(card1);
+        card1.setSecurityCode(expDate);
+        Validator.validateVoltageCard(card1);
+        card1.setPrimaryAccountNumber(PAN1);
+        Validator.validateVoltageCard(card1);
+
+        card1.setTrack1("");
+        Validator.validateVoltageCard(card1);
+        card1.setPrimaryAccountNumber("");
+        Validator.validateVoltageCard(card1);
+        card1.setSecurityCode("");
+        Validator.validateVoltageCard(card1);
+
+        card1.setTrack2("");
+        card1.setPrimaryAccountNumber(PAN1);
+        Validator.validateVoltageCard(card1);
+        card1.setSecurityCode(expDate);
+        Validator.validateVoltageCard(card1);
+        card1.setTrack1("1");
+        Validator.validateVoltageCard(card1);
+        card1.setTrack2("2");
+        Validator.validateVoltageCard(card1);
+
+        card1.setTrack1("");
+        card1.setTrack2("");
+        card1.setPrimaryAccountNumber("");
+        Validator.validateVoltageCard(card1);
+    }
+
+//    @Test
+//    public void testValidateECheckToken_null() throws Exception {
+//        doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,TOKEN_NOT_FOUND);
 //        Validator.validateToken((ECheckToken) null);
 //        ECheckToken tempToken = new ECheckToken();
 //        tempToken.setTokenValue("");
-//        Validator.validateToken(tempToken);
+//        Validator.validateToken((ECheckToken)tempToken);
 //        tempToken.setTokenValue("123");
-//        Validator.validateToken(tempToken);
+//        Validator.validateToken((ECheckToken)tempToken);
 //    }
 //
-//    @Test(expected = Exception.class)
-//    public void testValidateMerchant(){
+//
+//
+//    @Test
+//    public void testValidateMerchant() throws Exception {
+//        doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
 //        Validator.validateMerchant((MerchantType)null);
 //        merchant.setRollupId("");
 //        Validator.validateMerchant(merchant);

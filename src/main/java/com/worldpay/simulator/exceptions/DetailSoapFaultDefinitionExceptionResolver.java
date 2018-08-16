@@ -7,6 +7,7 @@ import javax.xml.bind.Marshaller;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.ws.soap.SoapFault;
+import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
 import com.worldpay.simulator.RequestValidationFault;
@@ -20,7 +21,7 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
     private static final Logger logger = LoggerFactory.getLogger(DetailSoapFaultDefinitionExceptionResolver.class);
 
     @Override
-    protected void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
+    public void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
         if (ex instanceof ServerFaultException) {
             ServerFault serverFault = ((ServerFaultException) ex).getServerFault();
             addFaultDetail(serverFault, fault);
@@ -28,26 +29,48 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
             RequestValidationFault requestValidationFault = ((ClientFaultException) ex).getRequestValidationFault();
             addFaultDetail(requestValidationFault, fault);
         } else {
-            logger.error("Runtime exception:\n" + ex);
-            ServerFault serverFault = new ServerFault();
-            serverFault.setRequestId(EWSUtils.randomReqId());
-            serverFault.setId(2);
-            EWSError error = ErrorIdMap.getError(2);
-            serverFault.setCode(error.getErrorCode());
-            serverFault.setMessage(error.getErrorMessage());
+            logRuntimeError(ex);
+            ServerFault serverFault = createServerFault();
             addFaultDetail(serverFault, fault);
         }
     }
 
-    private void addFaultDetail(Object customFault, SoapFault fault) {
+    public void addFaultDetail(Object customFault, SoapFault fault) {
         fault.addFaultDetail();
         try {
-            JAXBContext context = JAXBContext.newInstance("com.worldpay.simulator");
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.marshal(customFault, fault.getFaultDetail().getResult());
+            JAXBContext context = createJAXBContext();
+            Marshaller marshaller = createMarshaller(context);
+            marshaller.marshal(customFault, getFaultDetail(fault).getResult());
         }
         catch (JAXBException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ServerFault createServerFault() {
+        ServerFault serverFault = new ServerFault();
+        serverFault.setRequestId(EWSUtils.randomReqId());
+        serverFault.setId(2);
+        EWSError error = ErrorIdMap.getError(2);
+        serverFault.setCode(error.getErrorCode());
+        serverFault.setMessage(error.getErrorMessage());
+
+        return serverFault;
+    }
+
+    public SoapFaultDetail getFaultDetail(SoapFault fault) {
+        return fault.getFaultDetail();
+    }
+
+    public Marshaller createMarshaller(JAXBContext context) throws JAXBException {
+        return context.createMarshaller();
+    }
+
+    public JAXBContext createJAXBContext() throws JAXBException {
+        return JAXBContext.newInstance("com.worldpay.simulator");
+    }
+
+    public void logRuntimeError(Exception ex) {
+        logger.error("Runtime exception:\n" + ex);
     }
 }
