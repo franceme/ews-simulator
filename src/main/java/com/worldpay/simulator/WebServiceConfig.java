@@ -30,13 +30,17 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
-        PayloadValidatingInterceptor validatingInterceptor = new PayloadValidatingInterceptor();
+        PayloadValidatingInterceptor validatingInterceptor = payloadValidatingInterceptorInstance();
         validatingInterceptor.setValidateRequest(true);
         validatingInterceptor.setValidateResponse(true);
         validatingInterceptor.setXsdSchema(encryptionSchema());
 
         interceptors.add(validatingInterceptor);
 
+    }
+
+    public PayloadValidatingInterceptor payloadValidatingInterceptorInstance() {
+        return new PayloadValidatingInterceptor();
     }
 
 
