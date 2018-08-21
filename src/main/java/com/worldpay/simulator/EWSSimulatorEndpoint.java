@@ -381,7 +381,7 @@ public class EWSSimulatorEndpoint {
         String CVV = EWSUtils.getCVVThroughToken(token);
         answer.setExpirationDate("2308");
         // set CVV (optional)
-        if (request.isCardSecurityCodeRequested()) {
+        if (request.isCardSecurityCodeRequested() != null && request.isCardSecurityCodeRequested()) {
             answer.setCardSecurityCode(CVV); }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
         int indicator = (Integer.parseInt(regId.charAt(regId.length()-1)+"")) % 4;
