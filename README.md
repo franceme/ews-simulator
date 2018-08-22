@@ -57,15 +57,7 @@ gradle test
 To start the spring server for a given port use the below command:
 
 ```
-java -jar -Dserver.port=XXXX build/libs/worldpay-ews-simulator-X.X.X.jar
-```
-
-## Shutdown
-
-To stop the server, use the below command:
-
-```
-curl -X POST localhost:port/actuator/shutdown 
+java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> build/libs/worldpay-ews-simulator-X.X.X.jar
 ```
 
 ## Status
