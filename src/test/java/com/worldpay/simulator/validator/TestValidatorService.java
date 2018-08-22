@@ -40,7 +40,7 @@ import com.worldpay.simulator.WalletType;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Validator.class})
-public class TestValidateAndSimulate {
+public class TestValidatorService {
 
 
     private String validMerchantRfId;
@@ -66,7 +66,7 @@ public class TestValidateAndSimulate {
         CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
         CVV = "468";
         registrationId = "615348948648648";
-        ValidateAndSimulate temp = new ValidateAndSimulate();
+        ValidatorService temp = new ValidatorService();
         mockStatic(Validator.class);
     }
 
@@ -95,7 +95,7 @@ public class TestValidateAndSimulate {
 
         request.setVerifoneCryptogram(cryptogram);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -108,13 +108,13 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
     public void testSimulate() throws InterruptedException {
-        ValidateAndSimulate.simulate(validMerchantRfId);
-        ValidateAndSimulate.simulate(invalidMerchantRfId);
+        ValidatorService.handleExceptionsAndDelay(validMerchantRfId);
+        ValidatorService.handleExceptionsAndDelay(invalidMerchantRfId);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class TestValidateAndSimulate {
         tokenizeRequest.setPrimaryAccountNumber(PAN);
         tokenizeRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(tokenizeRequest,header);
+        ValidatorService.validateAndSimulate(tokenizeRequest,header);
     }
 
     @Test
@@ -140,7 +140,7 @@ public class TestValidateAndSimulate {
         detokenizeRequest.setExpirationDateRequested(true);
         detokenizeRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(detokenizeRequest,header);
+        ValidatorService.validateAndSimulate(detokenizeRequest,header);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -191,7 +191,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -212,7 +212,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -229,7 +229,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -243,7 +243,7 @@ public class TestValidateAndSimulate {
 
         deregistrationRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(deregistrationRequest,header);
+        ValidatorService.validateAndSimulate(deregistrationRequest,header);
     }
 
     @Test
@@ -256,7 +256,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -273,7 +273,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -288,7 +288,7 @@ public class TestValidateAndSimulate {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(request,header);
+        ValidatorService.validateAndSimulate(request,header);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class TestValidateAndSimulate {
 
         orderDeregistrationRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(orderDeregistrationRequest,header);
+        ValidatorService.validateAndSimulate(orderDeregistrationRequest,header);
     }
 
     @Test
@@ -312,7 +312,7 @@ public class TestValidateAndSimulate {
         echoRequest.setTest(test);
 
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidateAndSimulate.validateAndSimulate(echoRequest,header);
+        ValidatorService.validateAndSimulate(echoRequest,header);
 
     }
 }

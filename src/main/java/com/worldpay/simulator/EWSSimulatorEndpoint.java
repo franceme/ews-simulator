@@ -11,7 +11,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 import static com.worldpay.simulator.utils.EWSUtils.*;
-import static com.worldpay.simulator.validator.ValidateAndSimulate.validateAndSimulate;
+import static com.worldpay.simulator.validator.ValidatorService.validateAndSimulate;
 import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;

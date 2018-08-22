@@ -256,7 +256,7 @@ public class Validator {
 
     }
 
-    public static void validate(TokenizeRequest request){
+    public static void validateTokenizeRequest(TokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -271,7 +271,7 @@ public class Validator {
 
     }
 
-    public static void validate(DetokenizeRequest request){
+    public static void validateDeTokenizeRequest(DetokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -282,7 +282,7 @@ public class Validator {
     }
 
 
-    public static void validate(BatchTokenizeRequest request){
+    public static void validateBatchTokenizeRequest(BatchTokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -292,7 +292,7 @@ public class Validator {
     }
 
 
-    public static void validate(BatchDetokenizeRequest request){
+    public static void validateBatchDeTokenizeRequest(BatchDetokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -301,7 +301,7 @@ public class Validator {
 
     }
 
-    public static void validate(TokenInquiryRequest request){
+    public static void validateTokenInquiryRequest(TokenInquiryRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -309,13 +309,13 @@ public class Validator {
         validateCard(request.getCard(),TOKEN_INQUIRY_CARD_LIMIT);
     }
 
-    public static void validate(RegistrationRequest request){
+    public static void validateRegistrationRequest(RegistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
     }
 
-    public static void validate(DeregistrationRequest request){
+    public static void validateDeRegistrationRequest(DeregistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -324,7 +324,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_REG_ID);
     }
 
-    public static void validate(DecryptRequest request){
+    public static void validateDecryptRequest(DecryptRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -332,7 +332,7 @@ public class Validator {
         validateCryptogram(request.getVerifoneCryptogram(),request.getVoltageCryptogram());
     }
 
-    public static void validate(TokenRegistrationRequest request){
+    public static void validateTokenRegistrationRequest(TokenRegistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -341,7 +341,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_TOKEN);
     }
 
-    public static void validate(ECheckTokenizeRequest request){
+    public static void validateECheckTokenizeRequest(ECheckTokenizeRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -349,7 +349,7 @@ public class Validator {
         validateAccount(request.getAccount());
     }
 
-    public static void validate(ECheckDetokenizeRequest request){
+    public static void validateECheckDeTokenizeRequest(ECheckDetokenizeRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -357,7 +357,7 @@ public class Validator {
         validateToken(request.getToken());
     }
 
-    public static void validate(OrderRegistrationRequest request){
+    public static void validateOrderRegistrationRequest(OrderRegistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -366,7 +366,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_SECURITY_CODE);
     }
 
-    public static void validate(OrderDeregistrationRequest request){
+    public static void validateOrderDeRegistrationRequest(OrderDeregistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());

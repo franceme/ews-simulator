@@ -2,7 +2,6 @@ package com.worldpay.simulator.validator;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
@@ -20,12 +19,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.ws.transport.context.TransportContextHolder;
 
 import com.worldpay.simulator.Account;
 import com.worldpay.simulator.BatchDetokenizeRequest;
@@ -41,7 +36,6 @@ import com.worldpay.simulator.MerchantType;
 import com.worldpay.simulator.OrderDeregistrationRequest;
 import com.worldpay.simulator.OrderRegistrationRequest;
 import com.worldpay.simulator.RegistrationRequest;
-import com.worldpay.simulator.SecurityHeaderType;
 import com.worldpay.simulator.Token;
 import com.worldpay.simulator.TokenInquiryRequest;
 import com.worldpay.simulator.TokenRegistrationRequest;
@@ -50,7 +44,6 @@ import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
-import com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver;
 
 
 @RunWith(PowerMockRunner.class)
@@ -442,13 +435,13 @@ public class TestValidator {
         tokenizeRequest.setMerchant(merchant);
         tokenizeRequest.setPrimaryAccountNumber("");
         tokenizeRequest.setCardSecurityCode("");
-        Validator.validate(tokenizeRequest);
+        Validator.validateTokenizeRequest(tokenizeRequest);
         tokenizeRequest.setPrimaryAccountNumber(PAN1);
-        Validator.validate(tokenizeRequest);
+        Validator.validateTokenizeRequest(tokenizeRequest);
         tokenizeRequest.setCardSecurityCode("1");
-        Validator.validate(tokenizeRequest);
+        Validator.validateTokenizeRequest(tokenizeRequest);
         tokenizeRequest.setCardSecurityCode("123");
-        Validator.validate(tokenizeRequest);
+        Validator.validateTokenizeRequest(tokenizeRequest);
     }
 
     @Test
@@ -460,9 +453,9 @@ public class TestValidator {
         merchant.setRollupId(rollupId);
         detokenizeRequest.setMerchant(merchant);
         detokenizeRequest.setToken("");
-        Validator.validate(detokenizeRequest);
+        Validator.validateDeTokenizeRequest(detokenizeRequest);
         detokenizeRequest.setToken("468498435168468");
-        Validator.validate(detokenizeRequest);
+        Validator.validateDeTokenizeRequest(detokenizeRequest);
     }
 
     @Test
@@ -477,7 +470,7 @@ public class TestValidator {
 
         batchTokenizeRequest.getCard().add(card1);
         batchTokenizeRequest.getCard().add(card2);
-        Validator.validate(batchTokenizeRequest);
+        Validator.validateBatchTokenizeRequest(batchTokenizeRequest);
     }
 
     @Test
@@ -492,7 +485,7 @@ public class TestValidator {
 
         batchDetokenizeRequest.getToken().add(token1);
         batchDetokenizeRequest.getToken().add(token2);
-        Validator.validate(batchDetokenizeRequest);
+        Validator.validateBatchDeTokenizeRequest(batchDetokenizeRequest);
     }
 
     @Test
@@ -507,7 +500,7 @@ public class TestValidator {
 
         tokenInquiryRequest.getCard().add(card1);
         tokenInquiryRequest.getCard().add(card2);
-        Validator.validate(tokenInquiryRequest);
+        Validator.validateTokenInquiryRequest(tokenInquiryRequest);
     }
 
     @Test
@@ -517,7 +510,7 @@ public class TestValidator {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         registrationRequest.setMerchant(merchant);
-        Validator.validate(registrationRequest);
+        Validator.validateRegistrationRequest(registrationRequest);
     }
 
     @Test
@@ -529,9 +522,9 @@ public class TestValidator {
         merchant.setRollupId(rollupId);
         deregistrationRequest.setMerchant(merchant);
         deregistrationRequest.setRegId("");
-        Validator.validate(deregistrationRequest);
+        Validator.validateDeRegistrationRequest(deregistrationRequest);
         deregistrationRequest.setRegId("123456");
-        Validator.validate(deregistrationRequest);
+        Validator.validateDeRegistrationRequest(deregistrationRequest);
     }
 
     @Test
@@ -555,7 +548,7 @@ public class TestValidator {
         voltage.setEncryptedCard(card1);
         decryptRequest.setVerifoneCryptogram(verifone);
         decryptRequest.setVoltageCryptogram(voltage);
-        Validator.validate(decryptRequest);
+        Validator.validateDecryptRequest(decryptRequest);
     }
 
     @Test
@@ -567,9 +560,9 @@ public class TestValidator {
         merchant.setRollupId(rollupId);
         tokenRegistrationRequest.setMerchant(merchant);
         tokenRegistrationRequest.setToken("");
-        Validator.validate(tokenRegistrationRequest);
+        Validator.validateTokenRegistrationRequest(tokenRegistrationRequest);
         tokenRegistrationRequest.setToken("468498435168468");
-        Validator.validate(tokenRegistrationRequest);
+        Validator.validateTokenRegistrationRequest(tokenRegistrationRequest);
     }
 
     @Test
@@ -582,9 +575,9 @@ public class TestValidator {
         account.setAccountNumber("12345");
         account.setRoutingNumber("123456789");
         eCheckTokenizeRequest.setAccount(new Account());
-        Validator.validate(eCheckTokenizeRequest);
+        Validator.validateECheckTokenizeRequest(eCheckTokenizeRequest);
         eCheckTokenizeRequest.setAccount(account);
-        Validator.validate(eCheckTokenizeRequest);
+        Validator.validateECheckTokenizeRequest(eCheckTokenizeRequest);
     }
 
     @Test
@@ -597,9 +590,9 @@ public class TestValidator {
         ECheckToken tempToken = new ECheckToken();
         tempToken.setTokenValue("123");
         eCheckDetokenizeRequest.setToken(new ECheckToken());
-        Validator.validate(eCheckDetokenizeRequest);
+        Validator.validateECheckDeTokenizeRequest(eCheckDetokenizeRequest);
         eCheckDetokenizeRequest.setToken(tempToken);
-        Validator.validate(eCheckDetokenizeRequest);
+        Validator.validateECheckDeTokenizeRequest(eCheckDetokenizeRequest);
     }
 
     @Test
@@ -612,9 +605,9 @@ public class TestValidator {
         orderRegistrationRequest.setMerchant(merchant);
 
         orderRegistrationRequest.setCardSecurityCode("");
-        Validator.validate(orderRegistrationRequest);
+        Validator.validateOrderRegistrationRequest(orderRegistrationRequest);
         orderRegistrationRequest.setCardSecurityCode("123");
-        Validator.validate(orderRegistrationRequest);
+        Validator.validateOrderRegistrationRequest(orderRegistrationRequest);
     }
 
     @Test
@@ -627,9 +620,9 @@ public class TestValidator {
         orderDeregistrationRequest.setMerchant(merchant);
 
         orderDeregistrationRequest.setOrderLVT("");
-        Validator.validate(orderDeregistrationRequest);
+        Validator.validateOrderDeRegistrationRequest(orderDeregistrationRequest);
         orderDeregistrationRequest.setOrderLVT("312456789123456789");
-        Validator.validate(orderDeregistrationRequest);
+        Validator.validateOrderDeRegistrationRequest(orderDeregistrationRequest);
     }
 
 

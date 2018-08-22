@@ -1,7 +1,6 @@
 package com.worldpay.simulator.utils;
 
 import com.worldpay.simulator.SpringTestConfig;
-import com.worldpay.simulator.validator.ValidateAndSimulate;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,16 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.transport.WebServiceConnection;
-import org.springframework.ws.transport.context.DefaultTransportContext;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
-import org.springframework.ws.transport.http.CommonsHttpConnection;
-import org.springframework.ws.transport.http.HttpComponentsConnection;
 import org.springframework.ws.transport.http.HttpServletConnection;
-
-import java.util.List;
 
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willReturn;
