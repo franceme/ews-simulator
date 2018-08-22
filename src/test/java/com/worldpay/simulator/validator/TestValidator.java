@@ -166,7 +166,7 @@ public class TestValidator {
     @Test
     public void testValidateVerifoneCard() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",null);
+        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",new Object[]{null});
         doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
         doReturn(true).when(ValidatorUtils.class,"isValidExpiryDate",expDate);
         doReturn(true).when(ValidatorUtils.class,"isValidPAN",PAN1);
@@ -212,7 +212,7 @@ public class TestValidator {
     @Test
     public void testValidateVoltageCard() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",null);
+        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",new Object[]{null});
         doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
         doReturn(true).when(ValidatorUtils.class,"isValidExpiryDate",expDate);
         doReturn(true).when(ValidatorUtils.class,"isValidPAN",PAN1);
@@ -310,7 +310,7 @@ public class TestValidator {
     @Test
     public void testValidateVerifoneTerminal() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",null);
+        doReturn(true).when(ValidatorUtils.class,"isStringEmpty",new Object[]{null});
         doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
 
         Validator.validateVerifoneTerminal(terminal);

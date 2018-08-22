@@ -72,7 +72,7 @@ public class TestValidatorService {
 
 
     @Test
-    public void testValidateAndSimulateDecryptRequest() throws Exception {
+    public void testValidateRequestDecryptRequest() throws Exception {
         DecryptRequest request = new DecryptRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -95,11 +95,11 @@ public class TestValidatorService {
 
         request.setVerifoneCryptogram(cryptogram);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateOrderRegistrationRequest() throws Exception {
+    public void testValidateRequestOrderRegistrationRequest() throws Exception {
         OrderRegistrationRequest request = new OrderRegistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -108,7 +108,7 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class TestValidatorService {
     }
 
     @Test
-    public void testValidateAndSimulateTokenizeRequest() throws Exception {
+    public void testValidateRequestTokenizeRequest() throws Exception {
         TokenizeRequest tokenizeRequest = new TokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -126,11 +126,11 @@ public class TestValidatorService {
         tokenizeRequest.setPrimaryAccountNumber(PAN);
         tokenizeRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(tokenizeRequest,header);
+        ValidatorService.validateRequest(tokenizeRequest,header);
     }
 
     @Test
-    public void testValidateAndSimulateDetokenizeRequest() throws Exception {
+    public void testValidateRequestDetokenizeRequest() throws Exception {
         DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -140,11 +140,11 @@ public class TestValidatorService {
         detokenizeRequest.setExpirationDateRequested(true);
         detokenizeRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(detokenizeRequest,header);
+        ValidatorService.validateRequest(detokenizeRequest,header);
     }
 
     @Test
-    public void testValidateAndSimulateBatchTokenizeRequest() throws Exception {
+    public void testValidateRequestBatchTokenizeRequest() throws Exception {
         BatchTokenizeRequest request = new BatchTokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -165,11 +165,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateBatchDetokenizeRequest() throws Exception {
+    public void testValidateRequestBatchDetokenizeRequest() throws Exception {
         BatchDetokenizeRequest request = new BatchDetokenizeRequest();
 
         MerchantType merchant = new MerchantType();
@@ -191,11 +191,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateTokenInquiryRequest() throws Exception {
+    public void testValidateRequestTokenInquiryRequest() throws Exception {
         TokenInquiryRequest request = new TokenInquiryRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -212,11 +212,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateRegistrationRequest() throws Exception {
+    public void testValidateRequestRegistrationRequest() throws Exception {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
 
@@ -229,11 +229,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateDeregistrationRequest() throws Exception {
+    public void testValidateRequestDeregistrationRequest() throws Exception {
         DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -243,11 +243,11 @@ public class TestValidatorService {
 
         deregistrationRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(deregistrationRequest,header);
+        ValidatorService.validateRequest(deregistrationRequest,header);
     }
 
     @Test
-    public void testValidateAndSimulateTokenRegistrationRequest() throws Exception {
+    public void testValidateRequestTokenRegistrationRequest() throws Exception {
         TokenRegistrationRequest request = new TokenRegistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -256,11 +256,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateECheckTokenizeRequest() throws Exception {
+    public void testValidateRequestECheckTokenizeRequest() throws Exception {
         ECheckTokenizeRequest request = new ECheckTokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -273,11 +273,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateECheckDetokenizeRequest() throws Exception {
+    public void testValidateRequestECheckDetokenizeRequest() throws Exception {
         ECheckDetokenizeRequest request = new ECheckDetokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -288,11 +288,11 @@ public class TestValidatorService {
 
         request.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(request,header);
+        ValidatorService.validateRequest(request,header);
     }
 
     @Test
-    public void testValidateAndSimulateOrderDeregistrationRequest() throws Exception {
+    public void testValidateRequestOrderDeregistrationRequest() throws Exception {
         OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -302,17 +302,17 @@ public class TestValidatorService {
 
         orderDeregistrationRequest.setMerchantRefId(validMerchantRfId);
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(orderDeregistrationRequest,header);
+        ValidatorService.validateRequest(orderDeregistrationRequest,header);
     }
 
     @Test
-    public void testValidateAndSimulateEchoRequest() throws Exception {
+    public void testValidateRequestEchoRequest() throws Exception {
         EchoRequest echoRequest = new EchoRequest();
         String test = "asdahfiuahofo";
         echoRequest.setTest(test);
 
         doNothing().when(Validator.class, "validateSoapHeader", header);
-        ValidatorService.validateAndSimulate(echoRequest,header);
+        ValidatorService.validateRequest(echoRequest,header);
 
     }
 }

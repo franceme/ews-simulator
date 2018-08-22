@@ -1,4 +1,11 @@
 package com.worldpay.simulator;
+
+import static com.worldpay.simulator.utils.EWSUtils.getAccountType;
+import static com.worldpay.simulator.utils.EWSUtils.getError;
+import static com.worldpay.simulator.utils.EWSUtils.getRoutingNumber;
+import static com.worldpay.simulator.validator.ValidatorService.validateRequest;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 
@@ -10,9 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
-import static com.worldpay.simulator.utils.EWSUtils.*;
-import static com.worldpay.simulator.validator.ValidatorService.validateAndSimulate;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
+
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 
@@ -37,7 +42,7 @@ public class EWSSimulatorEndpoint {
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException, TransformerException {
 
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         RegistrationResponse response = new RegistrationResponse();
 
@@ -64,7 +69,7 @@ public class EWSSimulatorEndpoint {
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest,
                                      @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(tokenizeRequest,auth);
+        validateRequest(tokenizeRequest,auth);
 
 
         TokenizeResponse tokenizeResponse = new TokenizeResponse();
@@ -91,7 +96,7 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
         String cvv = request.getCardSecurityCode();
@@ -110,7 +115,7 @@ public class EWSSimulatorEndpoint {
     public TokenRegistrationResponse tokenRegistration(@RequestPayload TokenRegistrationRequest tokenRegistrationRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(tokenRegistrationRequest, auth);
+        validateRequest(tokenRegistrationRequest, auth);
 
         TokenRegistrationResponse tokenRegistrationResponse = new TokenRegistrationResponse();
         addMerchantRefId(tokenRegistrationRequest, tokenRegistrationResponse);
@@ -129,7 +134,7 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         BatchTokenizeResponse response = new BatchTokenizeResponse();
 
@@ -160,7 +165,7 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         BatchDetokenizeResponse response = new BatchDetokenizeResponse();
 
@@ -191,7 +196,7 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         ECheckTokenizeResponse response = new ECheckTokenizeResponse();
 
@@ -220,7 +225,7 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
         String token = request.getToken().getTokenValue();
@@ -244,7 +249,7 @@ public class EWSSimulatorEndpoint {
     public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(tokenInquiryRequest,auth);
+        validateRequest(tokenInquiryRequest,auth);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
         addMerchantRefId(tokenInquiryRequest, tokenInquiryResponse);
@@ -273,7 +278,7 @@ public class EWSSimulatorEndpoint {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         DetokenizeResponse answer = new DetokenizeResponse();
 
@@ -309,7 +314,7 @@ public class EWSSimulatorEndpoint {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         OrderDeregistrationResponse answer = new OrderDeregistrationResponse();
 
@@ -361,7 +366,7 @@ public class EWSSimulatorEndpoint {
     public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         DeregistrationResponse answer = new DeregistrationResponse();
         String regId = request.getRegId();
@@ -408,7 +413,7 @@ public class EWSSimulatorEndpoint {
                                    @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         httpHeaderUtils.customizeHttpResponseHeader();
-        validateAndSimulate(decryptRequest, auth);
+        validateRequest(decryptRequest, auth);
 
         DecryptResponse decryptResponse = new DecryptResponse();
         addMerchantRefId(decryptRequest, decryptResponse);
@@ -476,7 +481,7 @@ public class EWSSimulatorEndpoint {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
-        validateAndSimulate(request,auth);
+        validateRequest(request,auth);
 
         EchoResponse answer = new EchoResponse();
         String test = request.getTest();
