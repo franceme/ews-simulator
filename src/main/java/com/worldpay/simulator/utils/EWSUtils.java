@@ -84,18 +84,6 @@ public class EWSUtils {
     }
 
 
-    public static void delayInResponse(String primaryAccountNumber) throws InterruptedException {
-        if(primaryAccountNumber != null) {
-            int lengthPAM = primaryAccountNumber.length();
-
-            if (lengthPAM > 2 && primaryAccountNumber.substring(0, 2).equals("00")) {
-                int time = Integer.parseInt(primaryAccountNumber.substring(2, 3));
-                sleep(time * 1000);
-            }
-        }
-    }
-
-
     public static String generateRandomNumber(int length){
         Random rnd = new Random();
         StringBuilder sb = new StringBuilder(length);

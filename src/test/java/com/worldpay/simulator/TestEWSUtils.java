@@ -3,6 +3,7 @@ package com.worldpay.simulator;
 import com.worldpay.simulator.exceptions.ServerFaultException;
 import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.utils.EWSUtils;
+import com.worldpay.simulator.validator.ValidatorService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -177,14 +178,6 @@ public class TestEWSUtils {
     temp = EWSUtils.getPANThroughRegId(regId2);
     assertEquals(PAN2,temp);
     assertEquals("12",EWSUtils.getPANThroughRegId("12"));
-  }
-
-  @Test
-  public void testDelayInResponse() throws InterruptedException {
-    final long startTime = System.nanoTime();
-    EWSUtils.delayInResponse("0032222222333");
-    final long duration = System.nanoTime() - startTime;
-    assertEquals(300,duration/10000000);
   }
 
   @Test

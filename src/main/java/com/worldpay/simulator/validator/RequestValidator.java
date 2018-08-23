@@ -1,59 +1,101 @@
 package com.worldpay.simulator.validator;
 
-import com.sun.org.apache.xerces.internal.dom.ElementNSImpl;
-import com.worldpay.simulator.*;
-import com.worldpay.simulator.exceptions.SecurityErrorException;
+import static com.worldpay.simulator.validator.ValidatorUtils.handleException;
+import static com.worldpay.simulator.validator.ValidatorUtils.isStringEmpty;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidCVV;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidExpiryDate;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidOrderLVT;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidRegId;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidRollupId;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidRoutingNumber;
+import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.w3c.dom.Node;
+import java.util.List;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.Source;
 
-import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
-import static com.worldpay.simulator.validator.ValidatorUtils.*;
+import com.worldpay.simulator.Account;
+import com.worldpay.simulator.BatchDetokenizeRequest;
+import com.worldpay.simulator.BatchTokenizeRequest;
+import com.worldpay.simulator.Card;
+import com.worldpay.simulator.DecryptRequest;
+import com.worldpay.simulator.DeregistrationRequest;
+import com.worldpay.simulator.DetokenizeRequest;
+import com.worldpay.simulator.ECheckDetokenizeRequest;
+import com.worldpay.simulator.ECheckToken;
+import com.worldpay.simulator.ECheckTokenizeRequest;
+import com.worldpay.simulator.MerchantType;
+import com.worldpay.simulator.OrderDeregistrationRequest;
+import com.worldpay.simulator.OrderRegistrationRequest;
+import com.worldpay.simulator.RegistrationRequest;
+import com.worldpay.simulator.SecurityHeaderType;
+import com.worldpay.simulator.Token;
+import com.worldpay.simulator.TokenInquiryRequest;
+import com.worldpay.simulator.TokenRegistrationRequest;
+import com.worldpay.simulator.TokenizeRequest;
+import com.worldpay.simulator.VerifoneCryptogram;
+import com.worldpay.simulator.VerifoneMerchantKeyType;
+import com.worldpay.simulator.VerifoneTerminal;
+import com.worldpay.simulator.VoltageCryptogram;
+import com.worldpay.simulator.exceptions.SecurityErrorException;
 
 /**
  * Validator class:-
  * 1) validates the request based on the specifications on the document (not XSD)
  * 2) simulates error responses based on specific fields (merchant reference id or PAN)
  */
-public class Validator {
 
-    public static final int INVALID_REQ = 4;
-    public static final int TOKEN_INQUIRY_CARD_LIMIT = 200;
-    public static final int BATCH_TOKENIZE_CARD_LIMIT = 500;
-    public static final int EMPTY = 0;
+@Service
+public class RequestValidator {
 
-    public static final String INVALID_TOKEN = "Error: token is invalid or Not present";
-    public static final String INVALID_ROLLUP_ID = "Error: RollUpId is invalid";
-    public static final String INVALID_SECURITY_CODE = "Error: CardSecurityCode is invalid";
-    public static final String INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
-    public static final String INVALID_PAN = "Error: PAN (PermanentAccountNumber) is invalid";
-    public static final String INVALID_REG_ID = "Error: RegId is invalid";
-    public static final String INVALID_MERCHANT_KEY_TYPE = "Error: MerchantKeyType is invalid";
-    public static final String INVALID_LANE_ID = "Error: LaneId is invalid";
-    public static final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
-    public static final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
-    public static final String INVALID_EXPIRY_DATE = "Error: Expiry Date is invalid (YYMM)";
+    public final int INVALID_REQ = 4;
+    public final int TOKEN_INQUIRY_CARD_LIMIT = 200;
+    public final int BATCH_TOKENIZE_CARD_LIMIT = 500;
+    public final int EMPTY = 0;
 
-    public static final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry Date (or) any one of Track Numbers)";
-    public static final String INVALID_VOLTAGE_CARD = "Error: Card details is invalid (Must either contain PAN and Security Code (or) any one of Track Numbers)";
-    public static final String INVALID_ROUTING_NUM = "Error: Routing Number is invalid";
-    public static final String INVALID_ACCOUNT_NUM = "Error: Account Number is invalid";
+    public final String INVALID_TOKEN = "Error: token is invalid or Not present";
+    public final String INVALID_ROLLUP_ID = "Error: RollUpId is invalid";
+    public final String INVALID_SECURITY_CODE = "Error: CardSecurityCode is invalid";
+    public final String INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
+    public final String INVALID_PAN = "Error: PAN (PermanentAccountNumber) is invalid";
+    public final String INVALID_REG_ID = "Error: RegId is invalid";
+    public final String INVALID_MERCHANT_KEY_TYPE = "Error: MerchantKeyType is invalid";
+    public final String INVALID_LANE_ID = "Error: LaneId is invalid";
+    public final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
+    public final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
+    public final String INVALID_EXPIRY_DATE = "Error: Expiry Date is invalid (YYMM)";
 
-    public static final String MERCHANT_NOT_FOUND = "Error: Merchant not found";
-    public static final String MERCHANT_KEY_NOT_FOUND = "Error: MerchantKeyType not found";
-    public static final String CARD_NOT_FOUND = "Error: Card not found";
-    public static final String TOKEN_NOT_FOUND = "Error: Token not found";
-    public static final String TERMINAL_NOT_FOUND = "Error: Terminal not found";
-    public static final String CRYPTO_NOT_FOUND = "Error: Both VerifoneCryptogram and VoltageCryptogram not found";
-    public static final String ACCOUNT_NOT_FOUND = "Error: Account not found";
+    public final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry Date (or) any one of Track Numbers)";
+    public final String INVALID_VOLTAGE_CARD = "Error: Card details is invalid (Must either contain PAN and Security Code (or) any one of Track Numbers)";
+    public final String INVALID_ROUTING_NUM = "Error: Routing Number is invalid";
+    public final String INVALID_ACCOUNT_NUM = "Error: Account Number is invalid";
 
-    public static void validateSoapHeader(SoapHeaderElement header){
+    public final String MERCHANT_NOT_FOUND = "Error: Merchant not found";
+    public final String MERCHANT_KEY_NOT_FOUND = "Error: MerchantKeyType not found";
+    public final String CARD_NOT_FOUND = "Error: Card not found";
+    public final String TOKEN_NOT_FOUND = "Error: Token not found";
+    public final String TERMINAL_NOT_FOUND = "Error: Terminal not found";
+    public final String CRYPTO_NOT_FOUND = "Error: Both VerifoneCryptogram and VoltageCryptogram not found";
+    public final String ACCOUNT_NOT_FOUND = "Error: Account not found";
+
+    @Value("${validate.header}")
+    private boolean validateHeader;
+
+    public void validateSoapHeader(SoapHeaderElement header){
+        if (!validateHeader) {
+            return;
+        }
 
         if(header == null) {
             throw new SecurityErrorException("TID:20531165.Rejected by policy.");
@@ -67,7 +109,7 @@ public class Validator {
             List<Object> securityAttributeList = root.getValue().getAny();
 
             if(securityAttributeList.size() == 1) {
-                ElementNSImpl userNameTokenAttribute = (ElementNSImpl)securityAttributeList.get(0);
+                Element userNameTokenAttribute = (Element)securityAttributeList.get(0);
 
                 if(userNameTokenAttribute.getFirstChild() == null) {
                     throw new SecurityErrorException("TID:20531165.Rejected by policy.");
@@ -91,7 +133,7 @@ public class Validator {
         }
     }
 
-    public static void validateCard(List<Card> cards, int LIMIT){
+    public void validateCard(List<Card> cards, int LIMIT){
 
         if(cards.size() > LIMIT || cards.size() == EMPTY)
             handleException(INVALID_REQ,INVALID_CARD_DETAILS);
@@ -100,13 +142,13 @@ public class Validator {
             validateCard(card);
     }
 
-    public static void validateCard(Card card){
+    public void validateCard(Card card){
         if(!isValidPAN(card.getPrimaryAccountNumber()))
             handleException(INVALID_REQ,INVALID_PAN);
     }
 
 
-    public static void validateVerifoneCard(Card card){
+    public void validateVerifoneCard(Card card){
         if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getExpirationDate()))
             handleException(INVALID_REQ,INVALID_VERIFONE_CARD);
 
@@ -131,7 +173,7 @@ public class Validator {
 
     }
 
-    public static void validateVoltageCard(Card card){
+    public void validateVoltageCard(Card card){
 
         if(isStringEmpty(card.getTrack1()) && isStringEmpty(card.getTrack2()) && !isValidPAN(card.getPrimaryAccountNumber()) && !isValidExpiryDate(card.getSecurityCode()))
             handleException(INVALID_REQ,INVALID_VOLTAGE_CARD);
@@ -157,7 +199,7 @@ public class Validator {
     }
 
 
-    public static void validateToken(List<Token> tokens, int LIMIT){
+    public void validateToken(List<Token> tokens, int LIMIT){
 
         if(tokens.size() > LIMIT || tokens.size() == EMPTY)
             handleException(INVALID_REQ,INVALID_TOKEN);
@@ -166,12 +208,12 @@ public class Validator {
             validateToken(token);
     }
 
-    public static void validateToken(Token token){
+    public void validateToken(Token token){
         if(!isValidToken(token.getTokenValue()))
             handleException(INVALID_REQ,INVALID_TOKEN);
     }
 
-    public static void validateToken(ECheckToken token){
+    public void validateToken(ECheckToken token){
 
         if(token == null)
             handleException(INVALID_REQ,TOKEN_NOT_FOUND);
@@ -181,7 +223,7 @@ public class Validator {
 
     }
 
-    public static void validateMerchant(MerchantType merchant){
+    public void validateMerchant(MerchantType merchant){
         if(merchant == null)
             handleException(INVALID_REQ, MERCHANT_NOT_FOUND);
 
@@ -189,12 +231,12 @@ public class Validator {
             handleException(INVALID_REQ, INVALID_ROLLUP_ID);
     }
 
-    public static void validateMerchantKeyType(VerifoneMerchantKeyType merchantKeyType){
+    public void validateMerchantKeyType(VerifoneMerchantKeyType merchantKeyType){
         if(merchantKeyType == null)
             handleException(INVALID_REQ,MERCHANT_KEY_NOT_FOUND);
     }
 
-    public static void validateVerifoneTerminal(VerifoneTerminal terminal){
+    public void validateVerifoneTerminal(VerifoneTerminal terminal){
 
         if(terminal == null)
             handleException(INVALID_REQ,TERMINAL_NOT_FOUND);
@@ -212,7 +254,7 @@ public class Validator {
             handleException(INVALID_REQ, INVALID_MERCHANT_ID);
     }
 
-    public static void validateVerifoneCryptogram(VerifoneCryptogram verifone){
+    public void validateVerifoneCryptogram(VerifoneCryptogram verifone){
 
         if(verifone.getEncryptedCard() == null)
             handleException(INVALID_REQ, CARD_NOT_FOUND);
@@ -225,7 +267,7 @@ public class Validator {
 
     }
 
-    public static void validateAccount(Account account){
+    public void validateAccount(Account account){
         if(account == null)
             handleException(INVALID_REQ, ACCOUNT_NOT_FOUND);
 
@@ -237,14 +279,14 @@ public class Validator {
 
     }
 
-    public static void validateVoltageCryptogram(VoltageCryptogram voltage){
+    public void validateVoltageCryptogram(VoltageCryptogram voltage){
         if(voltage.getEncryptedCard() == null)
             handleException(INVALID_REQ, CARD_NOT_FOUND);
 
         validateVoltageCard(voltage.getEncryptedCard());
     }
 
-    public static void validateCryptogram(VerifoneCryptogram verifone, VoltageCryptogram voltage){
+    public void validateCryptogram(VerifoneCryptogram verifone, VoltageCryptogram voltage){
         if(verifone == null && voltage == null)
             handleException(INVALID_REQ, CRYPTO_NOT_FOUND);
 
@@ -256,7 +298,7 @@ public class Validator {
 
     }
 
-    public static void validateTokenizeRequest(TokenizeRequest request){
+    public void validateTokenizeRequest(TokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -271,7 +313,7 @@ public class Validator {
 
     }
 
-    public static void validateDeTokenizeRequest(DetokenizeRequest request){
+    public void validateDetokenizeRequest(DetokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -282,7 +324,7 @@ public class Validator {
     }
 
 
-    public static void validateBatchTokenizeRequest(BatchTokenizeRequest request){
+    public void validateBatchTokenizeRequest(BatchTokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -292,7 +334,7 @@ public class Validator {
     }
 
 
-    public static void validateBatchDeTokenizeRequest(BatchDetokenizeRequest request){
+    public void validateBatchDetokenizeRequest(BatchDetokenizeRequest request){
 
         //mantory field check that is not mentioned in the xsd but in the document
         validateMerchant(request.getMerchant());
@@ -301,7 +343,7 @@ public class Validator {
 
     }
 
-    public static void validateTokenInquiryRequest(TokenInquiryRequest request){
+    public void validateTokenInquiryRequest(TokenInquiryRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -309,13 +351,13 @@ public class Validator {
         validateCard(request.getCard(),TOKEN_INQUIRY_CARD_LIMIT);
     }
 
-    public static void validateRegistrationRequest(RegistrationRequest request){
+    public void validateRegistrationRequest(RegistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
     }
 
-    public static void validateDeRegistrationRequest(DeregistrationRequest request){
+    public void validateDeregistrationRequest(DeregistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -324,7 +366,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_REG_ID);
     }
 
-    public static void validateDecryptRequest(DecryptRequest request){
+    public void validateDecryptRequest(DecryptRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -332,7 +374,7 @@ public class Validator {
         validateCryptogram(request.getVerifoneCryptogram(),request.getVoltageCryptogram());
     }
 
-    public static void validateTokenRegistrationRequest(TokenRegistrationRequest request){
+    public void validateTokenRegistrationRequest(TokenRegistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -341,7 +383,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_TOKEN);
     }
 
-    public static void validateECheckTokenizeRequest(ECheckTokenizeRequest request){
+    public void validateECheckTokenizeRequest(ECheckTokenizeRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -349,7 +391,7 @@ public class Validator {
         validateAccount(request.getAccount());
     }
 
-    public static void validateECheckDeTokenizeRequest(ECheckDetokenizeRequest request){
+    public void validateECheckDetokenizeRequest(ECheckDetokenizeRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -357,7 +399,7 @@ public class Validator {
         validateToken(request.getToken());
     }
 
-    public static void validateOrderRegistrationRequest(OrderRegistrationRequest request){
+    public void validateOrderRegistrationRequest(OrderRegistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
@@ -366,7 +408,7 @@ public class Validator {
             handleException(INVALID_REQ,INVALID_SECURITY_CODE);
     }
 
-    public static void validateOrderDeRegistrationRequest(OrderDeregistrationRequest request){
+    public void validateOrderDeregistrationRequest(OrderDeregistrationRequest request){
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());

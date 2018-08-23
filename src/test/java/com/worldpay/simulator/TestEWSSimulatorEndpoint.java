@@ -30,15 +30,15 @@ import java.util.List;
 
 
 // Test Case Id: TC15065; TC15066; TC15067; TC15068
-
-@RunWith(PowerMockRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringTestConfig.class)
-@PowerMockRunnerDelegate(SpringRunner.class)
-@PrepareForTest({ValidatorService.class})
 public class TestEWSSimulatorEndpoint {
 
     @MockBean
     HttpHeaderUtils httpHeaderUtils;
+
+    @MockBean
+    ValidatorService validatorService;
 
     @Autowired
     @Qualifier("testEWSSimulator")
@@ -72,7 +72,6 @@ public class TestEWSSimulatorEndpoint {
         SAMSUNG = "SAMSUNG";
         CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
         registrationId = "615348948648648";
-        mockStatic(ValidatorService.class);
         header = null;
         merchantRefId = "00012445653000";
     }
@@ -89,7 +88,7 @@ public class TestEWSSimulatorEndpoint {
         request.setCryptogram(CRYPTOGRAM.getBytes());
         request.setMerchant(merchant);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
@@ -99,8 +98,7 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
 
     }
@@ -117,7 +115,7 @@ public class TestEWSSimulatorEndpoint {
         request.setCryptogram(CRYPTOGRAM.getBytes());
         request.setMerchant(merchant);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
@@ -127,222 +125,212 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(true, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
 
     }
 
     @Test
     public void testDetokenize_success_with_ExpirationDateRequested_CVV2Requested() throws Exception {
-        DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
+        DetokenizeRequest request = new DetokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        detokenizeRequest.setMerchant(merchant);
-        detokenizeRequest.setToken(token);
-        detokenizeRequest.setCVV2Requested(true);
-        detokenizeRequest.setExpirationDateRequested(true);
+        request.setMerchant(merchant);
+        request.setToken(token);
+        request.setCVV2Requested(true);
+        request.setExpirationDateRequested(true);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", detokenizeRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(detokenizeRequest,header);
+        DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(request,header);
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
         assertEquals(CVV,testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 
-        verifyStatic();
-        ValidatorService.validateRequest(detokenizeRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testDetokenize_success_without_ExpirationDateRequested_CVV2Requested() throws Exception {
-        DetokenizeRequest detokenizeRequest = new DetokenizeRequest();
+        DetokenizeRequest request = new DetokenizeRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        detokenizeRequest.setMerchant(merchant);
-        detokenizeRequest.setToken(token);
-        detokenizeRequest.setCVV2Requested(false);
-        detokenizeRequest.setExpirationDateRequested(false);
+        request.setMerchant(merchant);
+        request.setToken(token);
+        request.setCVV2Requested(false);
+        request.setExpirationDateRequested(false);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", detokenizeRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(detokenizeRequest,header);
+        DetokenizeResponse testResponse = ewsSimulatorEndpoint.detokenize(request,header);
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getExpirationDate());
 
-        verifyStatic();
-        ValidatorService.validateRequest(detokenizeRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_CVVInitialNot3() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT(CVV);
-        orderDeregistrationRequest.setToken(token);
+        request.setMerchant(merchant);
+        request.setOrderLVT(CVV);
+        request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_InvalidToken() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT(CVV);
-        orderDeregistrationRequest.setToken("12");
+        request.setMerchant(merchant);
+        request.setOrderLVT(CVV);
+        request.setToken("12");
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals("1111000100038566",testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_CVVInitial3() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT("303");
-        orderDeregistrationRequest.setToken(token);
+        request.setMerchant(merchant);
+        request.setOrderLVT("303");
+        request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
         assertEquals("468",testResponse.getCardSecurityCode());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_CVVInitial3EndWith6() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT("306");
-        orderDeregistrationRequest.setToken(token);
+        request.setMerchant(merchant);
+        request.setOrderLVT("306");
+        request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals(9999,(int)testResponse.getError().get(0).getId());
         assertEquals("GENERIC CHECKOUT_ID ERROR",testResponse.getError().get(0).getMessage());
         assertNotNull(testResponse.getRequestId());
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_CVVInitial3EndWith7() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT("307");
-        orderDeregistrationRequest.setToken(token);
+        request.setMerchant(merchant);
+        request.setOrderLVT("307");
+        request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals(2,(int)testResponse.getError().get(0).getId());
         assertEquals("GENERIC CHECKOUT_ID ERROR",testResponse.getError().get(0).getMessage());
         assertNotNull(testResponse.getRequestId());
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_CVVInitial3EndWith8() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT("308");
-        orderDeregistrationRequest.setToken(token);
+        request.setMerchant(merchant);
+        request.setOrderLVT("308");
+        request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals(4,(int)testResponse.getError().get(0).getId());
         assertEquals("CHECKOUT_ID INVALID",testResponse.getError().get(0).getMessage());
         assertNotNull(testResponse.getRequestId());
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testOrderDeregistration_CVInitial3VEndWith9() throws Exception {
-        OrderDeregistrationRequest orderDeregistrationRequest = new OrderDeregistrationRequest();
+        OrderDeregistrationRequest request = new OrderDeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        orderDeregistrationRequest.setMerchant(merchant);
-        orderDeregistrationRequest.setOrderLVT("309");
-        orderDeregistrationRequest.setToken(token);
+        request.setMerchant(merchant);
+        request.setOrderLVT("309");
+        request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", orderDeregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(orderDeregistrationRequest,header);
+        OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
         assertEquals(6,(int)testResponse.getError().get(0).getId());
         assertEquals("CHECKOUT_ID NOT_FOUND", testResponse.getError().get(0).getMessage());
         assertNotNull(testResponse.getRequestId());
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
 
-        verifyStatic();
-        ValidatorService.validateRequest(orderDeregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -354,7 +342,7 @@ public class TestEWSSimulatorEndpoint {
         request.setMerchant(merchant);
         request.setPrimaryAccountNumber(PAN);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
@@ -363,8 +351,7 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -376,7 +363,7 @@ public class TestEWSSimulatorEndpoint {
         request.setMerchant(merchant);
         request.setPrimaryAccountNumber("615348948648000");
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
@@ -385,24 +372,23 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(true, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testDeregistration_returnCvv2IfAsked() throws Exception {
-        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        deregistrationRequest.setMerchant(merchant);
-        deregistrationRequest.setRegId(registrationId);
-        deregistrationRequest.setCardSecurityCodeRequested(true);
+        request.setMerchant(merchant);
+        request.setRegId(registrationId);
+        request.setCardSecurityCodeRequested(true);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", deregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
         assertEquals(token,testResponse.getToken());
@@ -410,24 +396,23 @@ public class TestEWSSimulatorEndpoint {
         assertEquals(CVV,testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 
-        verifyStatic();
-        ValidatorService.validateRequest(deregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testDeregistration_returnCvv2OnlyIfAsked() throws Exception {
-        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        deregistrationRequest.setMerchant(merchant);
-        deregistrationRequest.setRegId(registrationId);
-        deregistrationRequest.setCardSecurityCodeRequested(false);
+        request.setMerchant(merchant);
+        request.setRegId(registrationId);
+        request.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", deregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
         assertEquals(token,testResponse.getToken());
@@ -435,24 +420,23 @@ public class TestEWSSimulatorEndpoint {
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 
-        verifyStatic();
-        ValidatorService.validateRequest(deregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testDeregistration_DPAN_ANDROID() throws Exception {
-        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        deregistrationRequest.setMerchant(merchant);
-        deregistrationRequest.setRegId("615348948648641");
-        deregistrationRequest.setCardSecurityCodeRequested(false);
+        request.setMerchant(merchant);
+        request.setRegId("615348948648641");
+        request.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", deregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
         assertEquals("468498435161468",testResponse.getToken());
@@ -464,24 +448,23 @@ public class TestEWSSimulatorEndpoint {
         assertEquals("01",testResponse.getElectronicCommerceIndicator());
         assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
 
-        verifyStatic();
-        ValidatorService.validateRequest(deregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testDeregistration_DPAN_APPLE() throws Exception {
-        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        deregistrationRequest.setMerchant(merchant);
-        deregistrationRequest.setRegId("615348948648642");
-        deregistrationRequest.setCardSecurityCodeRequested(false);
+        request.setMerchant(merchant);
+        request.setRegId("615348948648642");
+        request.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", deregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
         assertEquals("468498435162468",testResponse.getToken());
@@ -493,25 +476,24 @@ public class TestEWSSimulatorEndpoint {
         assertEquals("02",testResponse.getElectronicCommerceIndicator());
         assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
 
-        verifyStatic();
-        ValidatorService.validateRequest(deregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
 
     @Test
     public void testDeregistration_DPAN_SAMSUNG() throws Exception {
-        DeregistrationRequest deregistrationRequest = new DeregistrationRequest();
+        DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
-        deregistrationRequest.setMerchant(merchant);
-        deregistrationRequest.setRegId("615348948648643");
-        deregistrationRequest.setCardSecurityCodeRequested(false);
+        request.setMerchant(merchant);
+        request.setRegId("615348948648643");
+        request.setCardSecurityCodeRequested(false);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", deregistrationRequest, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
-        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(deregistrationRequest,header);
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
         assertEquals("468498435163468",testResponse.getToken());
@@ -523,8 +505,7 @@ public class TestEWSSimulatorEndpoint {
         assertEquals("03",testResponse.getElectronicCommerceIndicator());
         assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
 
-        verifyStatic();
-        ValidatorService.validateRequest(deregistrationRequest, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -544,7 +525,7 @@ public class TestEWSSimulatorEndpoint {
         card2.setPrimaryAccountNumber("1234567891011000");
         cards.add(card2);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         TokenInquiryResponse response = ewsSimulatorEndpoint.tokenInquiry(request, header);
@@ -552,8 +533,7 @@ public class TestEWSSimulatorEndpoint {
         assertNotNull(tokens.get(0));
         assertNull(tokens.get(1));
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -565,14 +545,13 @@ public class TestEWSSimulatorEndpoint {
         request.setMerchant(merchant);
         request.setToken(token);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         TokenRegistrationResponse response = ewsSimulatorEndpoint.tokenRegistration(request, header);
         assertNotNull(response.getRegId());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -600,7 +579,7 @@ public class TestEWSSimulatorEndpoint {
 
         request.setVerifoneCryptogram(cryptogram);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
@@ -608,8 +587,7 @@ public class TestEWSSimulatorEndpoint {
         assertEquals("211101987654321", response.getDecryptedCard().getPrimaryAccountNumber());
         assertEquals("0818", response.getDecryptedCard().getExpirationDate());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -637,15 +615,14 @@ public class TestEWSSimulatorEndpoint {
 
         request.setVerifoneCryptogram(cryptogram);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
         assertEquals(merchantRefId, response.getMerchantRefId());
         assertEquals("654321", response.getDecryptedCard().getTrack1());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -673,15 +650,14 @@ public class TestEWSSimulatorEndpoint {
 
         request.setVerifoneCryptogram(cryptogram);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
         assertEquals(merchantRefId, response.getMerchantRefId());
         assertEquals("654321", response.getDecryptedCard().getTrack2());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -701,7 +677,7 @@ public class TestEWSSimulatorEndpoint {
 
         request.setVoltageCryptogram(cryptogram);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
@@ -709,8 +685,7 @@ public class TestEWSSimulatorEndpoint {
         assertEquals("211101987654321", response.getDecryptedCard().getPrimaryAccountNumber());
         assertEquals("123", response.getDecryptedCard().getSecurityCode());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -730,15 +705,14 @@ public class TestEWSSimulatorEndpoint {
 
         request.setVoltageCryptogram(cryptogram);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
         assertEquals(merchantRefId, response.getMerchantRefId());
         assertEquals("654321", response.getDecryptedCard().getTrack1());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -758,29 +732,30 @@ public class TestEWSSimulatorEndpoint {
 
         request.setVoltageCryptogram(cryptogram);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DecryptResponse response = ewsSimulatorEndpoint.decrypt(request, header);
         assertEquals(merchantRefId, response.getMerchantRefId());
         assertEquals("654321", response.getDecryptedCard().getTrack2());
 
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
     @Test
     public void testEchoRequest() throws Exception {
-        EchoRequest echoRequest = new EchoRequest();
+        EchoRequest request = new EchoRequest();
         String test = "asdahfiuahofo";
-        echoRequest.setTest(test);
+        request.setTest(test);
 
-        PowerMockito.doNothing().when(ValidatorService.class,"validateRequest",echoRequest,header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
 
-        EchoResponse echoResponse = ewsSimulatorEndpoint.echo(echoRequest,header);
+        EchoResponse echoResponse = ewsSimulatorEndpoint.echo(request,header);
 
         assertEquals(test,echoResponse.getResponse());
+        verify(validatorService, times(1)).validateRequest(request, header);
+
     }
 
     @Test
@@ -804,13 +779,12 @@ public class TestEWSSimulatorEndpoint {
         request.getCard().add(card2);
         request.getCard().add(card3);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         BatchTokenizeResponse response = ewsSimulatorEndpoint.batchTokenize(request,header);
         assertNotNull(response.getToken());
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
 
     }
@@ -837,13 +811,12 @@ public class TestEWSSimulatorEndpoint {
         request.getToken().add(token2);
         request.getToken().add(token3);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         BatchDetokenizeResponse response = ewsSimulatorEndpoint.batchDetokenize(request,header);
         assertEquals( true,response.getCard().size() > 0);
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -859,13 +832,12 @@ public class TestEWSSimulatorEndpoint {
         account.setRoutingNumber("123456");
         request.setAccount(account);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         ECheckTokenizeResponse response = ewsSimulatorEndpoint.echeckTokenize(request,header);
         assertEquals( true,response.getToken().getTokenValue().length() > 0);
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -882,13 +854,12 @@ public class TestEWSSimulatorEndpoint {
         errorAccount.setRoutingNumber("123456");
         request.setAccount(errorAccount);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         ECheckTokenizeResponse response = ewsSimulatorEndpoint.echeckTokenize(request,header);
         assertEquals( true,response.getToken().getError().getId() > 0);
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -902,13 +873,12 @@ public class TestEWSSimulatorEndpoint {
         batchtoken.setTokenValue(token);
         request.setToken(batchtoken);
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         ECheckDetokenizeResponse response = ewsSimulatorEndpoint.eCheckDetokenizeResponse(request,header);
         assertEquals( true,response.getAccount().getAccountNumber().length() > 0);
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
@@ -923,13 +893,12 @@ public class TestEWSSimulatorEndpoint {
         request.setCardSecurityCode("123");
 
 
-        PowerMockito.doNothing().when(ValidatorService.class, "validateRequest", request, header);
+        willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
         assertEquals( true,response.getOrderLVT().startsWith("3"));
-        verifyStatic();
-        ValidatorService.validateRequest(request, header);
+        verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 }

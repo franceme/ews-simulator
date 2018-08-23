@@ -48,7 +48,7 @@ import com.worldpay.simulator.VoltageCryptogram;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ValidatorUtils.class})
-public class TestValidator {
+public class TestRequestValidator {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -76,16 +76,16 @@ public class TestValidator {
     private static String INVALID_TOKEN;
     private static String TOKEN_NOT_FOUND;
     private String rollupId;
-    private Validator validatorSpy;
-    private Validator validator;
+    private RequestValidator requestValidatorSpy;
+    private RequestValidator requestValidator;
 
 
     @Before
     public void setUp() {
 
         mockStatic(ValidatorUtils.class);
-        validator = new Validator();
-        validatorSpy = spy(validator);
+        requestValidator = new RequestValidator();
+        requestValidatorSpy = spy(requestValidator);
         card1 = new Card();
         card2 = new Card();
         token1 = new Token();
@@ -95,7 +95,6 @@ public class TestValidator {
         verifone = new VerifoneCryptogram();
         account = new Account();
         voltage = new VoltageCryptogram();
-        Validator temp = new Validator();
         INVALID_REQ = 4;
         INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
         PAN1 = "1234567891011123";
@@ -120,7 +119,7 @@ public class TestValidator {
 
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
 
-        Validator.validateCard(cards,1);
+        requestValidator.validateCard(cards,1);
 
     }
 
@@ -128,7 +127,7 @@ public class TestValidator {
     public void testValidateCards_2() throws Exception {
 
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        Validator.validateCard(new ArrayList<Card>(),1);
+        requestValidator.validateCard(new ArrayList<Card>(),1);
     }
 
     @Test
@@ -137,10 +136,10 @@ public class TestValidator {
         List<Token> tokens = new ArrayList<>();
         tokens.add(token1);
         tokens.add(token2);
-        Validator.validateToken(tokens,1);
-        Validator.validateToken(tokens,2);
+        requestValidator.validateToken(tokens,1);
+        requestValidator.validateToken(tokens,2);
         tokens = new ArrayList<>();
-        Validator.validateToken(tokens,1);
+        requestValidator.validateToken(tokens,1);
     }
 
     @Test
@@ -148,9 +147,9 @@ public class TestValidator {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
         doReturn(true).when(ValidatorUtils.class,"isValidPAN","123456789011123");
         card1.setPrimaryAccountNumber("");
-        Validator.validateCard(card1);
+        requestValidator.validateCard(card1);
         card1.setPrimaryAccountNumber("123456789011123");
-        Validator.validateCard(card1);
+        requestValidator.validateCard(card1);
     }
 
     @Test
@@ -158,9 +157,9 @@ public class TestValidator {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
         doReturn(true).when(ValidatorUtils.class,"isValidToken","12312312");
         token1.setTokenValue("");
-        Validator.validateToken(token1);
+        requestValidator.validateToken(token1);
         token1.setTokenValue("12312312");
-        Validator.validateToken(token1);
+        requestValidator.validateToken(token1);
     }
 
     @Test
@@ -175,38 +174,38 @@ public class TestValidator {
         card1.setTrack2("");
         card1.setPrimaryAccountNumber("");
         card1.setExpirationDate("");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
 
         card1.setTrack1("1");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setTrack2("2");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setExpirationDate(expDate);
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setPrimaryAccountNumber(PAN1);
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
 
         card1.setTrack1("");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setPrimaryAccountNumber("");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setExpirationDate("");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
 
         card1.setTrack2("");
         card1.setPrimaryAccountNumber(PAN1);
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setExpirationDate(expDate);
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setTrack1("1");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
         card1.setTrack2("2");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
 
         card1.setTrack1("");
         card1.setTrack2("");
         card1.setPrimaryAccountNumber("");
-        Validator.validateVerifoneCard(card1);
+        requestValidator.validateVerifoneCard(card1);
     }
 
     @Test
@@ -222,49 +221,49 @@ public class TestValidator {
         card1.setTrack2("");
         card1.setPrimaryAccountNumber("");
         card1.setExpirationDate("");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
 
         card1.setTrack1("1");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setTrack2("2");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setSecurityCode(expDate);
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setPrimaryAccountNumber(PAN1);
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
 
         card1.setTrack1("");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setPrimaryAccountNumber("");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setSecurityCode("");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
 
         card1.setTrack2("");
         card1.setPrimaryAccountNumber(PAN1);
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setSecurityCode(expDate);
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setTrack1("1");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
         card1.setTrack2("2");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
 
         card1.setTrack1("");
         card1.setTrack2("");
         card1.setPrimaryAccountNumber("");
-        Validator.validateVoltageCard(card1);
+        requestValidator.validateVoltageCard(card1);
     }
 
     @Test(expected = NullPointerException.class)
     public void testValidateECheckToken_null() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,TOKEN_NOT_FOUND);
-        Validator.validateToken((ECheckToken) null);
+        requestValidator.validateToken((ECheckToken) null);
         ECheckToken tempToken = new ECheckToken();
         tempToken.setTokenValue("");
-        Validator.validateToken((ECheckToken)tempToken);
+        requestValidator.validateToken((ECheckToken)tempToken);
         tempToken.setTokenValue("123");
-        Validator.validateToken((ECheckToken)tempToken);
+        requestValidator.validateToken((ECheckToken)tempToken);
     }
 
     @Test
@@ -273,15 +272,15 @@ public class TestValidator {
         doReturn(true).when(ValidatorUtils.class,"isValidToken","123");
         ECheckToken tempToken = new ECheckToken();
         tempToken.setTokenValue("");
-        Validator.validateToken((ECheckToken)tempToken);
+        requestValidator.validateToken((ECheckToken)tempToken);
         tempToken.setTokenValue("123");
-        Validator.validateToken((ECheckToken)tempToken);
+        requestValidator.validateToken((ECheckToken)tempToken);
     }
 
     @Test(expected = NullPointerException.class)
     public void testValidateMerchant_null() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        Validator.validateMerchant((MerchantType)null);
+        requestValidator.validateMerchant((MerchantType)null);
     }
 
     @Test
@@ -289,22 +288,22 @@ public class TestValidator {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
         doReturn(true).when(ValidatorUtils.class,"isValidRollupId","1123");
         merchant.setRollupId("");
-        Validator.validateMerchant(merchant);
+        requestValidator.validateMerchant(merchant);
         merchant.setRollupId("1123");
-        Validator.validateMerchant(merchant);
+        requestValidator.validateMerchant(merchant);
     }
 
     @Test
     public void testValidateMerchantKeyType() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        Validator.validateMerchantKeyType(null);
-        Validator.validateMerchantKeyType(VerifoneMerchantKeyType.SHARED);
+        requestValidator.validateMerchantKeyType(null);
+        requestValidator.validateMerchantKeyType(VerifoneMerchantKeyType.SHARED);
     }
 
     @Test(expected = Exception.class)
     public void testValidateVerifoneTerminal_null() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        Validator.validateVerifoneTerminal(null);
+        requestValidator.validateVerifoneTerminal(null);
     }
 
     @Test
@@ -313,22 +312,22 @@ public class TestValidator {
         doReturn(true).when(ValidatorUtils.class,"isStringEmpty",new Object[]{null});
         doReturn(true).when(ValidatorUtils.class,"isStringEmpty","");
 
-        Validator.validateVerifoneTerminal(terminal);
+        requestValidator.validateVerifoneTerminal(terminal);
         terminal.setRegisterId("123");
-        Validator.validateVerifoneTerminal(terminal);
+        requestValidator.validateVerifoneTerminal(terminal);
         terminal.setLaneId("1");
-        Validator.validateVerifoneTerminal(terminal);
+        requestValidator.validateVerifoneTerminal(terminal);
         terminal.setChainCode("123");
-        Validator.validateVerifoneTerminal(terminal);
+        requestValidator.validateVerifoneTerminal(terminal);
         terminal.setMerchantId("123");
-        Validator.validateVerifoneTerminal(terminal);
+        requestValidator.validateVerifoneTerminal(terminal);
     }
 
     @Test(expected = NullPointerException.class)
     public void testValidateVerifoneCryptogram_null() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
         verifone.setEncryptedCard(null);
-        Validator.validateVerifoneCryptogram(verifone);
+        requestValidator.validateVerifoneCryptogram(verifone);
     }
 
     @Test
@@ -345,13 +344,13 @@ public class TestValidator {
         verifone.setEncryptedCard(card1);
         verifone.setMerchantKeyType(VerifoneMerchantKeyType.SHARED);
         verifone.setTerminal(terminal);
-        Validator.validateVerifoneCryptogram(verifone);
+        requestValidator.validateVerifoneCryptogram(verifone);
     }
 
     @Test(expected = Exception.class)
     public void testValidateAccount_null() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        Validator.validateAccount(null);
+        requestValidator.validateAccount(null);
     }
 
     @Test
@@ -362,18 +361,18 @@ public class TestValidator {
 
         account.setAccountNumber("");
         account.setRoutingNumber("");
-        Validator.validateAccount(account);
+        requestValidator.validateAccount(account);
         account.setAccountNumber("12345");
-        Validator.validateAccount(account);
+        requestValidator.validateAccount(account);
         account.setRoutingNumber("123456789");
-        Validator.validateAccount(account);
+        requestValidator.validateAccount(account);
     }
 
     @Test(expected = Exception.class)
     public void testValidateVoltageCryptogram_null() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
         voltage.setEncryptedCard(null);
-        Validator.validateVoltageCryptogram(voltage);
+        requestValidator.validateVoltageCryptogram(voltage);
     }
 
     @Test
@@ -384,13 +383,13 @@ public class TestValidator {
         card1.setExpirationDate(expDate);
         card1.setPrimaryAccountNumber(PAN1);
         voltage.setEncryptedCard(card1);
-        Validator.validateVoltageCryptogram(voltage);
+        requestValidator.validateVoltageCryptogram(voltage);
     }
 
     @Test(expected =NullPointerException.class)
     public void testValidateCryptogram_allNull() throws Exception {
         doNothing().when(ValidatorUtils.class,"handleException",INVALID_REQ,INVALID_CARD_DETAILS);
-        Validator.validateCryptogram(null,null);
+        requestValidator.validateCryptogram(null,null);
     }
 
     @Test
@@ -407,7 +406,7 @@ public class TestValidator {
         verifone.setEncryptedCard(card1);
         verifone.setMerchantKeyType(VerifoneMerchantKeyType.SHARED);
         verifone.setTerminal(terminal);
-        Validator.validateCryptogram(verifone,null);
+        requestValidator.validateCryptogram(verifone,null);
     }
 
     @Test
@@ -418,7 +417,7 @@ public class TestValidator {
         card1.setExpirationDate(expDate);
         card1.setPrimaryAccountNumber(PAN1);
         voltage.setEncryptedCard(card1);
-        Validator.validateCryptogram(null,voltage);
+        requestValidator.validateCryptogram(null,voltage);
     }
 
     @Test
@@ -435,13 +434,13 @@ public class TestValidator {
         tokenizeRequest.setMerchant(merchant);
         tokenizeRequest.setPrimaryAccountNumber("");
         tokenizeRequest.setCardSecurityCode("");
-        Validator.validateTokenizeRequest(tokenizeRequest);
+        requestValidator.validateTokenizeRequest(tokenizeRequest);
         tokenizeRequest.setPrimaryAccountNumber(PAN1);
-        Validator.validateTokenizeRequest(tokenizeRequest);
+        requestValidator.validateTokenizeRequest(tokenizeRequest);
         tokenizeRequest.setCardSecurityCode("1");
-        Validator.validateTokenizeRequest(tokenizeRequest);
+        requestValidator.validateTokenizeRequest(tokenizeRequest);
         tokenizeRequest.setCardSecurityCode("123");
-        Validator.validateTokenizeRequest(tokenizeRequest);
+        requestValidator.validateTokenizeRequest(tokenizeRequest);
     }
 
     @Test
@@ -453,9 +452,9 @@ public class TestValidator {
         merchant.setRollupId(rollupId);
         detokenizeRequest.setMerchant(merchant);
         detokenizeRequest.setToken("");
-        Validator.validateDeTokenizeRequest(detokenizeRequest);
+        requestValidator.validateDetokenizeRequest(detokenizeRequest);
         detokenizeRequest.setToken("468498435168468");
-        Validator.validateDeTokenizeRequest(detokenizeRequest);
+        requestValidator.validateDetokenizeRequest(detokenizeRequest);
     }
 
     @Test
@@ -470,7 +469,7 @@ public class TestValidator {
 
         batchTokenizeRequest.getCard().add(card1);
         batchTokenizeRequest.getCard().add(card2);
-        Validator.validateBatchTokenizeRequest(batchTokenizeRequest);
+        requestValidator.validateBatchTokenizeRequest(batchTokenizeRequest);
     }
 
     @Test
@@ -485,7 +484,7 @@ public class TestValidator {
 
         batchDetokenizeRequest.getToken().add(token1);
         batchDetokenizeRequest.getToken().add(token2);
-        Validator.validateBatchDeTokenizeRequest(batchDetokenizeRequest);
+        requestValidator.validateBatchDetokenizeRequest(batchDetokenizeRequest);
     }
 
     @Test
@@ -500,7 +499,7 @@ public class TestValidator {
 
         tokenInquiryRequest.getCard().add(card1);
         tokenInquiryRequest.getCard().add(card2);
-        Validator.validateTokenInquiryRequest(tokenInquiryRequest);
+        requestValidator.validateTokenInquiryRequest(tokenInquiryRequest);
     }
 
     @Test
@@ -510,7 +509,7 @@ public class TestValidator {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         registrationRequest.setMerchant(merchant);
-        Validator.validateRegistrationRequest(registrationRequest);
+        requestValidator.validateRegistrationRequest(registrationRequest);
     }
 
     @Test
@@ -522,9 +521,9 @@ public class TestValidator {
         merchant.setRollupId(rollupId);
         deregistrationRequest.setMerchant(merchant);
         deregistrationRequest.setRegId("");
-        Validator.validateDeRegistrationRequest(deregistrationRequest);
+        requestValidator.validateDeregistrationRequest(deregistrationRequest);
         deregistrationRequest.setRegId("123456");
-        Validator.validateDeRegistrationRequest(deregistrationRequest);
+        requestValidator.validateDeregistrationRequest(deregistrationRequest);
     }
 
     @Test
@@ -548,7 +547,7 @@ public class TestValidator {
         voltage.setEncryptedCard(card1);
         decryptRequest.setVerifoneCryptogram(verifone);
         decryptRequest.setVoltageCryptogram(voltage);
-        Validator.validateDecryptRequest(decryptRequest);
+        requestValidator.validateDecryptRequest(decryptRequest);
     }
 
     @Test
@@ -560,9 +559,9 @@ public class TestValidator {
         merchant.setRollupId(rollupId);
         tokenRegistrationRequest.setMerchant(merchant);
         tokenRegistrationRequest.setToken("");
-        Validator.validateTokenRegistrationRequest(tokenRegistrationRequest);
+        requestValidator.validateTokenRegistrationRequest(tokenRegistrationRequest);
         tokenRegistrationRequest.setToken("468498435168468");
-        Validator.validateTokenRegistrationRequest(tokenRegistrationRequest);
+        requestValidator.validateTokenRegistrationRequest(tokenRegistrationRequest);
     }
 
     @Test
@@ -575,9 +574,9 @@ public class TestValidator {
         account.setAccountNumber("12345");
         account.setRoutingNumber("123456789");
         eCheckTokenizeRequest.setAccount(new Account());
-        Validator.validateECheckTokenizeRequest(eCheckTokenizeRequest);
+        requestValidator.validateECheckTokenizeRequest(eCheckTokenizeRequest);
         eCheckTokenizeRequest.setAccount(account);
-        Validator.validateECheckTokenizeRequest(eCheckTokenizeRequest);
+        requestValidator.validateECheckTokenizeRequest(eCheckTokenizeRequest);
     }
 
     @Test
@@ -590,9 +589,9 @@ public class TestValidator {
         ECheckToken tempToken = new ECheckToken();
         tempToken.setTokenValue("123");
         eCheckDetokenizeRequest.setToken(new ECheckToken());
-        Validator.validateECheckDeTokenizeRequest(eCheckDetokenizeRequest);
+        requestValidator.validateECheckDetokenizeRequest(eCheckDetokenizeRequest);
         eCheckDetokenizeRequest.setToken(tempToken);
-        Validator.validateECheckDeTokenizeRequest(eCheckDetokenizeRequest);
+        requestValidator.validateECheckDetokenizeRequest(eCheckDetokenizeRequest);
     }
 
     @Test
@@ -605,9 +604,9 @@ public class TestValidator {
         orderRegistrationRequest.setMerchant(merchant);
 
         orderRegistrationRequest.setCardSecurityCode("");
-        Validator.validateOrderRegistrationRequest(orderRegistrationRequest);
+        requestValidator.validateOrderRegistrationRequest(orderRegistrationRequest);
         orderRegistrationRequest.setCardSecurityCode("123");
-        Validator.validateOrderRegistrationRequest(orderRegistrationRequest);
+        requestValidator.validateOrderRegistrationRequest(orderRegistrationRequest);
     }
 
     @Test
@@ -620,9 +619,9 @@ public class TestValidator {
         orderDeregistrationRequest.setMerchant(merchant);
 
         orderDeregistrationRequest.setOrderLVT("");
-        Validator.validateOrderDeRegistrationRequest(orderDeregistrationRequest);
+        requestValidator.validateOrderDeregistrationRequest(orderDeregistrationRequest);
         orderDeregistrationRequest.setOrderLVT("312456789123456789");
-        Validator.validateOrderDeRegistrationRequest(orderDeregistrationRequest);
+        requestValidator.validateOrderDeregistrationRequest(orderDeregistrationRequest);
     }
 
 

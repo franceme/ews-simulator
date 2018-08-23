@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.worldpay.simulator.utils.HttpHeaderUtils;
+import com.worldpay.simulator.validator.RequestValidator;
+import com.worldpay.simulator.validator.ValidatorService;
 
 @ContextConfiguration
 public class SpringTestConfig {
@@ -21,8 +23,20 @@ public class SpringTestConfig {
     }
 
     @Bean(name = "testFilterConfig")
-    public TestFilterConfiguration testFilterConfiguration() {
-        TestFilterConfiguration testFilterConfiguration = new TestFilterConfiguration();
+    public FilterConfiguration filterConfiguration() {
+        FilterConfiguration testFilterConfiguration = new FilterConfiguration();
         return testFilterConfiguration;
+    }
+
+    @Bean(name = "testValidatorService")
+    public ValidatorService validatorService() {
+        ValidatorService validatorService = new ValidatorService();
+        return validatorService;
+    }
+
+    @Bean(name = "testRequestValidator")
+    public RequestValidator requestValidator() {
+        RequestValidator requestValidator = new RequestValidator();
+        return requestValidator;
     }
 }
