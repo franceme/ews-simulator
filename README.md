@@ -52,12 +52,23 @@ Tests are run as part of the build steps above, but to run them manually you can
 gradle test
 ```
 
+## Configuration
+Following are the command line options that can be used to start the simulator to respond accordingly.
+
+| Argument Name   | Default value | Description                                                                                                                                                     | Type      | Sample value                        |
+|-----------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|-------------------------------------|
+| port            | 443           | Port number to start the simulator on.                                                                                                                          | Optional  | 443                                 |
+| key-store       |               | Fully qualified location to the key store file                                                                                                                  | Mandatory | /etc/path/to/key/store/keystore.jks |
+| key-pass        |               | Password to the key store                                                                                                                                       | Mandatory | keyStorePassword                    |
+| validate-header | false         | Determines if soap header needs to be validated in the incoming requests                                                                                        | Optional  | true/false                          |
+| simulate-delay  | 0             | Amount of delay in ms to be simulated in response 0-9: X00 ms delay  -1: X00 ms delay based on the first three digits in merchant-ref-id if it starts with 00X  | Option    | 5                                   |
+
 ## Deployment
 
 To start the spring server for a given port use the below command:
 
 ```
-java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> build/libs/worldpay-ews-simulator-X.X.X.jar
+java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 build/libs/worldpay-ews-simulator-X.X.X.jar
 ```
 
 ## Status
