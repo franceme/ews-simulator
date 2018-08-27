@@ -16,7 +16,7 @@ An important note about the order of tags in a message: order matters!  Misorder
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
@@ -61,14 +61,14 @@ Following are the command line options that can be used to start the simulator t
 | key-store       |               | Fully qualified location to the key store file                                                                                                                  | Mandatory | /etc/path/to/key/store/keystore.jks |
 | key-pass        |               | Password to the key store                                                                                                                                       | Mandatory | keyStorePassword                    |
 | validate-header | false         | Determines if soap header needs to be validated in the incoming requests                                                                                        | Optional  | true/false                          |
-| simulate-delay  | 0             | Amount of delay in ms to be simulated in response  | Option    | 5                                   |
+| simulate-delay  | 0             | Amount of delay in ms to be simulated in response  | Optional    | 5                                   |
 
 ## Deployment
 
 To start the spring server for a given port use the below command:
 
 ```
-java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 build/libs/worldpay-ews-simulator-X.X.X.jar
+java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 path/to/worldpay-ews-simulator-X.X.X.jar
 ```
 
 ## Status
@@ -79,39 +79,9 @@ To get the current health of the server, use the below command:
 curl -X GET localhost:port/actuator/health
 ```
 
-## Simulator behavior customization
-The simulator's response can be customized based on the below parameters in the request:
-1. First three digits of merchant reference string invokes customization
-* If first 2 characters are '00' then third character [0-9] can be used to simulate delay in seconds.
-* The last three characters [0-9] can be used to simulate the 10 error codes e.g (001 to 010).
-2. In case of invalid schema in request, it will respond with Invalid request mentioning the invalid field that has the error in the <requestValidationFault>.
-3. In case of invalid header, when header validation is on, it will respond with Rejected by policy error.
-4. Merchant-ref-id is optional, and is responded back with the same value as request.
-5. If correlation_id is present in the request, same value will be present in the response, else a random value will be present.
-6. PAN is calculated from the registration id by reversing the last four digits.
- ```
- E.g. 1234567890 => 1234560987
- ```
-7. Token is calculated from the PAN by keeping the last four digits same and reversing the rest.
- ```
- E.g. 1234567890 => 6543217890
- ```
-8. CVV is calculated from token by the last three digits
-```
- E.g. 1234567890 => 890
-```
-9. Registration id is calculated from PAN by reversing the last four digits.
-```
- E.g. 1234560987 => 1234567890
-```
-10. Registration id is calculated from token by reversing the last four digits and reversing the rest of the digits.
-```
- E.g. 6543217890 => 1234560987
-```
-11. PAN is calculated from the token by keeping the last four digits same, and reversing the rest.
-```
- E.g. 6543217890 => 1234567890
-```
+## Documentation
+
+Please see the [wiki](https://github.com/Vantiv/ews-simulator/wiki/Worldpay-EWS-Simulator) to get the full list of available features in the simulator.
 
 ## Built With
 
