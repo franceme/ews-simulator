@@ -10,7 +10,10 @@ script:
 deploy:
   provider: releases
   api_key: $GITHUB_TOKEN
-  file: $UPLOAD_ARTIFACT
+  file:
+   - $RELEASE_PREFIX-sources.jar
+   - $RELEASE_PREFIX.tar.gz
+   - $RELEASE_PREFIX.zip
   skip_cleanup: true
   on:
     tags: true
