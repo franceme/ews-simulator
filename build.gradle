@@ -15,6 +15,7 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
+apply plugin : 'maven'
 
 description = "Worldpay's EWS Simulator v${JAR_VERSION}"
 
@@ -31,7 +32,7 @@ sourceSets {
 }
 
 bootJar {
-    baseName = 'worldpay-ews-simulator'
+    baseName = "${JAR_NAME}"
     version =  "${JAR_VERSION}"
 }
 
@@ -74,7 +75,7 @@ dependencies {
 }
 
 task jaxb () {
-    def jaxbTargetDir = file( "${buildDir}/generated" )
+    ext.jaxbTargetDir = file( "${buildDir}/generated" )
 
     doLast {
         jaxbTargetDir.mkdirs()
@@ -111,6 +112,76 @@ task jaxb () {
 
 javadoc{
     destinationDir = file("$buildDir/doc")
+}
+
+task copyJarToKit(type:Copy, dependsOn:[check,jar]){
+    from "${buildDir}/libs/${JAR_NAME}-${JAR_VERSION}.jar"
+    from "LICENSE"
+    into KIT_DIR
+}
+
+task copyLibsToKit(type:Copy, dependsOn:check){
+    from configurations.compile.asFileTree.matching{
+        include '**/activation*'
+        include '**/jaxb-api*'
+        include '**/jaxb-impl*'
+        include '**/jsr173*'
+        include '**/commons-logging-1.1.1*'
+        include '**/commons-codec*'
+        include '**/fluent-hc*'
+        include '**/httpclient*'
+        include '**/httpcore*'
+        include '**/httpmime*'
+        include '**/jsch*'
+    }
+
+    into KIT_DEPENDENCIES_DIR
+}
+
+task tarKit(type:Tar, dependsOn:[copyJarToKit, copyLibsToKit]){
+    compression = Compression.GZIP
+    destinationDir = file("$buildDir/kit")
+    archiveName = "${JAR_NAME}-${JAR_VERSION}.tar.gz"
+    from "$buildDir/kit/java15"
+}
+
+task zipKit(type:Zip, dependsOn:[copyJarToKit, copyLibsToKit]){
+    destinationDir = file("$buildDir/kit")
+    archiveName = "${JAR_NAME}-${JAR_VERSION}.zip"
+    from "$buildDir/kit/java15"
+}
+
+task kit(dependsOn:[tarKit, zipKit]){
+    if (JavaVersion.current().isJava8Compatible()) {
+        allprojects {
+            tasks.withType(Javadoc) {
+                options.addStringOption('Xdoclint:none', '-quiet')
+            }
+        }
+    }
+    build.dependsOn it
+    dependsOn javadoc
+}
+
+task writeNewPom(type:Copy) {
+    build.dependsOn it
+    pom {
+        project {
+            modelVersion '4.0.0'
+            groupId 'com.worldpay'
+            artifactId "${JAR_NAME}"
+            version "${JAR_VERSION}"
+        }
+    }.writeTo("$buildDir/kit/${JAR_NAME}-${JAR_VERSION}.pom")
+}
+
+task sourceJar(type:Jar) {
+    build.dependsOn it
+    dependsOn jaxb
+    destinationDir = file("${buildDir}/kit")
+    archiveName = "${JAR_NAME}-${JAR_VERSION}-sources.jar"
+    from "src/main/java"
+    from jaxb.jaxbTargetDir
 }
 
 compileJava.dependsOn jaxb
