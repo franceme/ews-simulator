@@ -8,11 +8,11 @@ notifications:
 script:
  - gradle build jacocoTestReport kit
 deploy:
- provider: releases
- api_key: $GITHUB_TOKEN
-   file: build/kit/worldpay-ews-simulator-4.3.0.zip
-   skip_cleanup: true
-   on:
-     tags: true
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: $UPLOAD_ARTIFACT
+  skip_cleanup: true
+  on:
+    tags: true
 after_success:
  - bash <(curl -s https://codecov.io/bash)
