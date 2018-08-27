@@ -6,7 +6,13 @@ notifications:
     on_success: always
     on_failure: always
 script:
- - gradle -Dorg.gradle.warning.mode=summary build jacocoTestReport kit
+ - gradle build jacocoTestReport kit
+deploy:
+ provider: releases
+ api_key: $GITHUB_TOKEN
+   file: build/kit/worldpay-ews-simulator-4.3.0.zip
+   skip_cleanup: true
+   on:
+     tags: false
 after_success:
  - bash <(curl -s https://codecov.io/bash)
- 
