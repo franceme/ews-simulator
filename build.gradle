@@ -140,13 +140,13 @@ task copyLibsToKit(type:Copy, dependsOn:check){
 
 task tarKit(type:Tar, dependsOn:[copyJarToKit, copyLibsToKit]){
     compression = Compression.GZIP
-    destinationDir = file("$buildDir/kit")
+    destinationDir = file("$buildDir/${RELEASE_DIR}")
     archiveName = "${JAR_NAME}-${JAR_VERSION}.tar.gz"
     from "$buildDir/kit/java15"
 }
 
 task zipKit(type:Zip, dependsOn:[copyJarToKit, copyLibsToKit]){
-    destinationDir = file("$buildDir/kit")
+    destinationDir = file("$buildDir/${RELEASE_DIR}")
     archiveName = "${JAR_NAME}-${JAR_VERSION}.zip"
     from "$buildDir/kit/java15"
 }
@@ -172,13 +172,13 @@ task writeNewPom(type:Copy) {
             artifactId "${JAR_NAME}"
             version "${JAR_VERSION}"
         }
-    }.writeTo("$buildDir/kit/${JAR_NAME}-${JAR_VERSION}.pom")
+    }.writeTo("$buildDir/${RELEASE_DIR}/${JAR_NAME}-${JAR_VERSION}.pom")
 }
 
 task sourceJar(type:Jar) {
     build.dependsOn it
     dependsOn jaxb
-    destinationDir = file("${buildDir}/kit")
+    destinationDir = file("${buildDir}/${RELEASE_DIR}")
     archiveName = "${JAR_NAME}-${JAR_VERSION}-sources.jar"
     from "src/main/java"
     from jaxb.jaxbTargetDir
