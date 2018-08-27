@@ -13,6 +13,6 @@ deploy:
    file: build/kit/worldpay-ews-simulator-4.3.0.zip
    skip_cleanup: true
    on:
-     tags: false
+     tags: true
 after_success:
  - bash <(curl -s https://codecov.io/bash)
