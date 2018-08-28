@@ -60,15 +60,16 @@ Following are the command line options that can be used to start the simulator t
 | port            | 443           | Port number to start the simulator on.                                                                                                                          | Optional  | 443                                 |
 | key-store       |               | Fully qualified location to the key store file                                                                                                                  | Mandatory | /etc/path/to/key/store/keystore.jks |
 | key-pass        |               | Password to the key store                                                                                                                                       | Mandatory | keyStorePassword                    |
-| validate-header | false         | Determines if soap header needs to be validated in the incoming requests                                                                                        | Optional  | true/false                          |
-| simulate-delay  | 0             | Amount of delay in ms to be simulated in response  | Optional    | 5                                   |
+| validate-header | true         | Determines if soap header needs to be validated in the incoming requests                                                                                        | Optional  | true/false                          |
+| simulate-delay  | 0             | Amount of delay in ms to be simulated in response, if -1 adds delay based on merchant-ref-id. More details in [wiki](https://github.com/Vantiv/ews-simulator/wiki/Worldpay-EWS-Simulator).  | Optional    | 5                               |
+| endpoint | merchant/encryption/v4 | Endpoint the simulator listens to. E.g. https://host:port/merchant/encryption/v4 | |
 
 ## Deployment
 
 To start the spring server for a given port use the below command:
 
 ```
-java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 path/to/worldpay-ews-simulator-X.X.X.jar
+java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 -Dendpoint=etws/v4 path/to/worldpay-ews-simulator-X.X.X.jar
 ```
 
 ## Status
@@ -76,7 +77,7 @@ java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore
 To get the current health of the server, use the below command:
 
 ```
-curl -X GET localhost:port/actuator/health
+curl -X GET https://localhost:port/actuator/health
 ```
 
 ## Documentation
