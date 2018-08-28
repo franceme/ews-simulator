@@ -3,6 +3,7 @@ package com.worldpay.simulator;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,9 @@ import com.worldpay.simulator.exceptions.ServerFaultException;
 @EnableWs
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
+
+    @Value("${simulator.endpoint}")
+    private String simulatorEndpoint="etws/v4";
 
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
@@ -68,7 +72,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean<>(servlet, "/etws/v4/*");
+        return new ServletRegistrationBean<>(servlet, "/"+simulatorEndpoint+"/*");
     }
 
 

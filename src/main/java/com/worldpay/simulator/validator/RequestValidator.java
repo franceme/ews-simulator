@@ -22,6 +22,7 @@ import javax.xml.bind.Unmarshaller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -91,6 +92,16 @@ public class RequestValidator {
 
     @Value("${validate.header}")
     private boolean validateHeader;
+    private static JAXBContext context;
+
+    public JAXBContext getContext() throws JAXBException {
+        if (context != null) {
+            return context;
+        }
+        context = JAXBContext.newInstance(SecurityHeaderType.class);
+        return context;
+
+    }
 
     public void validateSoapHeader(SoapHeaderElement header){
         if (!validateHeader) {
@@ -101,8 +112,9 @@ public class RequestValidator {
             throw new SecurityErrorException("TID:20531165.Rejected by policy.");
         }
 
+
         try {
-            JAXBContext context = JAXBContext.newInstance(SecurityHeaderType.class);
+            JAXBContext context = getContext();
             Unmarshaller unmarshaller = context.createUnmarshaller();
             JAXBElement<SecurityHeaderType> root = unmarshaller.unmarshal(header.getSource(), SecurityHeaderType.class);
 
