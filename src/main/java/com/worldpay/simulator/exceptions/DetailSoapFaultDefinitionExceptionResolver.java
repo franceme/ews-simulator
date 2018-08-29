@@ -22,6 +22,9 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
 
     @Override
     public void customizeFault(Object endpoint, Exception ex, SoapFault fault) {
+        if (ex instanceof SecurityErrorException){
+            return;
+        }
         if (ex instanceof ServerFaultException) {
             ServerFault serverFault = ((ServerFaultException) ex).getServerFault();
             addFaultDetail(serverFault, fault);
