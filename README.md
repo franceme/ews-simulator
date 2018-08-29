@@ -63,13 +63,14 @@ Following are the command line options that can be used to start the simulator t
 | validate-header | true         | Determines if soap header needs to be validated in the incoming requests                                                                                        | Optional  | true/false                          |
 | simulate-delay  | 0             | Amount of delay in ms to be simulated in response, if -1 adds delay based on merchant-ref-id. More details in [wiki](https://github.com/Vantiv/ews-simulator/wiki/Worldpay-EWS-Simulator).  | Optional    | 5                               |
 | endpoint | merchant/encryption/v4 | Endpoint the simulator listens to. E.g. https://host:port/merchant/encryption/v4 | |
+| log-level | INFO | Level of details in logging | Optional | DEBUG |
 
 ## Deployment
 
 To start the spring server for a given port use the below command:
 
 ```
-java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 -Dendpoint=etws/v4 path/to/worldpay-ews-simulator-X.X.X.jar
+java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore file> -Dvalidate-header=false -Dsimulate-delay=0 -Dendpoint=etws/v4 -Dlog-level=DEBUG path/to/worldpay-ews-simulator-X.X.X.jar
 ```
 
 ## Status
