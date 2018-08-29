@@ -78,7 +78,7 @@ java -jar -Dport=XXXX -Dkey-pass=<KeyPassword> -Dkey-store=<Location to keystore
 To get the current health of the server, use the below command:
 
 ```
-curl -X GET https://localhost:port/actuator/health
+curl -X GET https://host:port/actuator/health
 ```
 
 ## Documentation
