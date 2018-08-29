@@ -1,6 +1,10 @@
 CHANGELOG
 ---------
 
+-v4.3.3
+* BugFix: Fix Invalid default expiration date in Detokenize and DeRegistration
+* BugFix: Fix Invalid length of Routing Number in EcheckDetokenizeResponse.
+
 -v4.3.2
 * BugFix: Fix serverFault on soap header validation errors.
 

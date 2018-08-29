@@ -196,8 +196,8 @@ public class TestEWSUtils {
 
   @Test
   public void testGetRoutingNumber(){
-    assertEquals("300010",EWSUtils.getRoutingNumber(defaultPAN));
-    assertEquals("123456",EWSUtils.getRoutingNumber("123"));
+    assertEquals("300010001",EWSUtils.getRoutingNumber(defaultPAN));
+    assertEquals("123456789",EWSUtils.getRoutingNumber("123"));
   }
 
   @Test

@@ -296,7 +296,7 @@ public class EWSSimulatorEndpoint {
             answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
         }
         if (request.isExpirationDateRequested()){
-            answer.setExpirationDate("2308");
+            answer.setExpirationDate("0823");
         }
 
         answer.setPrimaryAccountNumber(primaryAccountNumber);
@@ -380,9 +380,9 @@ public class EWSSimulatorEndpoint {
         // set PAN (mandatory)
         answer.setPrimaryAccountNumber(PAN);
         // set expiration date (mandatory)
-        // if card's cvv is odd, the expiration date would be 2308; otherwise empty
+        // if card's cvv is odd, the expiration date would be 0823; otherwise empty
         String CVV = EWSUtils.getCVVThroughToken(token);
-        answer.setExpirationDate("2308");
+        answer.setExpirationDate("0823");
         // set CVV (optional)
         if (request.isCardSecurityCodeRequested() != null && request.isCardSecurityCodeRequested()) {
             answer.setCardSecurityCode(CVV); }// set wallet type and ECI

@@ -181,9 +181,9 @@ public class EWSUtils {
     }
 
     public static String getRoutingNumber(String AccNum) {
-        if(AccNum.length() < 6)
-            return "123456";
-        return AccNum.substring(0, 6);
+        if(AccNum.length() < 9)
+            return "123456789";
+        return AccNum.substring(0, 9);
     }
 
 

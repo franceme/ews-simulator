@@ -65,7 +65,7 @@ public class TestEWSSimulatorEndpoint {
         token = "468498435168468";
         PAN = "615348948648468";
         CVV = "468";
-        expirationDate = "2308";
+        expirationDate = "0823";
         rollupId = "1123";
         APPLE = "APPLE";
         ANDROID = "ANDROID";
@@ -851,7 +851,7 @@ public class TestEWSSimulatorEndpoint {
         Account errorAccount = new Account();
         errorAccount.setAccountNumber("1234567890004");
         errorAccount.setAccountType(AccountType.CHECKING);
-        errorAccount.setRoutingNumber("123456");
+        errorAccount.setRoutingNumber("123456789");
         request.setAccount(errorAccount);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
