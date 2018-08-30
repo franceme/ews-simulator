@@ -21,6 +21,10 @@ import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 import com.worldpay.simulator.validator.ValidatorService;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
+
 
 @Endpoint
 public class EWSSimulatorEndpoint {
@@ -476,7 +480,7 @@ public class EWSSimulatorEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "EchoRequest")
     @ResponsePayload
     public EchoResponse echo(@RequestPayload EchoRequest request,
-                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) {
+                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws UnknownHostException {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
@@ -485,6 +489,10 @@ public class EWSSimulatorEndpoint {
         EchoResponse answer = new EchoResponse();
         String test = request.getTest();
         answer.setResponse(test);
+        answer.setProjectVersion("4.3.0-RELEASE");
+        answer.setBuildNumber("devBuild");
+        answer.setRevisionNumber("devBuild");
+        answer.setHostEnvironment(Inet4Address.getLocalHost().getHostAddress());
         return answer;
     }
 }

@@ -3,6 +3,7 @@ package com.worldpay.simulator;
 import java.util.List;
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +33,9 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Value("${simulator.endpoint}")
     private String simulatorEndpoint="etws/v4";
 
+    @Autowired
+    DetailSoapFaultDefinitionExceptionResolver exceptionResolver;
+
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
         PayloadValidatingInterceptor validatingInterceptor = payloadValidatingInterceptorInstance();
@@ -50,7 +54,6 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 
     @Bean
     public SoapFaultMappingExceptionResolver exceptionResolver() {
-        SoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultDefinitionExceptionResolver();
 
         SoapFaultDefinition faultDefinition = new SoapFaultDefinition();
         faultDefinition.setFaultCode(SoapFaultDefinition.SERVER);

@@ -1,12 +1,18 @@
 package com.worldpay.simulator.exceptions;
 
+import com.worldpay.simulator.JAXBService;
 import com.worldpay.simulator.RequestValidationFault;
 import com.worldpay.simulator.ServerFault;
+import com.worldpay.simulator.SpringTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 
@@ -15,22 +21,26 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.Result;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static junit.framework.TestCase.*;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SpringTestConfig.class)
 public class TestDetailSoapFaultDefinitionExceptionResolver {
 
-    private SoapFault fault;
-    private DetailSoapFaultDefinitionExceptionResolver exceptionResolver;
+    @MockBean
+    JAXBService jaxbService;
+
+    @Autowired
+    DetailSoapFaultDefinitionExceptionResolver exceptionResolver;
+
     private DetailSoapFaultDefinitionExceptionResolver exceptionResolverSpy;
+    private SoapFault fault;
 
     @Before
     public void setUp() {
         fault = mock(SoapFault.class);
-        exceptionResolver = new DetailSoapFaultDefinitionExceptionResolver();
         exceptionResolverSpy = spy(exceptionResolver);
     }
 
@@ -43,7 +53,7 @@ public class TestDetailSoapFaultDefinitionExceptionResolver {
 
         String customFault = "An Object";
         doReturn(faultDetail).when(fault).addFaultDetail();
-        doReturn(context).when(exceptionResolverSpy).createJAXBContext();
+        doReturn(context).when(exceptionResolverSpy).getJAXBContext();
         doReturn(marshaller).when(exceptionResolverSpy).createMarshaller(context);
         doReturn(faultDetail).when(exceptionResolverSpy).getFaultDetail(fault);
         doReturn(result).when(faultDetail).getResult();
@@ -67,7 +77,7 @@ public class TestDetailSoapFaultDefinitionExceptionResolver {
 
         String customFault = "An Object";
         doReturn(faultDetail).when(fault).addFaultDetail();
-        doReturn(context).when(exceptionResolverSpy).createJAXBContext();
+        doReturn(context).when(exceptionResolverSpy).getJAXBContext();
         doReturn(marshaller).when(exceptionResolverSpy).createMarshaller(context);
         doReturn(faultDetail).when(exceptionResolverSpy).getFaultDetail(fault);
         doReturn(result).when(faultDetail).getResult();
@@ -161,11 +171,12 @@ public class TestDetailSoapFaultDefinitionExceptionResolver {
     }
 
     @Test
-    public void testCreateJAXBContext() throws JAXBException {
+    public void testgetJAXBContext() throws JAXBException {
         JAXBContext expectedContext = JAXBContext.newInstance("com.worldpay.simulator");
-        JAXBContext context = exceptionResolverSpy.createJAXBContext();
+        willReturn(expectedContext).given(jaxbService).getContext();
 
-        assertEquals(expectedContext.toString(), context.toString());
+        JAXBContext context = exceptionResolverSpy.getJAXBContext();
+        assertSame(expectedContext, context);
     }
 
     @Test

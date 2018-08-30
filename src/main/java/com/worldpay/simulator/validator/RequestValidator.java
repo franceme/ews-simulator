@@ -7,6 +7,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import com.worldpay.simulator.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapHeaderElement;
@@ -14,29 +16,6 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.worldpay.simulator.Account;
-import com.worldpay.simulator.BatchDetokenizeRequest;
-import com.worldpay.simulator.BatchTokenizeRequest;
-import com.worldpay.simulator.Card;
-import com.worldpay.simulator.DecryptRequest;
-import com.worldpay.simulator.DeregistrationRequest;
-import com.worldpay.simulator.DetokenizeRequest;
-import com.worldpay.simulator.ECheckDetokenizeRequest;
-import com.worldpay.simulator.ECheckToken;
-import com.worldpay.simulator.ECheckTokenizeRequest;
-import com.worldpay.simulator.MerchantType;
-import com.worldpay.simulator.OrderDeregistrationRequest;
-import com.worldpay.simulator.OrderRegistrationRequest;
-import com.worldpay.simulator.RegistrationRequest;
-import com.worldpay.simulator.SecurityHeaderType;
-import com.worldpay.simulator.Token;
-import com.worldpay.simulator.TokenInquiryRequest;
-import com.worldpay.simulator.TokenRegistrationRequest;
-import com.worldpay.simulator.TokenizeRequest;
-import com.worldpay.simulator.VerifoneCryptogram;
-import com.worldpay.simulator.VerifoneMerchantKeyType;
-import com.worldpay.simulator.VerifoneTerminal;
-import com.worldpay.simulator.VoltageCryptogram;
 import com.worldpay.simulator.exceptions.SecurityErrorException;
 
 import static com.worldpay.simulator.validator.ValidatorUtils.*;
@@ -79,20 +58,18 @@ public class RequestValidator {
     public final String TERMINAL_NOT_FOUND = "Error: Terminal not found";
     public final String CRYPTO_NOT_FOUND = "Error: Both VerifoneCryptogram and VoltageCryptogram not found";
     public final String ACCOUNT_NOT_FOUND = "Error: Account not found";
+    private final String SECURITY_ERROR = "Rejected by policy. (from client)";
 
     public final String INVALID_ECHECK_TOKEN = "Invalid field data length";
 
     @Value("${validate.header}")
     private boolean validateHeader;
-    private static JAXBContext context;
+
+    @Autowired
+    JAXBService jaxbService;
 
     public JAXBContext getContext() throws JAXBException {
-        if (context != null) {
-            return context;
-        }
-        context = JAXBContext.newInstance(SecurityHeaderType.class);
-        return context;
-
+        return jaxbService.getContext();
     }
 
     public void validateSoapHeader(SoapHeaderElement header){
@@ -101,7 +78,7 @@ public class RequestValidator {
         }
 
         if(header == null) {
-            throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+            throw new SecurityErrorException(SECURITY_ERROR);
         }
 
 
@@ -116,20 +93,20 @@ public class RequestValidator {
                 Element userNameTokenAttribute = (Element)securityAttributeList.get(0);
 
                 if(userNameTokenAttribute.getFirstChild() == null) {
-                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                    throw new SecurityErrorException(SECURITY_ERROR);
                 }
 
                 Node userNameNode = userNameTokenAttribute.getFirstChild();
 
                 if(!userNameNode.getLocalName().equals("Username")) {
-                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                    throw new SecurityErrorException(SECURITY_ERROR);
                 }
 
-                if(userNameNode.getNextSibling() == null || !userNameNode.getNextSibling().getLocalName().equals("Password")) {
-                    throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                if(userNameNode.getNextSibling() == null || userNameNode.getNextSibling().getLocalName() == null || !userNameNode.getNextSibling().getLocalName().equals("Password")) {
+                    throw new SecurityErrorException(SECURITY_ERROR);
                 }
             } else {
-                throw new SecurityErrorException("TID:20531165.Rejected by policy.");
+                throw new SecurityErrorException(SECURITY_ERROR);
             }
 
         } catch (JAXBException e) {
