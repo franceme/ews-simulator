@@ -754,6 +754,10 @@ public class TestEWSSimulatorEndpoint {
         EchoResponse echoResponse = ewsSimulatorEndpoint.echo(request,header);
 
         assertEquals(test,echoResponse.getResponse());
+        assertNotNull(echoResponse.getProjectVersion());
+        assertNotNull(echoResponse.getBuildNumber());
+        assertNotNull(echoResponse.getRevisionNumber());
+        assertNotNull(echoResponse.getHostEnvironment());
         verify(validatorService, times(1)).validateRequest(request, header);
 
     }

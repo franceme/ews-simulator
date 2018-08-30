@@ -2,8 +2,6 @@ package com.worldpay.simulator.utils;
 
 import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
 import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
-import static java.lang.Thread.sleep;
 
 import java.util.Random;
 import java.util.UUID;

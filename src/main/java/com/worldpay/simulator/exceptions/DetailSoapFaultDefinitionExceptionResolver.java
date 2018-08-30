@@ -4,8 +4,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import com.worldpay.simulator.JAXBService;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
@@ -16,7 +19,11 @@ import com.worldpay.simulator.errors.EWSError;
 import com.worldpay.simulator.errors.ErrorIdMap;
 import com.worldpay.simulator.utils.EWSUtils;
 
+@Service
 public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMappingExceptionResolver {
+
+    @Autowired
+    JAXBService jaxbService;
 
     private static final Logger logger = LoggerFactory.getLogger(DetailSoapFaultDefinitionExceptionResolver.class);
 
@@ -41,7 +48,7 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
     public void addFaultDetail(Object customFault, SoapFault fault) {
         fault.addFaultDetail();
         try {
-            JAXBContext context = createJAXBContext();
+            JAXBContext context = getJAXBContext();
             Marshaller marshaller = createMarshaller(context);
             marshaller.marshal(customFault, getFaultDetail(fault).getResult());
         }
@@ -69,8 +76,8 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
         return context.createMarshaller();
     }
 
-    public JAXBContext createJAXBContext() throws JAXBException {
-        return JAXBContext.newInstance("com.worldpay.simulator");
+    public JAXBContext getJAXBContext() {
+        return jaxbService.getContext();
     }
 
     public void logRuntimeError(Exception ex) {
@@ -81,4 +88,6 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
     public Logger getLogger() {
         return logger;
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.worldpay.simulator;
 
+import com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -38,5 +39,15 @@ public class SpringTestConfig {
     public RequestValidator requestValidator() {
         RequestValidator requestValidator = new RequestValidator();
         return requestValidator;
+    }
+
+    @Bean
+    public JAXBService jaxbService() {
+        return new JAXBService();
+    }
+
+    @Bean
+    public DetailSoapFaultDefinitionExceptionResolver exceptionResolver(){
+        return new DetailSoapFaultDefinitionExceptionResolver();
     }
 }

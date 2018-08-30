@@ -52,6 +52,5 @@ public class HttpHeaderUtils {
 
         HttpServletResponse httpServletResponse = getHttpServletResponse();
         httpServletResponse.setHeader(headerName, headerValue);
-
     }
 }
