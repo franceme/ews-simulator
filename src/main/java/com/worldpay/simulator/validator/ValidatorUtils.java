@@ -60,6 +60,10 @@ public class ValidatorUtils {
     public static boolean isValidToken(String token) {
         return (!isStringEmpty(token) && token.length() <= TOKEN_LENGTH);
     }
+    //based on cert - env (not by specification)
+    public static boolean isValidEcheckToken(String token) {
+        return isValidPAN(token);
+    }
 
     public static boolean isValidAccount(String account) {
         return (!isStringEmpty(account) && (ACC_LENGTH_1 <= account.length() && account.length() <= ACC_LENGTH_2));

@@ -57,13 +57,14 @@ public class TestEWSSimulatorEndpoint {
     private String registrationId;
     private SoapHeaderElement header;
     private String merchantRefId;
+    private String EcheckToken;
 
 
     @Before
     public void setup() {
         requestId = "f75b9c0f-5348-4621-acdc-a00861b25697";
-        token = "468498435168468";
-        PAN = "615348948648468";
+        token = "468498435169468";
+        PAN = "468498615349468";
         CVV = "468";
         expirationDate = "0823";
         rollupId = "1123";
@@ -71,9 +72,10 @@ public class TestEWSSimulatorEndpoint {
         ANDROID = "ANDROID";
         SAMSUNG = "SAMSUNG";
         CRYPTOGRAM = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=";
-        registrationId = "615348948648648";
+        registrationId = "894864615348649";
         header = null;
         merchantRefId = "00012445653000";
+        EcheckToken = "2468498435169468123";
     }
 
     @Test
@@ -93,8 +95,8 @@ public class TestEWSSimulatorEndpoint {
 
         RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
 
-        assertEquals("468498435168468", response.getToken());
-        assertEquals("615348948648648", response.getRegId());
+        assertEquals(token, response.getToken());
+        assertEquals(registrationId, response.getRegId());
         assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
@@ -120,8 +122,8 @@ public class TestEWSSimulatorEndpoint {
 
         RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
 
-        assertEquals("468498435168000", response.getToken());
-        assertEquals("615348948640008", response.getRegId());
+        assertEquals("615348468498000", response.getToken());
+        assertEquals("843516948640008", response.getRegId());
         assertEquals(true, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
@@ -206,14 +208,14 @@ public class TestEWSSimulatorEndpoint {
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
         request.setOrderLVT(CVV);
-        request.setToken("12");
+        request.setToken(token);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         OrderDeregistrationResponse testResponse = ewsSimulatorEndpoint.orderDeregistration(request,header);
 
-        assertEquals("1111000100038566",testResponse.getPrimaryAccountNumber());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -347,7 +349,7 @@ public class TestEWSSimulatorEndpoint {
 
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
 
-        assertEquals("468498435168468", response.getToken());
+        assertEquals(token, response.getToken());
         assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
@@ -368,7 +370,7 @@ public class TestEWSSimulatorEndpoint {
 
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
 
-        assertEquals("468498435168000", response.getToken());
+        assertEquals("615348468498000", response.getToken());
         assertEquals(true, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
@@ -425,27 +427,26 @@ public class TestEWSSimulatorEndpoint {
     }
 
     @Test
-    public void testDeregistration_DPAN_ANDROID() throws Exception {
+    public void testDeregistration_DPAN_APPLE() throws Exception {
         DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId("615348948648641");
+        request.setRegId("894864615348646");
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
-
         assertNotNull(testResponse.getRequestId());
-        assertEquals("468498435161468",testResponse.getToken());
-        assertEquals("615348948641468",testResponse.getPrimaryAccountNumber());
+        assertEquals("468498615346468",testResponse.getPrimaryAccountNumber());
+        assertEquals("468498435166468",testResponse.getToken());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
-        assertEquals(ANDROID,testResponse.getWalletType().value());
-        assertEquals("01",testResponse.getElectronicCommerceIndicator());
+        assertEquals(APPLE,testResponse.getWalletType().value());
+        assertEquals("05",testResponse.getElectronicCommerceIndicator());
         assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -453,12 +454,12 @@ public class TestEWSSimulatorEndpoint {
     }
 
     @Test
-    public void testDeregistration_DPAN_APPLE() throws Exception {
+    public void testDeregistration_DPAN__ANDROID() throws Exception {
         DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId("615348948648642");
+        request.setRegId(registrationId);
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -467,13 +468,13 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals("468498435162468",testResponse.getToken());
-        assertEquals("615348948642468",testResponse.getPrimaryAccountNumber());
+        assertEquals(token,testResponse.getToken());
+        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
-        assertEquals(APPLE,testResponse.getWalletType().value());
-        assertEquals("02",testResponse.getElectronicCommerceIndicator());
+        assertEquals(ANDROID,testResponse.getWalletType().value());
+        assertEquals("07",testResponse.getElectronicCommerceIndicator());
         assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -487,7 +488,7 @@ public class TestEWSSimulatorEndpoint {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId("615348948648643");
+        request.setRegId("894864615348647");
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -496,13 +497,13 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals("468498435163468",testResponse.getToken());
-        assertEquals("615348948643468",testResponse.getPrimaryAccountNumber());
+        assertEquals("468498435167468",testResponse.getToken());
+        assertEquals("468498615347468",testResponse.getPrimaryAccountNumber());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
         assertEquals(SAMSUNG,testResponse.getWalletType().value());
-        assertEquals("03",testResponse.getElectronicCommerceIndicator());
+        assertEquals("07",testResponse.getElectronicCommerceIndicator());
         assertEquals(CRYPTOGRAM,new Base64().encodeAsString(testResponse.getCryptogram()));
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -870,7 +871,7 @@ public class TestEWSSimulatorEndpoint {
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
         ECheckToken batchtoken = new ECheckToken();
-        batchtoken.setTokenValue(token);
+        batchtoken.setTokenValue(EcheckToken);
         request.setToken(batchtoken);
 
         willDoNothing().given(validatorService).validateRequest(request, header);

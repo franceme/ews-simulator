@@ -1,8 +1,6 @@
 package com.worldpay.simulator.utils;
 
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
+import static com.worldpay.simulator.validator.ValidatorUtils.*;
 import static java.lang.Thread.sleep;
 
 import java.util.Random;
@@ -16,73 +14,91 @@ import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.exceptions.ServerFaultException;
 
 public class EWSUtils {
+    private static String defaultPan = "3000100011118566";
 
     public static String randomReqId() {
         return UUID.randomUUID().toString();
     }
 
-    public static String getRegIdFromPAN(String input) {
-        int lengthInput = input.length();
 
-        if(lengthInput > 3) {
-            StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
-            StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
-            return sb.append(lastFour.reverse().toString()).toString();
-        } else {
-            return input;
-        }
+
+    public static String generatePropertyStrategyPAN(String input){
+        int lengthInput = input.length();
+        String firstSix = input.substring(0,6);
+        String lastFour = input.substring(lengthInput-4,lengthInput);
+        StringBuffer sb = new StringBuffer(input.substring(6, lengthInput - 4));
+
+        return firstSix+sb.reverse().toString()+lastFour;
     }
 
+    public static String generateEcheckToken(String input){
+        int inputLength = input.length();
 
-    public static String getRegIdFromToken(String input) {
-        int lengthInput = input.length();
+        Long l = 99999999999999999l;
+        Long inputValue = Long.parseLong(input);
+        Long middleValue = (l-inputValue);
 
-        if(lengthInput > 3) {
-            StringBuilder sb = new StringBuilder(input.substring(0, lengthInput - 4));
-            StringBuilder lastFour = new StringBuilder(input.substring(lengthInput - 4));
-            return sb.reverse().append(lastFour.reverse().toString()).toString();
-        } else {
-            return input;
-        }
+        StringBuilder middle = new StringBuilder(middleValue.toString());
+
+        while(middle.length() < 17)
+            middle.insert(0,"0");
+
+        return middle.toString();
     }
 
+    public static String generateEcheckAccount(String input){
+        if(input.length() != 19 && !input.startsWith("2"))
+            throw new ClientFaultException(6,"Token Not Found");
+
+        Long l = 99999999999999999l;
+        String middleValue = input.substring(1,18);
+        Long accountNumber = l-Long.parseLong(middleValue);
+        return accountNumber.toString();
+    }
 
     public static String generateProperty(String input) {
 
-        int lengthInput = input.length();
+        if(!isStringValidInteger(input))
+            throw new ClientFaultException(4,"Value data must be numeric");
 
-        try{
-            Long temp = Long.parseLong(input);
-        }catch (Exception e){
-            throw new NumberFormatException();
-        }
+        if(isValidPAN(input))
+            return generatePropertyStrategyPAN(input);
 
-        if(lengthInput > 3) {
-            StringBuffer sb = new StringBuffer(input.substring(0, lengthInput - 4));
-            String lastFour = input.substring(lengthInput - 4);
-            return sb.reverse().append(lastFour).toString();
-        } else {
-            return input;
-        }
+        return input;
     }
 
-    public static String getToken(String primaryAccountNumber) {
+    public static String getPANToken(String primaryAccountNumber) {
         return generateProperty(primaryAccountNumber);
+    }
+
+    public static int getAccountType(AccountType accountType) {
+
+        switch (accountType) {
+            case CHECKING:
+                return 0;
+            case SAVINGS:
+                return 1;
+            case CORPORATE_CHECKING:
+                return 2;
+            default:
+                return 3;
+        }
+
+    }
+
+    //generating tokens based on cert environment
+    //the length of the token varies between both simulator and cert (19 digits, 17 digits respectively)
+    //Also the token always starts with "2" in cert
+    public static String generateEcheckToken(String accountNumber, AccountType accountType) {
+        return  "2"+generateEcheckToken(accountNumber)+String.valueOf(getAccountType(accountType));
     }
 
     public static String getPAN(String token) {
 
         if(!isValidPAN(generateProperty(token)))
-            return "3000100011118566";
+            return defaultPan;
         return generateProperty(token);
     }
-
-    public static String getAccountNumber(String token){
-        if(!isValidAccount(getPAN(token)))
-            return "3000100011118566";
-        return getPAN(token);
-    }
-
 
     public static String generateRandomNumber(int length){
         Random rnd = new Random();
@@ -146,16 +162,34 @@ public class EWSUtils {
     }
 
 
+    public static String convertPanToRegId(String regId){
+        int lengthInput = regId.length();
+        String middle = regId.substring(6, lengthInput - 4);
+        StringBuilder lastFour = new StringBuilder(regId.substring(lengthInput - 4));
+        StringBuilder firstSix = new StringBuilder(regId.substring(0,6));
+        return firstSix.reverse().toString() + middle + lastFour.reverse().toString();
+    }
+
+
     public static String getPANThroughRegId(String regId) {
         int lengthInput = regId.length();
 
-        if(lengthInput > 3) {
-            StringBuilder sb = new StringBuilder(regId.substring(0, lengthInput - 4));
-            StringBuilder lastFour = new StringBuilder(regId.substring(lengthInput - 4));
-            return sb.append(lastFour.reverse().toString()).toString();
+        if(lengthInput >= 10) {
+            return convertPanToRegId(regId);
         } else {
-            return regId;
+            return convertPanToRegId(defaultPan);
         }
+    }
+
+
+    public static String getRegIdFromPAN(String pan) {
+        return convertPanToRegId(pan);
+    }
+
+
+    public static String getRegIdFromToken(String token) {
+        String pan = getPAN(token);
+        return getRegIdFromPAN(pan);
     }
 
     public static String getCVVThroughToken(String token) {
@@ -167,8 +201,8 @@ public class EWSUtils {
 
 
     public static AccountType getAccountType(String AccNum){
-        int last2Digits = Integer.parseInt(AccNum.substring(AccNum.length()-2,AccNum.length()));
-        switch (last2Digits % 4){
+        int lastDigit = Integer.parseInt(AccNum.substring(AccNum.length()-1,AccNum.length()));
+        switch (lastDigit%4){
             case 0:
                 return AccountType.CHECKING;
             case 1:

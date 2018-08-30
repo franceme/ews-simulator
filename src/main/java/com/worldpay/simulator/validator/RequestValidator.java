@@ -1,17 +1,5 @@
 package com.worldpay.simulator.validator;
 
-import static com.worldpay.simulator.validator.ValidatorUtils.handleException;
-import static com.worldpay.simulator.validator.ValidatorUtils.isStringEmpty;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidCVV;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidExpiryDate;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidOrderLVT;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidRegId;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidRollupId;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidRoutingNumber;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
-
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -51,6 +39,8 @@ import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
 import com.worldpay.simulator.exceptions.SecurityErrorException;
 
+import static com.worldpay.simulator.validator.ValidatorUtils.*;
+
 /**
  * Validator class:-
  * 1) validates the request based on the specifications on the document (not XSD)
@@ -71,7 +61,7 @@ public class RequestValidator {
     public final String INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
     public final String INVALID_PAN = "Error: PAN (PermanentAccountNumber) is invalid";
     public final String INVALID_REG_ID = "Error: RegId is invalid";
-    public final String INVALID_MERCHANT_KEY_TYPE = "Error: MerchantKeyType is invalid";
+
     public final String INVALID_LANE_ID = "Error: LaneId is invalid";
     public final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
     public final String INVALID_MERCHANT_ID = "Error: MerchantId is invalid";
@@ -80,7 +70,7 @@ public class RequestValidator {
     public final String INVALID_VERIFONE_CARD = "Error: Card details is invalid (Must either contain PAN and Expiry Date (or) any one of Track Numbers)";
     public final String INVALID_VOLTAGE_CARD = "Error: Card details is invalid (Must either contain PAN and Security Code (or) any one of Track Numbers)";
     public final String INVALID_ROUTING_NUM = "Error: Routing Number is invalid";
-    public final String INVALID_ACCOUNT_NUM = "Error: Account Number is invalid";
+    public final String INVALID_ACCOUNT_NUM = "Invalid field data length";
 
     public final String MERCHANT_NOT_FOUND = "Error: Merchant not found";
     public final String MERCHANT_KEY_NOT_FOUND = "Error: MerchantKeyType not found";
@@ -89,6 +79,8 @@ public class RequestValidator {
     public final String TERMINAL_NOT_FOUND = "Error: Terminal not found";
     public final String CRYPTO_NOT_FOUND = "Error: Both VerifoneCryptogram and VoltageCryptogram not found";
     public final String ACCOUNT_NOT_FOUND = "Error: Account not found";
+
+    public final String INVALID_ECHECK_TOKEN = "Invalid field data length";
 
     @Value("${validate.header}")
     private boolean validateHeader;
@@ -230,8 +222,8 @@ public class RequestValidator {
         if(token == null)
             handleException(INVALID_REQ,TOKEN_NOT_FOUND);
 
-        if(!isValidToken(token.getTokenValue()))
-            handleException(INVALID_REQ,INVALID_TOKEN);
+        if(!isValidEcheckToken(token.getTokenValue()))
+            handleException(INVALID_REQ,INVALID_ECHECK_TOKEN);
 
     }
 

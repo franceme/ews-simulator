@@ -3,7 +3,6 @@ package com.worldpay.simulator;
 import com.worldpay.simulator.exceptions.ServerFaultException;
 import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.utils.EWSUtils;
-import com.worldpay.simulator.validator.ValidatorService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +16,13 @@ public class TestEWSUtils {
   private String PAN3;
   private String regId1;
   private String regId2;
+  private String regId3;
   private String property1;
   private String property2;
   private String property3;
   private String invalidProperty;
   private String defaultPAN;
+  private String defaultRegId;
   private String cvv;
   private String token;
   private AccountType CHECKING;
@@ -37,13 +38,15 @@ public class TestEWSUtils {
     PAN1 = "123513521231";
     PAN2 = "251";
     PAN3 = "7123513521231";
-    regId1 = "123513521321";
+    regId1 = "315321521321";
     regId2 = "251";
-    property1 = "253153211231";
+    regId3 = "1532173521321";
+    property1 = "123513251231";
     property2 = "251";
-    property3 = "2531532171231";
+    property3 = "7123512531231";
     invalidProperty = "asd21132";
     defaultPAN = "3000100011118566";
+    defaultRegId = "0100030011116658";
     cvv = "688";
     token = "1252645696785667688";
     SAVINGS = AccountType.SAVINGS;
@@ -71,34 +74,32 @@ public class TestEWSUtils {
   public void testGetRegId(){
     String temp = EWSUtils.getRegIdFromPAN(PAN1);
     assertEquals(regId1,temp);
-    temp = EWSUtils.getRegIdFromPAN(PAN2);
-    assertEquals(regId2,temp);
+    temp = EWSUtils.getRegIdFromPAN(PAN3);
+    assertEquals(regId3,temp);
   }
-
   @Test
   public void testGetRegIdFromToken(){
-    assertEquals("251",EWSUtils.getRegIdFromToken(property2));
-    assertEquals("6658769654625218867",EWSUtils.getRegIdFromToken(token));
+    assertEquals("4625216658769658867",EWSUtils.getRegIdFromToken(token));
   }
 
   @Test
   public void testGenerateProperty(){
-    String temp = EWSUtils.generateProperty(PAN1);
-    assertEquals(property1,temp);
+    String temp = EWSUtils.generateProperty(PAN3);
+    assertEquals(property3,temp);
     temp = EWSUtils.generateProperty(PAN2);
-    assertEquals(property2,temp);
+    assertEquals(PAN2,temp);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = ClientFaultException.class)
   public void testGenerateProperty_with_exception(){
     EWSUtils.generateProperty("asdas");
   }
 
   @Test
   public void testGetToken(){
-    String temp = EWSUtils.getToken(PAN1);
-    assertEquals(property1,temp);
-    temp = EWSUtils.getToken(PAN2);
+    String temp = EWSUtils.getPANToken(PAN3);
+    assertEquals(property3,temp);
+    temp = EWSUtils.getPANToken(PAN2);
     assertEquals(property2,temp);
 
 
@@ -175,9 +176,9 @@ public class TestEWSUtils {
   public void testGetPANThroughRegId(){
     String temp = EWSUtils.getPANThroughRegId(regId1);
     assertEquals(PAN1,temp);
-    temp = EWSUtils.getPANThroughRegId(regId2);
-    assertEquals(PAN2,temp);
-    assertEquals("12",EWSUtils.getPANThroughRegId("12"));
+    temp = EWSUtils.getPANThroughRegId(regId3);
+    assertEquals(PAN3,temp);
+    assertEquals(defaultPAN,EWSUtils.getPANThroughRegId(defaultRegId));
   }
 
   @Test
@@ -206,9 +207,14 @@ public class TestEWSUtils {
   }
 
   @Test
-  public void testGetAccountNumber(){
-    assertEquals(defaultPAN,EWSUtils.getAccountNumber("123456789123456789"));
-    assertEquals("219876543213456",EWSUtils.getAccountNumber("123456789123456"));
+  public void testGenerateEcheckToken(){
+      assertEquals("2876543210987654322",EWSUtils.generateEcheckToken("12345678901234567",AccountType.CORPORATE_CHECKING));
+      assertEquals("87654321098765432",EWSUtils.generateEcheckToken("12345678901234567"));
+  }
+
+  @Test
+  public void testGenerateEcheckAccount(){
+      assertEquals("12345678901234567",EWSUtils.generateEcheckAccount("2876543210987654322"));
   }
 
   @Test

@@ -54,7 +54,7 @@ public class EWSSimulatorEndpoint {
         addMerchantRefId(request, response);
         response.setRequestId(EWSUtils.randomReqId());
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
-        response.setToken(EWSUtils.getToken(primaryAccountNumber));
+        response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
         if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
             response.setTokenNewlyGenerated(true);
@@ -80,7 +80,7 @@ public class EWSSimulatorEndpoint {
 
         String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
         int lengthPAN = primaryAccountNumber.length();
-        tokenizeResponse.setToken(EWSUtils.getToken(primaryAccountNumber));
+        tokenizeResponse.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
         if(lengthPAN >= 3 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 3)))) {
             tokenizeResponse.setTokenNewlyGenerated(true);
@@ -151,7 +151,7 @@ public class EWSSimulatorEndpoint {
                 response.getToken().add(token);
                 break;
             }else{
-                token.setTokenValue(EWSUtils.getToken(PAN));
+                token.setTokenValue(EWSUtils.getPANToken(PAN));
                 token.setTokenNewlyGenerated(PAN.endsWith("000") ? true:false);
             }
             response.getToken().add(token);
@@ -212,7 +212,7 @@ public class EWSSimulatorEndpoint {
             token.setError(error);
             response.setToken(token);
         }else{
-            token.setTokenValue(EWSUtils.getToken(AccNum));
+            token.setTokenValue(EWSUtils.generateEcheckToken(AccNum,request.getAccount().getAccountType()));
             token.setTokenNewlyGenerated(AccNum.endsWith("000")?true:false);
         }
         response.setToken(token);
@@ -232,12 +232,13 @@ public class EWSSimulatorEndpoint {
 
         ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
         String token = request.getToken().getTokenValue();
-        String PAN = EWSUtils.getPAN(token);
+        String PAN = EWSUtils.generateEcheckAccount(token);
+        String AccountTypeValue = token.substring(token.length()-1,token.length());
 
         Account account = new Account();
 
         account.setAccountNumber(PAN);
-        account.setAccountType(getAccountType(PAN));
+        account.setAccountType(getAccountType(token));
         account.setRoutingNumber(getRoutingNumber(PAN));
 
         response.setAccount(account);
@@ -265,7 +266,7 @@ public class EWSSimulatorEndpoint {
                 tokenInquiryResponse.getToken().add(null);
             } else {
                 Token token = new Token();
-                token.setTokenValue(EWSUtils.getToken(primaryAccountNumber));
+                token.setTokenValue(EWSUtils.getPANToken(primaryAccountNumber));
                 tokenInquiryResponse.getToken().add(token);
             }
         }
@@ -374,7 +375,7 @@ public class EWSSimulatorEndpoint {
         // set requestId (mandatory)
         answer.setRequestId(EWSUtils.randomReqId());
         // set token (mandatory)
-        String token = EWSUtils.getToken(PAN);
+        String token = EWSUtils.getPANToken(PAN);
         EWSUtils.handleDesiredExceptions(token);
         answer.setToken(token);
         // set PAN (mandatory)
@@ -390,13 +391,13 @@ public class EWSSimulatorEndpoint {
         int indicator = (Integer.parseInt(regId.charAt(regId.length()-1)+"")) % 4;
         if(indicator == 1) {
             answer.setWalletType(WalletType.ANDROID);
-            answer.setElectronicCommerceIndicator("01");
+            answer.setElectronicCommerceIndicator("07");
         } else if(indicator == 2) {
             answer.setWalletType(WalletType.APPLE);
-            answer.setElectronicCommerceIndicator("02");
+            answer.setElectronicCommerceIndicator("05");
         } else if(indicator == 3) {
             answer.setWalletType(WalletType.SAMSUNG);
-            answer.setElectronicCommerceIndicator("03"); }// set cryptogram
+            answer.setElectronicCommerceIndicator("07"); }// set cryptogram
         // if indicator equals 0 it means it's not DPAN
         if(indicator != 0) {
             // the soap framework will re-encode this value on its own.
