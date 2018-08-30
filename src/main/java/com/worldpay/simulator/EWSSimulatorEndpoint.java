@@ -152,8 +152,9 @@ public class EWSSimulatorEndpoint {
             VError error = getError(PAN);
             if(error != null){
                 token.setError(error);
-                response.getToken().add(token);
-                break;
+                // break was specified in the document, but the cert environment behaves differently (So commenting out the below lines)
+                // response.getToken().add(token);
+                // break;
             }else{
                 token.setTokenValue(EWSUtils.getPANToken(PAN));
                 token.setTokenNewlyGenerated(PAN.endsWith("000") ? true:false);
@@ -183,8 +184,9 @@ public class EWSSimulatorEndpoint {
             VError error = getError(tokenValue);
             if(error != null){
                 card.setError(error);
-                response.getCard().add(card);
-                break;
+                // break was specified in the document, but the cert environment behaves differently (So commenting out the below lines)
+                //response.getCard().add(card);
+                //break;
             }else{
                 card.setPrimaryAccountNumber(EWSUtils.getPAN(tokenValue));
             }
