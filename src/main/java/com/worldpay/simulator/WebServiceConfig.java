@@ -30,8 +30,11 @@ import com.worldpay.simulator.exceptions.ServerFaultException;
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
 
+    @Value("${validate.schema}")
+    private boolean validateSchema;
+
     @Value("${simulator.endpoint}")
-    private String simulatorEndpoint="etws/v4";
+    private String simulatorEndpoint;
 
     @Autowired
     DetailSoapFaultDefinitionExceptionResolver exceptionResolver;
@@ -39,8 +42,8 @@ public class WebServiceConfig extends WsConfigurerAdapter {
     @Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
         PayloadValidatingInterceptor validatingInterceptor = payloadValidatingInterceptorInstance();
-        validatingInterceptor.setValidateRequest(true);
-        validatingInterceptor.setValidateResponse(true);
+        validatingInterceptor.setValidateRequest(validateSchema);
+        validatingInterceptor.setValidateResponse(validateSchema);
         validatingInterceptor.setXsdSchema(encryptionSchema());
 
         interceptors.add(validatingInterceptor);

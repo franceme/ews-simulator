@@ -62,7 +62,7 @@ public class RequestValidator {
 
     public final String INVALID_ECHECK_TOKEN = "Invalid field data length";
 
-    @Value("${validate.header}")
+    @Value("${validate.schema}")
     private boolean validateHeader;
 
     @Autowired
