@@ -58,10 +58,7 @@ public class ValidatorUtils {
     }
 
     public static boolean isValidToken(String token) {
-        return (!isStringEmpty(token) && token.length() <= TOKEN_LENGTH);
-    }
-    //based on cert - env (not by specification)
-    public static boolean isValidEcheckToken(String token) {
+        //return (!isStringEmpty(token) && token.length() <= TOKEN_LENGTH);
         return isValidPAN(token);
     }
 
