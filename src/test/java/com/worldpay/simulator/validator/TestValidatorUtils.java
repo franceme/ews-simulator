@@ -112,7 +112,7 @@ public class TestValidatorUtils {
     public void testIsValidToken(){
         assertFalse(ValidatorUtils.isValidToken(PAN1));
         assertFalse(ValidatorUtils.isValidToken(token));
-        assertTrue(ValidatorUtils.isValidToken(PAN2));
+        assertFalse(ValidatorUtils.isValidToken(PAN2));
     }
 
     @Test

@@ -35,10 +35,10 @@ public class RequestValidator {
     public final int EMPTY = 0;
 
     public final String INVALID_TOKEN = "Error: token is invalid or Not present";
-    public final String INVALID_ROLLUP_ID = "Error: RollUpId is invalid";
+    public final String INVALID_ROLLUP_ID = "RollupId not found in chain";
     public final String INVALID_SECURITY_CODE = "Error: CardSecurityCode is invalid";
     public final String INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
-    public final String INVALID_PAN = "Error: PAN (PermanentAccountNumber) is invalid";
+    public final String INVALID_PAN = "Error: PAN (PrimaryAccountNumber) is invalid";
     public final String INVALID_REG_ID = "Invalid field data length";
 
     public final String INVALID_LANE_ID = "Error: LaneId is invalid";
@@ -199,7 +199,7 @@ public class RequestValidator {
         if(token == null)
             handleException(INVALID_REQ,TOKEN_NOT_FOUND);
 
-        if(!isValidEcheckToken(token.getTokenValue()))
+        if(!isValidToken(token.getTokenValue()))
             handleException(INVALID_REQ,INVALID_ECHECK_TOKEN);
 
     }
@@ -399,6 +399,9 @@ public class RequestValidator {
 
         if(!isValidOrderLVT(request.getOrderLVT()) )
             handleException(INVALID_REQ,INVALID_SECURITY_CODE);
+
+        if(isValidToken(request.getToken()))
+            handleException(INVALID_REQ,INVALID_TOKEN);
     }
 
 }
