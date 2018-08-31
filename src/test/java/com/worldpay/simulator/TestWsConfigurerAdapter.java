@@ -1,6 +1,7 @@
 package com.worldpay.simulator;
 
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.doNothing;
@@ -40,8 +41,8 @@ public class TestWsConfigurerAdapter {
         List<EndpointInterceptor> testInterceptors = new ArrayList<>();
 
         doReturn(payloadValidatingInterceptorMock).when(webServiceConfigSpy).payloadValidatingInterceptorInstance();
-        doNothing().when(payloadValidatingInterceptorMock).setValidateRequest(true);
-        doNothing().when(payloadValidatingInterceptorMock).setValidateResponse(true);
+        doNothing().when(payloadValidatingInterceptorMock).setValidateRequest(anyBoolean());
+        doNothing().when(payloadValidatingInterceptorMock).setValidateResponse(anyBoolean());
         doReturn(xsdSchemaMock).when(webServiceConfigSpy).encryptionSchema();
         doNothing().when(payloadValidatingInterceptorMock).setXsdSchema(xsdSchemaMock);
 
