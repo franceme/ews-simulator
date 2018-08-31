@@ -39,7 +39,7 @@ public class RequestValidator {
     public final String INVALID_SECURITY_CODE = "Error: CardSecurityCode is invalid";
     public final String INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
     public final String INVALID_PAN = "Error: PAN (PermanentAccountNumber) is invalid";
-    public final String INVALID_REG_ID = "Error: RegId is invalid";
+    public final String INVALID_REG_ID = "Invalid field data length";
 
     public final String INVALID_LANE_ID = "Error: LaneId is invalid";
     public final String INVALID_CHAIN_CODE = "Error: ChainCode is invalid";
@@ -336,6 +336,9 @@ public class RequestValidator {
 
         //mandatory field check that is not mentioned in the xsd but in document
         validateMerchant(request.getMerchant());
+
+        if(!isValidPAN(request.getPrimaryAccountNumber()))
+            handleException(INVALID_REQ,INVALID_PAN);
     }
 
     public void validateDeregistrationRequest(DeregistrationRequest request){
