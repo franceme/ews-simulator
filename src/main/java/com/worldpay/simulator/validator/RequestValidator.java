@@ -8,11 +8,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import com.worldpay.simulator.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -68,7 +68,7 @@ public class RequestValidator {
     @Autowired
     JAXBService jaxbService;
 
-    public JAXBContext getContext() throws JAXBException {
+    public JAXBContext getContext() {
         return jaxbService.getContext();
     }
 
@@ -110,7 +110,7 @@ public class RequestValidator {
             }
 
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Fatal Error : Cannot Unmarshal SOAP-Header");
         }
     }
 

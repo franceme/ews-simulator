@@ -13,7 +13,7 @@ public class ErrorIdMap {
         errorIdMap.put(3, new EWSError("INTERNAL_ERROR", "Internal error."));
         errorIdMap.put(4, new EWSError("INVALID_REQUEST", "Invalid request (syntax error)."));
         errorIdMap.put(5, new EWSError("DETOKENIZATION_PAN_INVALID", "The De-tokenized PAN is invalid (legacy)."));
-        errorIdMap.put(6, new EWSError("DECRYPTION_TOKEN_FAILED", "Decryption or De-tokenization failed."));
+        errorIdMap.put(6, new EWSError("DECRYPTION_TOKEN_FAILED", "Token not found"));
         errorIdMap.put(7, new EWSError("TOKEN_OR_REG_ID_GENERATION_FAILED", "Token or registration ID generation failed."));
         errorIdMap.put(8, new EWSError("SERVICE_TIMED_OUT", "A back-end service/server timed out unexpectedly."));
         errorIdMap.put(9, new EWSError("TOKEN_ALREADY_EXISTS", "The Token already exists in the token vault."));
