@@ -40,9 +40,9 @@ public class ValidatorUtils {
     public static boolean isValidPAN(String PAN) {
         return (isStringValidInteger(PAN) && PAN_LENGTH_1 <= PAN.length() && PAN.length() <= PAN_LENGTH_2);
     }
-
+    // change the regId to 19
     public static boolean isValidRegId(String regId) {
-        return (isStringValidInteger(regId) && regId.length() <= REG_LENGTH_2);
+        return (isStringValidInteger(regId) && regId.length() == REG_LENGTH_2);
     }
 
     public static boolean isValidRollupId(String rollupId) {

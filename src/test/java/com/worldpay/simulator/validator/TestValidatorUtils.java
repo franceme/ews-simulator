@@ -82,7 +82,7 @@ public class TestValidatorUtils {
         assertFalse(ValidatorUtils.isValidRegId(PAN1));
         assertFalse(ValidatorUtils.isValidRegId(regId2));
         assertFalse(ValidatorUtils.isValidRegId(regId3));
-        assertTrue(ValidatorUtils.isValidRegId(regId4));
+        assertFalse(ValidatorUtils.isValidRegId(regId4));
     }
 
     @Test

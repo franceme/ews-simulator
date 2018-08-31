@@ -38,14 +38,14 @@ public class TestEWSUtils {
     PAN1 = "123513521231";
     PAN2 = "251";
     PAN3 = "7123513521231";
-    regId1 = "315321521321";
+    regId1 = "3153219999999471321";
     regId2 = "251";
-    regId3 = "1532173521321";
+    regId3 = "1532179999996471321";
     property1 = "123513251231";
     property2 = "251";
     property3 = "7123512531231";
     invalidProperty = "asd21132";
-    defaultPAN = "3000100011118566";
+    defaultPAN = "3000109999988888566";
     defaultRegId = "0100030011116658";
     cvv = "688";
     token = "1252645696785667688";
@@ -79,7 +79,7 @@ public class TestEWSUtils {
   }
   @Test
   public void testGetRegIdFromToken(){
-    assertEquals("4625216658769658867",EWSUtils.getRegIdFromToken(token));
+    assertEquals("4625213341230348867",EWSUtils.getRegIdFromToken(token));
   }
 
   @Test
@@ -110,7 +110,7 @@ public class TestEWSUtils {
     String temp = EWSUtils.getPAN(property3);
     assertEquals(PAN3,temp);
     temp = EWSUtils.getPAN(property2);
-    assertEquals(defaultPAN,temp);
+    assertEquals("3000100011118566",temp);
   }
 
   @Test
@@ -197,7 +197,7 @@ public class TestEWSUtils {
 
   @Test
   public void testGetRoutingNumber(){
-    assertEquals("300010001",EWSUtils.getRoutingNumber(defaultPAN));
+    assertEquals("300010999",EWSUtils.getRoutingNumber(defaultPAN));
     assertEquals("123456789",EWSUtils.getRoutingNumber("123"));
   }
 

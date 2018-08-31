@@ -59,6 +59,18 @@ public class TestEWSSimulatorEndpoint {
     private String merchantRefId;
     private String EcheckToken;
 
+    private String APPLEPAN;
+    private String APPLEToken;
+    private String APPLERegId;
+
+    private String ANDROIDPAN;
+    private String ANDROIDToken;
+    private String ANDROIDRegId;
+
+    private String SAMSUNGPAN;
+    private String SAMSUNGToken;
+    private String SAMSUNGRegId;
+
 
     @Before
     public void setup() {
@@ -76,6 +88,18 @@ public class TestEWSSimulatorEndpoint {
         header = null;
         merchantRefId = "00012445653000";
         EcheckToken = "2468498435169468123";
+
+        APPLEPAN = "4684983846512426468";
+        APPLEToken= "4684982421564836468";
+        APPLERegId= "8948646153487578646";
+
+        ANDROIDPAN = "4684983846512429468";
+        ANDROIDToken= "4684982421564839468";
+        ANDROIDRegId = "8948646153487578649";
+
+        SAMSUNGPAN ="4684983846512427468";
+        SAMSUNGToken="4684982421564837468";
+        SAMSUNGRegId= "8948646153487578647";
     }
 
     @Test
@@ -85,7 +109,7 @@ public class TestEWSSimulatorEndpoint {
 
         RegistrationRequest request = new RegistrationRequest();
         request.setMerchantRefId(merchantRefId);
-        request.setPrimaryAccountNumber(PAN);
+        request.setPrimaryAccountNumber(ANDROIDPAN);
         request.setWalletType(WalletType.fromValue(ANDROID));
         request.setCryptogram(CRYPTOGRAM.getBytes());
         request.setMerchant(merchant);
@@ -95,8 +119,8 @@ public class TestEWSSimulatorEndpoint {
 
         RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
 
-        assertEquals(token, response.getToken());
-        assertEquals(registrationId, response.getRegId());
+        assertEquals(ANDROIDToken, response.getToken());
+        assertEquals(ANDROIDRegId, response.getRegId());
         assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
@@ -123,7 +147,7 @@ public class TestEWSSimulatorEndpoint {
         RegistrationResponse response = ewsSimulatorEndpoint.registration(request, header);
 
         assertEquals("615348468498000", response.getToken());
-        assertEquals("843516948640008", response.getRegId());
+        assertEquals("8435169999051350008", response.getRegId());
         assertEquals(true, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
@@ -384,7 +408,7 @@ public class TestEWSSimulatorEndpoint {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId(registrationId);
+        request.setRegId(SAMSUNGRegId);
         request.setCardSecurityCodeRequested(true);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -393,8 +417,8 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals(token,testResponse.getToken());
-        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertEquals(SAMSUNGToken,testResponse.getToken());
+        assertEquals(SAMSUNGPAN,testResponse.getPrimaryAccountNumber());
         assertEquals(CVV,testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 
@@ -408,7 +432,7 @@ public class TestEWSSimulatorEndpoint {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId(registrationId);
+        request.setRegId(APPLERegId);
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -417,8 +441,8 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals(token,testResponse.getToken());
-        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertEquals(APPLEToken,testResponse.getToken());
+        assertEquals(APPLEPAN,testResponse.getPrimaryAccountNumber());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 
@@ -432,7 +456,7 @@ public class TestEWSSimulatorEndpoint {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId("894864615348646");
+        request.setRegId(APPLERegId);
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -440,8 +464,8 @@ public class TestEWSSimulatorEndpoint {
 
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
         assertNotNull(testResponse.getRequestId());
-        assertEquals("468498615346468",testResponse.getPrimaryAccountNumber());
-        assertEquals("468498435166468",testResponse.getToken());
+        assertEquals(APPLEPAN,testResponse.getPrimaryAccountNumber());
+        assertEquals(APPLEToken,testResponse.getToken());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
@@ -459,7 +483,7 @@ public class TestEWSSimulatorEndpoint {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId(registrationId);
+        request.setRegId(ANDROIDRegId);
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -468,8 +492,8 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals(token,testResponse.getToken());
-        assertEquals(PAN,testResponse.getPrimaryAccountNumber());
+        assertEquals(ANDROIDToken,testResponse.getToken());
+        assertEquals(ANDROIDPAN,testResponse.getPrimaryAccountNumber());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
@@ -488,7 +512,7 @@ public class TestEWSSimulatorEndpoint {
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
         request.setMerchant(merchant);
-        request.setRegId("894864615348647");
+        request.setRegId(SAMSUNGRegId);
         request.setCardSecurityCodeRequested(false);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -497,8 +521,8 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals("468498435167468",testResponse.getToken());
-        assertEquals("468498615347468",testResponse.getPrimaryAccountNumber());
+        assertEquals(SAMSUNGToken,testResponse.getToken());
+        assertEquals(SAMSUNGPAN,testResponse.getPrimaryAccountNumber());
         assertNull(testResponse.getCardSecurityCode());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
