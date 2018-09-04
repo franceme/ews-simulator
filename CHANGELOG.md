@@ -1,5 +1,8 @@
 CHANGELOG
 ---------
+-v4.3.5
+* BugFix: Fix invalid expiration date
+* BugFix: Stage mode does not use https
 
 -v4.3.3
 * BugFix: Fix Invalid default expiration date in Detokenize and DeRegistration

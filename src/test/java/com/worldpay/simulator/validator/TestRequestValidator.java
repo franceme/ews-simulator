@@ -99,7 +99,7 @@ public class TestRequestValidator {
         INVALID_CARD_DETAILS = "Error: Card is invalid or Not present ";
         PAN1 = "1234567891011123";
         PAN2= "1234567891011000";
-        expDate = "0823";
+        expDate = "2308";
         INVALID_TOKEN = "Error: Token not found";
         TOKEN_NOT_FOUND = "Error: Token not found";
         rollupId = "1123";
