@@ -111,16 +111,16 @@ public class EWSUtils {
     }
 
     public static VError getError(String PAN){
-        int last3Digits = Integer.parseInt(PAN.substring(PAN.length()-3,PAN.length()));
+        int last3DigitsButOne = Integer.parseInt(PAN.substring(PAN.length()-4,PAN.length() - 1));
 
-        if(isServerFaultError(last3Digits))
+        if(isServerFaultError(last3DigitsButOne))
             return null;
 
-        EWSError validError = ErrorIdMap.getError(last3Digits);
+        EWSError validError = ErrorIdMap.getError(last3DigitsButOne);
 
         if(validError != null){
             VError error = new VError();
-            error.setId(last3Digits);
+            error.setId(last3DigitsButOne);
             error.setCode(validError.getErrorCode());
             error.setMessage(validError.getErrorMessage());
 
@@ -132,12 +132,13 @@ public class EWSUtils {
     }
 
     public static void handleDesiredExceptions(String input) {
-        String inputLast3;
-        if (input.length() >= 3) {
+        String inputLast3ButOne;
+        int inputLength = input.length();
+        if (inputLength >= 4) {
             int errorId = 0;
-            inputLast3 = input.substring(input.length() - 3);
+            inputLast3ButOne = input.substring(inputLength - 4,inputLength - 1);
             try {
-                errorId = Integer.parseInt(inputLast3);
+                errorId = Integer.parseInt(inputLast3ButOne);
             } catch (NumberFormatException ex){
                 // Do Nothing
             }
@@ -213,15 +214,15 @@ public class EWSUtils {
     }
 
     public static String getCVVThroughToken(String token) {
-        if(token.length() < 3){
+        if(token.length() < 4){
             return "566";
         }
-        return token.substring(token.length() - 3, token.length());
+        return token.substring(token.length() - 4, token.length() - 1);
     }
 
 
     public static AccountType getAccountType(String AccNum){
-        int lastDigit = Integer.parseInt(AccNum.substring(AccNum.length()-1,AccNum.length()));
+        int lastDigit = Integer.parseInt(AccNum.substring(AccNum.length()-2,AccNum.length() - 1));
         switch (lastDigit%4){
             case 0:
                 return AccountType.CHECKING;

@@ -96,7 +96,7 @@ public class TestValidatorService {
 
         spy.setDelay(-1);
         try {
-            spy.handleExceptionsAndDelay("001001");
+            spy.handleExceptionsAndDelay("010011");
             fail("Must throw exception");
         } catch(Exception e) {
         }
@@ -268,7 +268,7 @@ public class TestValidatorService {
     @Test
     public void testAddDelayBasedOnMerchantRefId() throws InterruptedException {
         final long startTime = System.nanoTime();
-        spy.addDelayBasedOnMerchantRefId("0032222222333");
+        spy.addDelayBasedOnMerchantRefId("0032222222033");
         final long duration = System.nanoTime() - startTime;
         assertTrue(300 <= (duration / 1000000));
     }

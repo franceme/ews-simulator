@@ -77,8 +77,8 @@ public class TestEWSSimulatorEndpoint {
         requestId = "f75b9c0f-5348-4621-acdc-a00861b25697";
         token = "468498435169468";
         PAN = "468498615349468";
-        CVV = "468";
-        expirationDate = "2308";
+        CVV = "776";
+        expirationDate = "0823";
         rollupId = "1123";
         APPLE = "APPLE";
         ANDROID = "ANDROID";
@@ -89,17 +89,17 @@ public class TestEWSSimulatorEndpoint {
         merchantRefId = "00012445653000";
         EcheckToken = "2468498435169468123";
 
-        APPLEPAN = "4684983846512426468";
-        APPLEToken= "4684982421564836468";
-        APPLERegId= "8948646153487578646";
+        APPLEPAN = "4684983846512426668";
+        APPLEToken= "4684982421564836668";
+        APPLERegId= "8948646153487578666";
 
-        ANDROIDPAN = "4684983846512429468";
-        ANDROIDToken= "4684982421564839468";
-        ANDROIDRegId = "8948646153487578649";
+        ANDROIDPAN = "4684983846512429968";
+        ANDROIDToken= "4684982421564839968";
+        ANDROIDRegId = "8948646153487578699";
 
-        SAMSUNGPAN ="4684983846512427468";
-        SAMSUNGToken="4684982421564837468";
-        SAMSUNGRegId= "8948646153487578647";
+        SAMSUNGPAN ="4684983846512427768";
+        SAMSUNGToken="4684982421564837768";
+        SAMSUNGRegId= "8948646153487578677";
     }
 
     @Test
@@ -148,7 +148,7 @@ public class TestEWSSimulatorEndpoint {
 
         assertEquals("615348468498000", response.getToken());
         assertEquals("8435169999051350008", response.getRegId());
-        assertEquals(true, response.isTokenNewlyGenerated());
+        assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -173,7 +173,7 @@ public class TestEWSSimulatorEndpoint {
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
-        assertEquals(CVV,testResponse.getCardSecurityCode());
+        assertEquals("946",testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -262,7 +262,7 @@ public class TestEWSSimulatorEndpoint {
 
         assertEquals(PAN,testResponse.getPrimaryAccountNumber());
         assertNotNull(testResponse.getRequestId());
-        assertEquals("468",testResponse.getCardSecurityCode());
+        assertEquals("946",testResponse.getCardSecurityCode());
 
         verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
@@ -395,7 +395,7 @@ public class TestEWSSimulatorEndpoint {
         TokenizeResponse response = ewsSimulatorEndpoint.tokenize(request, header);
 
         assertEquals("615348468498000", response.getToken());
-        assertEquals(true, response.isTokenNewlyGenerated());
+        assertEquals(false, response.isTokenNewlyGenerated());
         assertNotNull(response.getRequestId());
 
         verify(validatorService, times(1)).validateRequest(request, header);
@@ -543,11 +543,11 @@ public class TestEWSSimulatorEndpoint {
         List<Card> cards = request.getCard();
 
         Card card1 = new Card();
-        card1.setPrimaryAccountNumber("1234567891011123");
+        card1.setPrimaryAccountNumber("1234567891011133");
         cards.add(card1);
 
         Card card2 = new Card();
-        card2.setPrimaryAccountNumber("1234567891011000");
+        card2.setPrimaryAccountNumber("1234567891010000");
         cards.add(card2);
 
         willDoNothing().given(validatorService).validateRequest(request, header);
@@ -878,7 +878,7 @@ public class TestEWSSimulatorEndpoint {
         request.setMerchant(merchant);
 
         Account errorAccount = new Account();
-        errorAccount.setAccountNumber("1234567890004");
+        errorAccount.setAccountNumber("123456780044");
         errorAccount.setAccountType(AccountType.CHECKING);
         errorAccount.setRoutingNumber("123456789");
         request.setAccount(errorAccount);

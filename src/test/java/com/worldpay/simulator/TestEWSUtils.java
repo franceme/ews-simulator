@@ -47,7 +47,7 @@ public class TestEWSUtils {
     invalidProperty = "asd21132";
     defaultPAN = "3000109999988888566";
     defaultRegId = "0100030011116658";
-    cvv = "688";
+    cvv = "768";
     token = "1252645696785667688";
     SAVINGS = AccountType.SAVINGS;
     CHECKING = AccountType.CHECKING;
@@ -122,7 +122,7 @@ public class TestEWSUtils {
 
   @Test(expected = Exception.class)
   public void handleDesiredExceptions_throwException(){
-    EWSUtils.handleDesiredExceptions("1003");
+    EWSUtils.handleDesiredExceptions("10033");
   }
 
   @Test
@@ -189,10 +189,10 @@ public class TestEWSUtils {
 
   @Test
   public void testGetAccountType(){
-    assertEquals(CHECKING,EWSUtils.getAccountType("120"));
-    assertEquals(SAVINGS,EWSUtils.getAccountType("121"));
+    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("120"));
+    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("121"));
     assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("122"));
-    assertEquals(CORPORATE_SAVINGS,EWSUtils.getAccountType("123"));
+    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("123"));
   }
 
   @Test
@@ -219,8 +219,8 @@ public class TestEWSUtils {
 
   @Test
   public void testGetError(){
-    assertNull(EWSUtils.getError("001"));
-    VError tempError = EWSUtils.getError("004");
+    assertNull(EWSUtils.getError("0011"));
+    VError tempError = EWSUtils.getError("0044");
     assertEquals(error1.getId(),tempError.getId());
     assertEquals(error1.getCode(),tempError.getCode());
     assertEquals(error1.getMessage(),tempError.getMessage());

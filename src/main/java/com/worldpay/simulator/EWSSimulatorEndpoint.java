@@ -60,7 +60,7 @@ public class EWSSimulatorEndpoint {
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if(lengthPAN >= 3 && (primaryAccountNumber.substring(lengthPAN - 3).equals("000"))) {
+        if(lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
             response.setTokenNewlyGenerated(true);
         }else {
             response.setTokenNewlyGenerated(false);
@@ -86,7 +86,7 @@ public class EWSSimulatorEndpoint {
         int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if(lengthPAN >= 3 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 3)))) {
+        if(lengthPAN >= 4 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1)))) {
             tokenizeResponse.setTokenNewlyGenerated(true);
         } else {
             tokenizeResponse.setTokenNewlyGenerated(false);
@@ -156,8 +156,9 @@ public class EWSSimulatorEndpoint {
                 // response.getToken().add(token);
                 // break;
             }else{
+                int panLength = PAN.length();
                 token.setTokenValue(EWSUtils.getPANToken(PAN));
-                token.setTokenNewlyGenerated(PAN.endsWith("000") ? true:false);
+                token.setTokenNewlyGenerated(PAN.substring(panLength - 4, panLength - 1).equals("000") ? true:false);
             }
             response.getToken().add(token);
 
@@ -219,7 +220,7 @@ public class EWSSimulatorEndpoint {
             response.setToken(token);
         }else{
             token.setTokenValue(EWSUtils.generateEcheckToken(AccNum,request.getAccount().getAccountType()));
-            token.setTokenNewlyGenerated(AccNum.endsWith("000")?true:false);
+            token.setTokenNewlyGenerated(AccNum.substring(AccNum.length() - 4, AccNum.length() - 1).equals("000")?true:false);
         }
         response.setToken(token);
 
@@ -268,7 +269,7 @@ public class EWSSimulatorEndpoint {
             String primaryAccountNumber = card.getPrimaryAccountNumber();
             int lengthPAN = primaryAccountNumber.length();
 
-            if ("000".equals(primaryAccountNumber.substring(lengthPAN - 3))) {
+            if ("000".equals(primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1))) {
                 tokenInquiryResponse.getToken().add(null);
             } else {
                 Token token = new Token();
@@ -303,7 +304,7 @@ public class EWSSimulatorEndpoint {
             answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
         }
         if (request.isExpirationDateRequested()){
-            answer.setExpirationDate("2308");
+            answer.setExpirationDate("0823");
         }
 
         answer.setPrimaryAccountNumber(primaryAccountNumber);
@@ -387,14 +388,14 @@ public class EWSSimulatorEndpoint {
         // set PAN (mandatory)
         answer.setPrimaryAccountNumber(PAN);
         // set expiration date (mandatory)
-        // if card's cvv is odd, the expiration date would be 2308; otherwise empty
+        // if card's cvv is odd, the expiration date would be 0823; otherwise empty
         String CVV = EWSUtils.getCVVThroughToken(token);
-        answer.setExpirationDate("2308");
+        answer.setExpirationDate("0823");
         // set CVV (optional)
         if (request.isCardSecurityCodeRequested() != null && request.isCardSecurityCodeRequested()) {
             answer.setCardSecurityCode(CVV); }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
-        int indicator = (Integer.parseInt(regId.charAt(regId.length()-1)+"")) % 4;
+        int indicator = (Integer.parseInt(regId.charAt(regId.length()-2)+"")) % 4;
         if(indicator == 1) {
             answer.setWalletType(WalletType.ANDROID);
             answer.setElectronicCommerceIndicator("07");

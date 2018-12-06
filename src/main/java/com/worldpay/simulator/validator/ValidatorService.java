@@ -131,7 +131,8 @@ public class ValidatorService {
 
     public void addDelayBasedOnMerchantRefId(String merchantRefId) throws InterruptedException {
         if (merchantRefId != null) {
-            if (merchantRefId.length() > 2 && merchantRefId.substring(0, 2).equals("00")) {
+            int inputLength = merchantRefId.length();
+            if (inputLength > 2 && merchantRefId.substring(0, 2).equals("00")) {
                 int time = Integer.parseInt(merchantRefId.substring(2, 3));
                 sleep(time * 100);
             }
