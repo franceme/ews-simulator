@@ -88,6 +88,7 @@ Please see the [wiki](https://github.com/Vantiv/ews-simulator/wiki/Worldpay-EWS-
 ## Built With
 
 * [Gradle](https://gradle.org/) - The build tool
+* [Maven](https://maven.apache.org/) - Dependency Management
 
 ## Versioning
 
