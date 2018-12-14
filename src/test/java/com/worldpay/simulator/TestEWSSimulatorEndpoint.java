@@ -78,7 +78,7 @@ public class TestEWSSimulatorEndpoint {
         token = "468498435169468";
         PAN = "468498615349468";
         CVV = "776";
-        expirationDate = "0823";
+        expirationDate = "5001";
         rollupId = "1123";
         APPLE = "APPLE";
         ANDROID = "ANDROID";

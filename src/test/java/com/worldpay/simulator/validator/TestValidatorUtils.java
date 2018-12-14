@@ -26,6 +26,9 @@ public class TestValidatorUtils {
     private String token;
     private String account;
 
+    private String validExpireationDate1;
+    private String invalidExpireationDate1;
+
 
 
     @Before
@@ -46,6 +49,9 @@ public class TestValidatorUtils {
         LVT2 = "321456789123456789";
         token = "123456789012345678901234567890123456789012345678901";
         account = "1234567890123456";
+
+        validExpireationDate1 = "1212";
+        invalidExpireationDate1 = "5051";
         ValidatorUtils temp = new ValidatorUtils();
 
     }
@@ -140,9 +146,10 @@ public class TestValidatorUtils {
 
     @Test
     public void testIsValidExpiryDate(){
-        assertTrue(ValidatorUtils.isValidExpiryDate(CVV2));
+        assertTrue(ValidatorUtils.isValidExpiryDate(validExpireationDate1));
         assertFalse(ValidatorUtils.isValidExpiryDate(PAN1));
         assertFalse(ValidatorUtils.isValidExpiryDate(PAN2));
+        assertFalse(ValidatorUtils.isValidExpiryDate(invalidExpireationDate1));
     }
 
     @Test(expected = ClientFaultException.class)
