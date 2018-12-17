@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.8
+* **Feature** Stage mode to start in http mode
+
 ## 4.3.7
 * **BugFix** Expiration date response from MMYY to YYMM (0823 -> 5001)
 * **Feature** Add validation for expiration date
