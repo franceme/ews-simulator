@@ -13,7 +13,7 @@ public class ClientFaultException extends RuntimeException{
     public ClientFaultException(int errorId) {
         super(FAULT_STRING);
         if (!EWSUtils.isClientFaultError(errorId)) {
-            throw new ServerFaultException(3);
+            throw new ServerFaultException(103);
         }
         EWSError error = ErrorIdMap.getError(errorId);
         initRequestValidationfault(errorId, error, error.getErrorMessage());
@@ -22,7 +22,7 @@ public class ClientFaultException extends RuntimeException{
     public ClientFaultException(int errorId, String errorMessage) {
         super(FAULT_STRING);
         if (!EWSUtils.isClientFaultError(errorId)) {
-            throw new ServerFaultException(3);
+            throw new ServerFaultException(103);
         }
         EWSError error = ErrorIdMap.getError(errorId);
         initRequestValidationfault(errorId, error, errorMessage);

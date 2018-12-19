@@ -144,7 +144,7 @@ public class TestDetailSoapFaultDefinitionExceptionResolver {
     @Test
     public void testCreateServerFault() {
         ServerFault serverFault = exceptionResolverSpy.createServerFault();
-        assertEquals(2, (int) serverFault.getId());
+        assertEquals(102, (int) serverFault.getId());
         assertEquals("UNKNOWN_ERROR", serverFault.getCode());
         assertEquals("an unspecified error occurred.", serverFault.getMessage());
     }

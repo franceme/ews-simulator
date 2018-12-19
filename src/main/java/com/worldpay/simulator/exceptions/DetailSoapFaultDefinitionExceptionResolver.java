@@ -60,8 +60,8 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
     public ServerFault createServerFault() {
         ServerFault serverFault = new ServerFault();
         serverFault.setRequestId(EWSUtils.randomReqId());
-        serverFault.setId(2);
-        EWSError error = ErrorIdMap.getError(2);
+        serverFault.setId(102);
+        EWSError error = ErrorIdMap.getError(102);
         serverFault.setCode(error.getErrorCode());
         serverFault.setMessage(error.getErrorMessage());
 

@@ -8,8 +8,8 @@ import static org.junit.Assert.*;
 
 public class TestErrorIdMap {
 
-    private int errorValue = 1;
-    private int nonErrorValue = 11;
+    private int errorValue = 101;
+    private int nonErrorValue = 111;
     private ErrorIdMap errorIdMap;
 
 

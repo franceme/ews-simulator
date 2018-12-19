@@ -492,7 +492,7 @@ public class EWSSimulatorEndpoint {
         EchoResponse answer = new EchoResponse();
         String test = request.getTest();
         answer.setResponse(test);
-        answer.setProjectVersion("4.3.0-RELEASE");
+        answer.setProjectVersion("4.3.9-RELEASE");
         answer.setBuildNumber("devBuild");
         answer.setRevisionNumber("devBuild");
         answer.setHostEnvironment(Inet4Address.getLocalHost().getHostAddress());

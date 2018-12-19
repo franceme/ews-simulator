@@ -61,7 +61,7 @@ public class EWSUtils {
     public static String generateProperty(String input) {
 
         if(!isStringValidInteger(input))
-            throw new ClientFaultException(4,"Value data must be numeric");
+            throw new ClientFaultException(104,"Value data must be numeric");
 
         if(isValidPAN(input))
             return generatePropertyStrategyPAN(input);
@@ -148,6 +148,23 @@ public class EWSUtils {
         }
     }
 
+    public static void handleDesiredExceptionsForCVV(String input) {
+        String inputLast3;
+        int inputLength = input.length();
+        if (inputLength >= 3) {
+            int errorId = 0;
+            inputLast3 = input.substring(inputLength - 3,inputLength);
+            try {
+                errorId = Integer.parseInt(inputLast3);
+            } catch (NumberFormatException ex){
+                // Do Nothing
+            }
+
+            if (errorId > 0)
+                throwDesiredException(errorId);
+        }
+    }
+
     public static void throwDesiredException(int errorId) {
         if (isServerFaultError(errorId)) {
             throw new ServerFaultException(errorId);
@@ -157,7 +174,7 @@ public class EWSUtils {
     }
 
     public static boolean isServerFaultError(int errorId) {
-        return errorId == 1 || errorId == 2 || errorId == 3 || errorId == 8;
+        return errorId == 101 || errorId == 102 || errorId == 103 || errorId == 108;
     }
 
     public static boolean isClientFaultError(int errorId) {

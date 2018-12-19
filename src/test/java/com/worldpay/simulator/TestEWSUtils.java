@@ -54,7 +54,7 @@ public class TestEWSUtils {
     CORPORATE_CHECKING = AccountType.CORPORATE_CHECKING;
     CORPORATE_SAVINGS = AccountType.CORPORATE_SAVINGS;
     error1 = new VError();
-    error1.setId(4);
+    error1.setId(104);
     error1.setCode("INVALID_REQUEST");
     error1.setMessage("Invalid request (syntax error).");
     EWSUtils tempUtils = new EWSUtils();
@@ -122,7 +122,7 @@ public class TestEWSUtils {
 
   @Test(expected = Exception.class)
   public void handleDesiredExceptions_throwException(){
-    EWSUtils.handleDesiredExceptions("10033");
+    EWSUtils.handleDesiredExceptions("11033");
   }
 
   @Test
@@ -142,32 +142,32 @@ public class TestEWSUtils {
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_1(){
-    EWSUtils.throwDesiredException(1);
+    EWSUtils.throwDesiredException(101);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_2(){
-    EWSUtils.throwDesiredException(2);
+    EWSUtils.throwDesiredException(102);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_3(){
-    EWSUtils.throwDesiredException(3);
+    EWSUtils.throwDesiredException(103);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_8(){
-    EWSUtils.throwDesiredException(8);
+    EWSUtils.throwDesiredException(108);
   }
 
   @Test(expected = ClientFaultException.class)
   public void testThrowDesiredException_ClientFaultException(){
-    EWSUtils.throwDesiredException(7);
+    EWSUtils.throwDesiredException(107);
   }
 
   @Test
   public void testIsClientFaultError(){
-    assertTrue(EWSUtils.isClientFaultError(4));
+    assertTrue(EWSUtils.isClientFaultError(104));
     assertFalse(EWSUtils.isClientFaultError(2));
     assertFalse(EWSUtils.isClientFaultError(99));
   }
@@ -220,7 +220,7 @@ public class TestEWSUtils {
   @Test
   public void testGetError(){
     assertNull(EWSUtils.getError("0011"));
-    VError tempError = EWSUtils.getError("0044");
+    VError tempError = EWSUtils.getError("1044");
     assertEquals(error1.getId(),tempError.getId());
     assertEquals(error1.getCode(),tempError.getCode());
     assertEquals(error1.getMessage(),tempError.getMessage());

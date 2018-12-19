@@ -878,7 +878,7 @@ public class TestEWSSimulatorEndpoint {
         request.setMerchant(merchant);
 
         Account errorAccount = new Account();
-        errorAccount.setAccountNumber("123456780044");
+        errorAccount.setAccountNumber("123456781044");
         errorAccount.setAccountType(AccountType.CHECKING);
         errorAccount.setRoutingNumber("123456789");
         request.setAccount(errorAccount);

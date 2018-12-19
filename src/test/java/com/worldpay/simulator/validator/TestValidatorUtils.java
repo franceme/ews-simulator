@@ -154,7 +154,7 @@ public class TestValidatorUtils {
 
     @Test(expected = ClientFaultException.class)
     public void testHandleException_throw_exception(){
-        ValidatorUtils.handleException(4,"Invalid request (syntax error).");
+        ValidatorUtils.handleException(104,"Invalid request (syntax error).");
     }
 
 }

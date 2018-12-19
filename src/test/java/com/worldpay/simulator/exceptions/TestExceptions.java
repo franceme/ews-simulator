@@ -33,8 +33,8 @@ public class TestExceptions {
     public void setUp() {
 
         errorMessage = "error";
-        clientError = 4;
-        serverError = 1;
+        clientError = 104;
+        serverError = 101;
     }
 
     @Test
