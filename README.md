@@ -99,6 +99,7 @@ For the versions available, see the [tags on this repository](https://github.com
 * [**Ajjunesh Raju**](https://github.com/Ajjunesh)
 * [**Charmik Sheth**](https://github.com/Charmik-Sheth)
 * [**Chen Chang**](https://github.com/cc6980312)
+* [**Jason Hilliard**](https://github.com/jrhill95)
 * [**Kartik Dave**](https://github.com/davekartik24)
 
 See also the list of [contributors](https://github.com/vantiv/ews-simulator/contributors) who participated in this project.
