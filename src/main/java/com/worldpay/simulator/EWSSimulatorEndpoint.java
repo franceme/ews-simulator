@@ -41,15 +41,13 @@ public class EWSSimulatorEndpoint {
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
 
 
-
-
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
     public RegistrationResponse registration(@RequestPayload RegistrationRequest request,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException, TransformerException {
 
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         RegistrationResponse response = new RegistrationResponse();
 
@@ -60,9 +58,9 @@ public class EWSSimulatorEndpoint {
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if(lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
+        if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
             response.setTokenNewlyGenerated(true);
-        }else {
+        } else {
             response.setTokenNewlyGenerated(false);
         }
 
@@ -70,13 +68,12 @@ public class EWSSimulatorEndpoint {
     }
 
 
-
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenizeRequest")
     @ResponsePayload
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest,
                                      @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(tokenizeRequest,auth);
+        validatorService.validateRequest(tokenizeRequest, auth);
 
 
         TokenizeResponse tokenizeResponse = new TokenizeResponse();
@@ -86,7 +83,7 @@ public class EWSSimulatorEndpoint {
         int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if(lengthPAN >= 4 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1)))) {
+        if (lengthPAN >= 4 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1)))) {
             tokenizeResponse.setTokenNewlyGenerated(true);
         } else {
             tokenizeResponse.setTokenNewlyGenerated(false);
@@ -103,15 +100,15 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
         String cvv = request.getCardSecurityCode();
         String orderLVT = "3";
 
-        response.setOrderLVT(orderLVT+EWSUtils.generateRandomNumber(17));
+        response.setOrderLVT(orderLVT + EWSUtils.generateRandomNumber(17));
         response.setRequestId(EWSUtils.randomReqId());
-        addMerchantRefId(request,response);
+        addMerchantRefId(request, response);
         return response;
 
     }
@@ -120,7 +117,7 @@ public class EWSSimulatorEndpoint {
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenRegistrationRequest")
     @ResponsePayload
     public TokenRegistrationResponse tokenRegistration(@RequestPayload TokenRegistrationRequest tokenRegistrationRequest,
-                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+                                                       @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
         validatorService.validateRequest(tokenRegistrationRequest, auth);
 
@@ -141,72 +138,72 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         BatchTokenizeResponse response = new BatchTokenizeResponse();
 
-        for(Card card : request.getCard()){
+        for (Card card : request.getCard()) {
             String PAN = card.getPrimaryAccountNumber();
             Token token = new Token();
 
             VError error = getError(PAN);
-            if(error != null){
+            if (error != null) {
                 token.setError(error);
                 // break was specified in the document, but the cert environment behaves differently (So commenting out the below lines)
                 // response.getToken().add(token);
                 // break;
-            }else{
+            } else {
                 int panLength = PAN.length();
                 token.setTokenValue(EWSUtils.getPANToken(PAN));
-                token.setTokenNewlyGenerated(PAN.substring(panLength - 4, panLength - 1).equals("000") ? true:false);
+                token.setTokenNewlyGenerated(PAN.substring(panLength - 4, panLength - 1).equals("000") ? true : false);
             }
             response.getToken().add(token);
 
         }
-        addMerchantRefId(request,response);
+        addMerchantRefId(request, response);
         return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "BatchDetokenizeRequest")
     @ResponsePayload
     public BatchDetokenizeResponse batchDetokenize(@RequestPayload BatchDetokenizeRequest request,
-                                               @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+                                                   @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         BatchDetokenizeResponse response = new BatchDetokenizeResponse();
 
-        for(Token token : request.getToken()){
+        for (Token token : request.getToken()) {
             String tokenValue = token.getTokenValue();
             Card card = new Card();
 
             VError error = getError(tokenValue);
-            if(error != null){
+            if (error != null) {
                 card.setError(error);
                 // break was specified in the document, but the cert environment behaves differently (So commenting out the below lines)
                 //response.getCard().add(card);
                 //break;
-            }else{
+            } else {
                 card.setPrimaryAccountNumber(EWSUtils.getPAN(tokenValue));
             }
             response.getCard().add(card);
 
         }
 
-        addMerchantRefId(request,response);
+        addMerchantRefId(request, response);
         return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "ECheckTokenizeRequest")
     @ResponsePayload
     public ECheckTokenizeResponse echeckTokenize(@RequestPayload ECheckTokenizeRequest request,
-                                                   @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+                                                 @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         ECheckTokenizeResponse response = new ECheckTokenizeResponse();
 
@@ -215,32 +212,32 @@ public class EWSSimulatorEndpoint {
         ECheckToken token = new ECheckToken();
 
         VError error = getError(AccNum);
-        if(error != null){
+        if (error != null) {
             token.setError(error);
             response.setToken(token);
-        }else{
-            token.setTokenValue(EWSUtils.generateEcheckToken(AccNum,request.getAccount().getAccountType()));
-            token.setTokenNewlyGenerated(AccNum.substring(AccNum.length() - 4, AccNum.length() - 1).equals("000")?true:false);
+        } else {
+            token.setTokenValue(EWSUtils.generateEcheckToken(AccNum, request.getAccount().getAccountType()));
+            token.setTokenNewlyGenerated(AccNum.substring(AccNum.length() - 4, AccNum.length() - 1).equals("000") ? true : false);
         }
         response.setToken(token);
 
-        addMerchantRefId(request,response);
+        addMerchantRefId(request, response);
         return response;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "ECheckDetokenizeRequest")
     @ResponsePayload
     public ECheckDetokenizeResponse eCheckDetokenizeResponse(@RequestPayload ECheckDetokenizeRequest request,
-                                                 @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
+                                                             @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
         String token = request.getToken().getTokenValue();
         String PAN = EWSUtils.generateEcheckAccount(token);
-        String AccountTypeValue = token.substring(token.length()-1,token.length());
+        String AccountTypeValue = token.substring(token.length() - 1, token.length());
 
         Account account = new Account();
 
@@ -250,7 +247,7 @@ public class EWSSimulatorEndpoint {
 
         response.setAccount(account);
 
-        addMerchantRefId(request,response);
+        addMerchantRefId(request, response);
         return response;
     }
 
@@ -260,12 +257,12 @@ public class EWSSimulatorEndpoint {
     public TokenInquiryResponse tokenInquiry(@RequestPayload TokenInquiryRequest tokenInquiryRequest,
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(tokenInquiryRequest,auth);
+        validatorService.validateRequest(tokenInquiryRequest, auth);
 
         TokenInquiryResponse tokenInquiryResponse = new TokenInquiryResponse();
         addMerchantRefId(tokenInquiryRequest, tokenInquiryResponse);
 
-        for (Card card: tokenInquiryRequest.getCard()) {
+        for (Card card : tokenInquiryRequest.getCard()) {
             String primaryAccountNumber = card.getPrimaryAccountNumber();
             int lengthPAN = primaryAccountNumber.length();
 
@@ -289,7 +286,7 @@ public class EWSSimulatorEndpoint {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         DetokenizeResponse answer = new DetokenizeResponse();
 
@@ -300,10 +297,10 @@ public class EWSSimulatorEndpoint {
 
         String primaryAccountNumber = EWSUtils.getPAN(token);
 
-        if (request.isCVV2Requested()){
+        if (request.isCVV2Requested()) {
             answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
         }
-        if (request.isExpirationDateRequested()){
+        if (request.isExpirationDateRequested()) {
             answer.setExpirationDate("0150");
         }
 
@@ -314,7 +311,6 @@ public class EWSSimulatorEndpoint {
     }
 
 
-
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "OrderDeregistrationRequest")
     @ResponsePayload
     public OrderDeregistrationResponse orderDeregistration(@RequestPayload OrderDeregistrationRequest request,
@@ -322,7 +318,7 @@ public class EWSSimulatorEndpoint {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         OrderDeregistrationResponse answer = new OrderDeregistrationResponse();
 
@@ -332,7 +328,7 @@ public class EWSSimulatorEndpoint {
 
         String token = request.getToken();
 
-        if(!isValidToken(token) || token.length()<3) token = "3000100011118566";
+        if (!isValidToken(token) || token.length() < 3) token = "3000100011118566";
 
         String PAN = EWSUtils.getPAN(token);
 
@@ -373,7 +369,7 @@ public class EWSSimulatorEndpoint {
     public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         DeregistrationResponse answer = new DeregistrationResponse();
         String regId = request.getRegId();
@@ -393,24 +389,27 @@ public class EWSSimulatorEndpoint {
         answer.setExpirationDate("0150");
         // set CVV (optional)
         if (request.isCardSecurityCodeRequested() != null && request.isCardSecurityCodeRequested()) {
-            answer.setCardSecurityCode(CVV); }// set wallet type and ECI
+            answer.setCardSecurityCode(CVV);
+        }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
-        int indicator = (Integer.parseInt(regId.charAt(regId.length()-2)+"")) % 4;
-        if(indicator == 1) {
+        int indicator = (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
+        if (indicator == 1) {
             answer.setWalletType(WalletType.ANDROID);
             answer.setElectronicCommerceIndicator("07");
-        } else if(indicator == 2) {
+        } else if (indicator == 2) {
             answer.setWalletType(WalletType.APPLE);
             answer.setElectronicCommerceIndicator("05");
-        } else if(indicator == 3) {
+        } else if (indicator == 3) {
             answer.setWalletType(WalletType.SAMSUNG);
-            answer.setElectronicCommerceIndicator("07"); }// set cryptogram
+            answer.setElectronicCommerceIndicator("07");
+        }// set cryptogram
         // if indicator equals 0 it means it's not DPAN
-        if(indicator != 0) {
+        if (indicator != 0) {
             // the soap framework will re-encode this value on its own.
             byte[] cryptogramBytes = new Base64().decode(DEMOBYTE.getBytes());
             answer.setCryptogram(cryptogramBytes);
-        }return answer;
+        }
+        return answer;
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "DecryptRequest")
@@ -446,7 +445,7 @@ public class EWSSimulatorEndpoint {
         Card decryptedCard = new Card();
 
         String encryptedPAN = encryptedCard.getPrimaryAccountNumber();
-        if (encryptedPAN != null){
+        if (encryptedPAN != null) {
             decryptedCard.setPrimaryAccountNumber(EWSUtils.decrypt(encryptedPAN));
             decryptedCard.setExpirationDate(encryptedCard.getExpirationDate());
         } else {
@@ -461,7 +460,7 @@ public class EWSSimulatorEndpoint {
         Card decryptedCard = new Card();
 
         String encryptedPAN = encryptedCard.getPrimaryAccountNumber();
-        if (encryptedPAN != null){
+        if (encryptedPAN != null) {
             decryptedCard.setPrimaryAccountNumber(EWSUtils.decrypt(encryptedPAN));
             decryptedCard.setSecurityCode(encryptedCard.getSecurityCode());
         } else {
@@ -487,12 +486,12 @@ public class EWSSimulatorEndpoint {
 
         httpHeaderUtils.customizeHttpResponseHeader();
 
-        validatorService.validateRequest(request,auth);
+        validatorService.validateRequest(request, auth);
 
         EchoResponse answer = new EchoResponse();
         String test = request.getTest();
         answer.setResponse(test);
-        answer.setProjectVersion("4.3.9-RELEASE");
+        answer.setProjectVersion("4.3.10-RELEASE");
         answer.setBuildNumber("devBuild");
         answer.setRevisionNumber("devBuild");
         answer.setHostEnvironment(Inet4Address.getLocalHost().getHostAddress());
