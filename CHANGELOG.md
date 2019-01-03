@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.10
+* **BugFix** Expiration date response from YYMM to MMYY (5001 -> 0150)
+
 ## 4.3.9
 * **Change** Error codes changed to 101-110 from 1-10
 * **Change** Started using PAN, regId, token, or CVV for simulating errors and delay instead of merchant ref_id

@@ -77,7 +77,7 @@ public class ValidatorUtils {
     public static boolean isValidExpiryDate(String expiryDate){
         return (isStringValidInteger(expiryDate) &&
                 expiryDate.length() == EXPIRY_DATE_LENGTH)&&
-                isValidMonth(Integer.parseInt(expiryDate.substring(2)));
+                isValidMonth(Integer.parseInt(expiryDate.substring(0,2)));
     }
 
     private static boolean isValidMonth(int i){
