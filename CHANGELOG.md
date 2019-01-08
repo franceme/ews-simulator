@@ -1,5 +1,7 @@
 CHANGELOG
 ---------
+## 4.3.11
+* **Change** OrderLVT generation in orderRegistration is now deterministic based on given CVV
 
 ## 4.3.10
 * **BugFix** Expiration date response from YYMM to MMYY (5001 -> 0150)
