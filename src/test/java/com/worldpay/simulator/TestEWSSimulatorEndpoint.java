@@ -912,6 +912,9 @@ public class TestEWSSimulatorEndpoint {
     }
 
 
+
+
+
     @Test
     public void testOrderRegistration() throws Exception {
 
@@ -926,8 +929,66 @@ public class TestEWSSimulatorEndpoint {
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
 
         OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
-        assertEquals( true,response.getOrderLVT().startsWith("3"));
+        String orderLVT = response.getOrderLVT();
+        assertEquals( true, orderLVT.startsWith("3"));
+        assertEquals("312312312312312312", orderLVT);
+        assertEquals(18, orderLVT.length());
+
+
+
         verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
+
+    @Test
+    public void testOrderRegistrationEmptyCVV() throws Exception {
+
+        OrderRegistrationRequest request = new OrderRegistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setCardSecurityCode("");
+
+
+        willDoNothing().given(validatorService).validateRequest(request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
+        String orderLVT = response.getOrderLVT();
+        assertEquals( true, orderLVT.startsWith("3"));
+        assertEquals("300000000000000000", orderLVT);
+        assertEquals(18, orderLVT.length());
+
+
+
+        verify(validatorService, times(1)).validateRequest(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+    @Test
+    public void testOrderRegistrationCVVLong() throws Exception {
+
+        OrderRegistrationRequest request = new OrderRegistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setCardSecurityCode("123456789123456789");
+
+
+        willDoNothing().given(validatorService).validateRequest(request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        OrderRegistrationResponse response = ewsSimulatorEndpoint.orderRegistration(request,header);
+        String orderLVT = response.getOrderLVT();
+        assertEquals( true, orderLVT.startsWith("3"));
+        assertEquals("312345678912345678", orderLVT);
+        assertEquals(18, orderLVT.length());
+
+
+
+        verify(validatorService, times(1)).validateRequest(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+
 }

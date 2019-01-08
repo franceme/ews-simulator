@@ -106,7 +106,16 @@ public class EWSSimulatorEndpoint {
         String cvv = request.getCardSecurityCode();
         String orderLVT = "3";
 
-        response.setOrderLVT(orderLVT + EWSUtils.generateRandomNumber(17));
+        //Generates the OrderLVT by repeating cvv until its at least 18 characters
+        while(orderLVT.length() < 18) {
+            if (!(cvv.equals(""))) {
+                orderLVT += cvv;
+            } else {
+                orderLVT += "00000000000000000";
+            }
+        }
+        response.setOrderLVT(orderLVT.substring(0,18));
+
         response.setRequestId(EWSUtils.randomReqId());
         addMerchantRefId(request, response);
         return response;
