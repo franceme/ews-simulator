@@ -1,5 +1,8 @@
 CHANGELOG
 ---------
+## 4.3.12
+* **BugFix** OrderDeregistration validation conditions fix
+
 ## 4.3.11
 * **Change** OrderLVT generation in orderRegistration is now deterministic based on given CVV
 

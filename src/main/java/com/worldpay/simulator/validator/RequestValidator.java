@@ -400,7 +400,7 @@ public class RequestValidator {
         if(!isValidOrderLVT(request.getOrderLVT()) )
             handleException(INVALID_REQ,INVALID_SECURITY_CODE);
 
-        if(isValidToken(request.getToken()))
+        if(!isValidToken(request.getToken()))
             handleException(INVALID_REQ,INVALID_TOKEN);
     }
 
