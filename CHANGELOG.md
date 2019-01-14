@@ -1,5 +1,8 @@
 CHANGELOG
 ---------
+## 4.3.13
+* **BugFIx** Expiration date response changed (again) from MMYY to YYMM (0150 -> 5001)
+
 ## 4.3.12
 * **BugFix** OrderDeregistration validation conditions fix
 
