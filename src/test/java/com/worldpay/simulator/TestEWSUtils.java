@@ -35,15 +35,15 @@ public class TestEWSUtils {
 
   @Before
   public void setUp(){
-    PAN1 = "123513521231";
+    PAN1 = "1235130000521231";
     PAN2 = "251";
-    PAN3 = "7123513521231";
+    PAN3 = "7123510003521231";
     regId1 = "3153219999999471321";
     regId2 = "251";
     regId3 = "1532179999996471321";
     property1 = "123513251231";
     property2 = "251";
-    property3 = "7123512531231";
+    property3 = "7123512530001231";
     invalidProperty = "asd21132";
     defaultPAN = "3000109999988888566";
     defaultRegId = "0100030011116658";
@@ -203,7 +203,7 @@ public class TestEWSUtils {
 
   @Test
   public void testDecrypt(){
-    assertEquals("132125315321",EWSUtils.decrypt(PAN1));
+    assertEquals("1321250000315321",EWSUtils.decrypt(PAN1));
   }
 
   @Test
