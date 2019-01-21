@@ -227,4 +227,17 @@ public class TestEWSUtils {
 
   }
 
+  @Test
+  public void testConvertRegIdToPAN() {
+      String regId = "1234567890123456799";
+      String actualPAN = EWSUtils.convertRegIdToPAN(regId);
+      String expectedPAN = "6543212109876549976";
+      assertEquals(expectedPAN, actualPAN);
+
+      regId = "9056849999999951001";
+      actualPAN = EWSUtils.convertRegIdToPAN(regId);
+      expectedPAN = "4865090000041001";
+      assertEquals(expectedPAN, actualPAN);
+  }
+
 }

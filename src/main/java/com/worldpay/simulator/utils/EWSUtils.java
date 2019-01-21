@@ -210,8 +210,13 @@ public class EWSUtils {
         Long inputValue = Long.parseLong(middle);
         Long middleValue = (l-inputValue);
 
+        StringBuilder middleSb = new StringBuilder(middleValue.toString());
 
-        return firstSix.reverse().toString() + middleValue + lastFour.reverse().toString();
+        while(middleSb.length() < 6)
+            middleSb.insert(0,"0");
+
+
+        return firstSix.reverse().toString() + middleSb.toString() + lastFour.reverse().toString();
     }
 
 

@@ -1,5 +1,8 @@
 CHANGELOG
 ---------
+## 4.3.14
+* **BugFix** Deregistration not maintaining 16 digits while converting from PAN
+
 ## 4.3.13
 * **BugFIx** Expiration date response changed (again) from MMYY to YYMM (0150 -> 5001)
 
