@@ -1,5 +1,8 @@
 CHANGELOG
 ---------
+## 4.3.15
+* **BugFix** Updated Deregistration to produce 15-digit PAN for generated PANs starting with 3
+
 ## 4.3.14
 * **BugFix** Deregistration not maintaining 16 digits while converting from PAN
 
