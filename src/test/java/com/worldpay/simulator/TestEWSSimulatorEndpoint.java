@@ -71,6 +71,10 @@ public class TestEWSSimulatorEndpoint {
     private String SAMSUNGToken;
     private String SAMSUNGRegId;
 
+    private String AMEXPAN;
+    private String AMEXToken;
+    private String AMEXRegId;
+
 
     @Before
     public void setup() {
@@ -100,6 +104,10 @@ public class TestEWSSimulatorEndpoint {
         SAMSUNGPAN ="4684983846512427768";
         SAMSUNGToken="4684982421564837768";
         SAMSUNGRegId= "8948646153487578677";
+
+        AMEXPAN = "378810200335459";
+        AMEXToken = "378810330025459";
+        AMEXRegId = "0188739999799669545";
     }
 
     @Test
@@ -533,6 +541,32 @@ public class TestEWSSimulatorEndpoint {
         verify(validatorService, times(1)).validateRequest(request, header);
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
+
+    @Test
+    public void testDeregistration_DPAN_AMEX() throws Exception {
+        DeregistrationRequest request = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setRegId(AMEXRegId);
+        request.setCardSecurityCodeRequested(false);
+
+        willDoNothing().given(validatorService).validateRequest(request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals(AMEXToken,testResponse.getToken());
+        assertEquals(AMEXPAN,testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+
+        verify(validatorService, times(1)).validateRequest(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
 
     @Test
     public void testTokenInquiry() throws Exception {

@@ -203,20 +203,26 @@ public class EWSUtils {
     public static String convertRegIdToPAN(String regId){
         int lengthInput = regId.length();
         String middle = regId.substring(6, lengthInput - 4);
-        StringBuilder lastFour = new StringBuilder(regId.substring(lengthInput - 4));
-        StringBuilder firstSix = new StringBuilder(regId.substring(0,6));
-
+        StringBuilder lastFour = new StringBuilder(regId.substring(lengthInput - 4)).reverse();
+        StringBuilder firstSix = new StringBuilder(regId.substring(0,6)).reverse();
+        char firstDigit = firstSix.charAt(0);
         Long l = 999999999l;
+
         Long inputValue = Long.parseLong(middle);
         Long middleValue = (l-inputValue);
 
         StringBuilder middleSb = new StringBuilder(middleValue.toString());
 
-        while(middleSb.length() < 6)
-            middleSb.insert(0,"0");
+        if (firstDigit == '3') {
+            while (middleSb.length() < 5)
+                middleSb.insert(0, "0");
+        } else {
+            while (middleSb.length() < 6)
+                middleSb.insert(0, "0");
+        }
 
 
-        return firstSix.reverse().toString() + middleSb.toString() + lastFour.reverse().toString();
+        return firstSix.toString() + middleSb.toString() + lastFour.toString();
     }
 
 
