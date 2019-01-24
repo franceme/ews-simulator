@@ -8,7 +8,6 @@ import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
 import java.util.Random;
 import java.util.UUID;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.worldpay.simulator.AccountType;
 import com.worldpay.simulator.WalletType;
 import com.worldpay.simulator.errors.EWSError;
@@ -16,7 +15,9 @@ import com.worldpay.simulator.errors.ErrorIdMap;
 import com.worldpay.simulator.VError;
 import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.exceptions.ServerFaultException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EWSUtils {
     private static String defaultPan = "3000100011118566";
 
