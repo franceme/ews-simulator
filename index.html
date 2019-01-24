@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EWS Simulator v4.x</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-grid.css">
+    <link rel="stylesheet" href="css/bootstrap-reboot.css">
+    <link rel="stylesheet" href="css/cheatsheet.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="js/common.js"></script>
+    <script src="js/cheatsheet.js"></script>
+
+</head>
+<body>
+<div class="container">
+    <h1>EWS Simulator responses</h1>
+    <div class="row">
+        <p>The simulator generates responses based on the input.
+            Use the below form to verify the responses that you'll get from the simulator based on the input.</p>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Input</h4>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">PAN</span>
+                </div>
+                <input type="text" id="input-pan" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" >
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Token</span>
+                </div>
+                <input type="text" id="input-token" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">RegId</span>
+                </div>
+                <input type="text" id="input-regid" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">CVV</span>
+                </div>
+                <input type="text" id="input-cvv" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <!--<div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Token Newly Generated</span>
+                </div>
+                <input type="text" id="input-tokennewlygen" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Expiration Date</span>
+                </div>
+                <input type="text" id="input-expdate" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">ECI</span>
+                </div>
+                <input type="text" id="input-eci" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Wallet Type</span>
+                </div>
+                <input type="text" id="input-wallet" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">CVV2</span>
+                </div>
+                <input type="text" id="input-cvv" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>-->
+            <button type="button" id="input-btn" class="btn btn-primary">Generate Output</button>
+            <button type="button" id="input-reset-btn" class="btn btn-default">Reset Input</button>
+
+            <br>
+            <br>
+
+            <!-- Tab links -->
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'Errors')">Errors</button>
+                <button class="tablinks" onclick="openTab(event, 'PAN')">PAN</button>
+                <button class="tablinks" onclick="openTab(event, 'Token')">Token</button>
+                <button class="tablinks" onclick="openTab(event, 'RegID')">RegID</button>
+                <button class="tablinks" onclick="openTab(event, 'TokenNew')">TokenNewlyGenerated</button>
+                <button class="tablinks" onclick="openTab(event, 'ExpDate')">ExpDate</button>
+                <button class="tablinks" onclick="openTab(event, 'ECI')">ECI</button>
+                <button class="tablinks" onclick="openTab(event, 'Wallet')">WalletType</button>
+                <button class="tablinks" onclick="openTab(event, 'CVV2')">CVV2</button>
+                <button class="tablinks" onclick="openTab(event, 'OrderLVT')">OrderLVT</button>
+
+            </div>
+
+            <!-- Tab content -->
+            <div id="Errors" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">ErrorCode</th>
+                    <th scope="col">Error</th>
+
+                    <tr>
+                        <td>101</td>
+                        <td>SERVICE_NOT_IMPLEMENTED</td>
+                    </tr>
+                    <tr>
+                        <td>102</td>
+                        <td>UNKNOWN_ERROR</td>
+                    </tr>
+                    <tr>
+                        <td>103</td>
+                        <td>INTERNAL_ERROR</td>
+                    </tr>
+                    <tr>
+                        <td>104</td>
+                        <td>INVALID_REQUEST</td>
+                    </tr>
+                    <tr>
+                        <td>105</td>
+                        <td>DETOKENIZATION_PAN_INVALID</td>
+                    </tr>
+                    <tr>
+                        <td>106</td>
+                        <td>DECRYPTION_TOKEN_FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>107</td>
+                        <td>TOKEN_OR_REG_ID_GENERATION_FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>108</td>
+                        <td>SERVICE_TIMED_OUT</td>
+                    </tr>
+                    <tr>
+                        <td>109</td>
+                        <td>TOKEN_ALREADY_EXISTS</td>
+                    </tr>
+                    <tr>
+                        <td>110</td>
+                        <td>PAN_ALREADY_EXISTS</td>
+                    </tr>
+
+                </table>
+            </div>
+
+            <div id="PAN" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            Token
+                        </td>
+                        <td>
+                            Detokenize
+                        </td>
+                        <td>
+                            Take Token value, keep first six and last four digits the same, reverse rest
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            RegID
+                        </td>
+                        <td>
+                            Deregistration
+                        </td>
+                        <td>
+                            Reverse first six and last four digits of RegId, subtract the remaining digits from 999999999, add 0's at beginning until 6 digits (or 5 if generated PAN starts with 3)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="Token" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            PAN
+                        </td>
+                        <td>
+                            Registration
+                        </td>
+                        <td>
+                            Take PAN, keep first six and last four digits the same, and reverse the rest
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            RegID
+                        </td>
+                        <td>
+                            Deregistration
+                        </td>
+                        <td>
+                            Reverse first six and last four digits of the RegId, subtract the remaining digits from
+                            999999999, add 0's until reaching 9 digits, then reverse all but first six and last four digits
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="RegID" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            PAN
+                        </td>
+                        <td>
+                            Registration, Tokenize, TokenInquiry
+                        </td>
+                        <td>
+                            Reverse first six and last four digits of PAN, subtract remaining digits from 999999999; then, add 0's at beginning until 6 digits (5 if PAN starts with 3)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Token
+                        </td>
+                        <td>
+                            TokenRegistration
+                        </td>
+                        <td>
+                            Reverse first six and last four digits of Token, then reverse remaining digits, OR same as Token if less than 4 digits
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="TokenNew" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            PAN
+                        </td>
+                        <td>
+                            Registration, Tokenize
+                        </td>
+                        <td>
+                            If PAN last three but one digits are 000, return true, else false
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="ExpDate" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            Token
+                        </td>
+                        <td>
+                            Detokenize
+                        </td>
+                        <td>
+                            Always 2308
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            RegID
+                        </td>
+                        <td>
+                            Deregistration
+                        </td>
+                        <td>
+                            Always 2308
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="ECI" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            RegID
+                        </td>
+                        <td>
+                            Deregistration
+                        </td>
+                        <td>
+                            Second to last digit of RegId mod 4 (1 = 07, 2 = 05, 3 = 07)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="Wallet" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            RegID
+                        </td>
+                        <td>
+                            Deregistration
+                        </td>
+                        <td>
+                            Second to last digit of RegId mod 4 (1 = ANDROID, 2 = APPLE, 3 = SAMSUNG)
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="CVV2" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            Token
+                        </td>
+                        <td>
+                            Detokenize
+                        </td>
+                        <td>
+                            Remove last digit from Token value, take last three digits of that
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Token, OrderLVT
+                        </td>
+                        <td>
+                            OrderDeregistration
+                        </td>
+                        <td>
+                            If OrderLVT does not start with 3 and does not have third digit of either 6, 7, 8, or 9, take last three digits of Token
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="OrderLVT" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Inputs</th>
+                    <th scope="col">Methods</th>
+                    <th scope="col">Rules</th>
+                    <tr>
+                        <td>
+                            CVV
+                        </td>
+                        <td>
+                            OrderRegistration
+                        </td>
+                        <td>
+                            Repeat CVV for 17 digits, crop off excess digits at end, and add a 3 before first digit, or add a 3 in front of 17 0's if CVV is empty
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+
+
+
+
+
+        </div>
+        <div class="col-md-6">
+            <h4>Output</h4>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">PAN</span>
+                </div>
+                <input type="text" id="output-pan" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Token</span>
+                </div>
+                <input type="text" id="output-token" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">RegId</span>
+                </div>
+                <input type="text" id="output-regid" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Token Newly Generated</span>
+                </div>
+                <input type="text" id="output-tokennewlygen" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Expiration Date</span>
+                </div>
+                <input type="text" id="output-expdate" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">ECI</span>
+                </div>
+                <input type="text" id="output-eci" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Wallet Type</span>
+                </div>
+                <input type="text" id="output-wallet" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">CVV2</span>
+                </div>
+                <input type="text" id="output-cvv" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">OrderLVT</span>
+                </div>
+                <input type="text" id="output-orderlvt" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <button type="button" id="output-btn" class="btn btn-success col-centered">Generate Input</button>
+            <button type="button" id="output-reset-btn" class="btn btn-default">Reset Output</button>
+        </div>
+    </div>
+
+
+
+</div>
+
+</body>
+</html>
