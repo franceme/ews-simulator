@@ -8,7 +8,6 @@ import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -30,6 +29,8 @@ import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+@RestController
+@Endpoint
 public class EWSSimulatorEndpoint {
 
     @Autowired
@@ -51,33 +52,66 @@ public class EWSSimulatorEndpoint {
 //
 //            return response;
 //        }
-@RequestMapping("/greeting")
-    public Car greeting(@RequestParam(value="primaryAccountNumber", defaultValue="4100000000000027") String primaryAccountNumber) {
-            String a = EWSUtils.getPANToken(primaryAccountNumber);
-            String b = EWSUtils.getRegIdFromPAN(primaryAccountNumber);
-            String c = EWSUtils.randomReqId();
-            int lengthPAN = primaryAccountNumber.length();
-            boolean temp;
-            if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
-                temp = true;
-            } else {
-                temp = false;
-            }
-            Car response = new Car(a, b, c, temp);
 
+@RequestMapping("/inputPAN")
+public OutputFields inputPAN(@RequestParam(value="primaryAccountNumber", defaultValue="4100000000000027") String primaryAccountNumber) {
+    //response.setContentType("application/json");
 
-            return response;
+    OutputFields response = new OutputFields();
+
+    int lengthPAN = primaryAccountNumber.length();
+    boolean temp;
+    if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
+        temp = true;
+    } else {
+        temp = false;
     }
-
-    @RequestMapping("/greeting2")
-    public Car greeting(@RequestParam(value="token", defaultValue="4100000000000027") String token) {
-        String a = EWSUtils.getRegIdFromToken(token)
-        String c = EWSUtils.randomReqId();
-        Car response = new Car(a, b, c, temp);
+    response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
+    response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
+    response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
 
-        return response;
-    }
+
+    return response;
+}
+//
+@RequestMapping("/inputToken")
+public OutputFields inputToken(@RequestParam(value="token", defaultValue="4100000000000027") String token) {
+    OutputFields response = new OutputFields();
+
+    response.setPAN(EWSUtils.getPAN(token));
+    response.setRegId(EWSUtils.getRegIdFromToken(token));
+    response.setExpDate(EWSUtils.getExpDate());
+    response.setCVV(EWSUtils.getCVVThroughToken(token));
+
+    return response;
+}
+
+@RequestMapping("/inputRegId")
+public OutputFields inputRegId(@RequestParam(value="regId", defaultValue="4100000000000027") String regId) {
+    OutputFields response = new OutputFields();
+
+    response.setPAN(EWSUtils.convertRegIdToPAN(regId));
+    response.setToken(EWSUtils.getPANToken(response.getPAN()));
+    response.setExpDate(EWSUtils.getExpDate());
+    int indicator = EWSUtils.getIndicator(regId);
+    response.setECI(EWSUtils.getEci(indicator));
+    response.setWalletType(EWSUtils.getWalletType(indicator));
+
+    return response;
+}
+
+@RequestMapping("/inputCVV")
+public OutputFields greeting(@RequestParam(value="cvv", defaultValue="4100000000000027") String cvv) {
+    OutputFields response = new OutputFields();
+    response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
+
+    return response;
+}
+
+
+
+
 
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
