@@ -80,7 +80,6 @@ $(document).ready(function () {
 })
 
 function processInputRegId() {
-
     let regId = $("#input-regid").val();
     let first6 = regId.substr(0, 6);
     let last4 = regId.substr(regId.length - 4, regId.length);
@@ -115,7 +114,6 @@ function processInputRegId() {
 }
 
 function processInputPan () {
-
     let pan = $("#input-pan").val();
     let first6 = pan.substr(0, 6);
     let last4 = pan.substr(pan.length - 4, pan.length);
