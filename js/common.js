@@ -80,6 +80,7 @@ $(document).ready(function () {
 })
 
 function processInputRegId() {
+
     let regId = $("#input-regid").val();
     let first6 = regId.substr(0, 6);
     let last4 = regId.substr(regId.length - 4, regId.length);
@@ -114,20 +115,35 @@ function processInputRegId() {
 }
 
 function processInputPan () {
+    console.log("herhe");
     let pan = $("#input-pan").val();
-    let first6 = pan.substr(0, 6);
-    let last4 = pan.substr(pan.length - 4, pan.length);
-    let mid = pan.substr(6, pan.length - 10);
-    let regId = '999999999' - mid;
-    let output_mid = mid.split("").reverse().join("");
-    let isTokenNew = pan.substr(pan.length-4, 3);
-    $("#output-token").val(first6 + output_mid + last4);
-    if (isTokenNew == '000') {
-        $("#output-tokennewlygen").val("true");
-    } else {
-        $("#output-tokennewlygen").val("false");
-    }
-    $("#output-regid").val(first6.split("").reverse().join("") + regId + last4.split("").reverse().join(""));
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "/sample/greeting", true);
+        xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    xhttp.onreadystatechange = function() {
+        console.log(xhttp);
+        if (this.readyState == 4 && this.status == 200) {
+            // Typical action to be performed when the document is ready:
+            console.log(xhttp.responseText);
+        }
+    };
+
+    xhttp.send("primaryAccountNumber=" + pan);
+    // let pan = $("#input-pan").val();
+    // let first6 = pan.substr(0, 6);
+    // let last4 = pan.substr(pan.length - 4, pan.length);
+    // let mid = pan.substr(6, pan.length - 10);
+    // let regId = '999999999' - mid;
+    // let output_mid = mid.split("").reverse().join("");
+    // let isTokenNew = pan.substr(pan.length-4, 3);
+    // $("#output-token").val(first6 + output_mid + last4);
+    // if (isTokenNew == '000') {
+    //     $("#output-tokennewlygen").val("true");
+    // } else {
+    //     $("#output-tokennewlygen").val("false");
+    // }
+    // $("#output-regid").val(first6.split("").reverse().join("") + regId + last4.split("").reverse().join(""));
 
 }
 
