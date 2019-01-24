@@ -10,6 +10,10 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -27,6 +31,7 @@ import java.net.UnknownHostException;
 
 
 @Endpoint
+@Controller
 public class EWSSimulatorEndpoint {
 
     @Autowired
@@ -40,6 +45,82 @@ public class EWSSimulatorEndpoint {
     private static final String DEMOBYTE = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=\n" +
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
 
+
+    /**
+     * Fetches all outputs that can be derived from the provided primary account number
+     *
+     * @param pan The primary account number
+     * @return An object containing the response values for Token, RegId,
+     * and TokenNewlyGenerated
+     */
+    @GetMapping("/pan/{pan}")
+    @ResponseBody
+    public OutputFields getPanOutputs(@PathVariable("pan") String pan) {
+        OutputFields response = new OutputFields();
+
+        response.setToken(EWSUtils.getPANToken(pan));
+        response.setRegId(EWSUtils.getRegIdFromPAN(pan));
+        response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(pan));
+
+        return response;
+    }
+
+    /**
+     * Fetches all outputs that can be derived from the provided token
+     *
+     * @param token The token value
+     * @return An object containing the response values for the PAN, RegId, ExpirationDate,
+     * and CVV
+     */
+    @GetMapping("/token/{token}")
+    @ResponseBody
+    public OutputFields getTokenOutputs(@PathVariable("token") String token) {
+        OutputFields response = new OutputFields();
+
+        response.setPAN(EWSUtils.getPAN(token));
+        response.setRegId(EWSUtils.getRegIdFromToken(token));
+        response.setExpDate(EWSUtils.getExpDate());
+        response.setCVV(EWSUtils.getCVVThroughToken(token));
+
+        return response;
+    }
+
+    /**
+     * Fetches all outputs that can be derived from the provided registration ID
+     *
+     * @param regId The registration ID
+     * @return An object containing the response values for the PAN
+     */
+    @GetMapping("/regid/{regId}")
+    @ResponseBody
+    public OutputFields getRegIdOutputs(@PathVariable("regId") String regId) {
+        OutputFields response = new OutputFields();
+
+        response.setPAN(EWSUtils.convertRegIdToPAN(regId));
+        response.setToken(EWSUtils.getPANToken(response.getPAN()));
+        response.setExpDate(EWSUtils.getExpDate());
+        int indicator = EWSUtils.getIndicator(regId);
+        response.setECI(EWSUtils.getEci(indicator));
+        response.setWalletType(EWSUtils.getWalletType(indicator));
+
+        return response;
+    }
+
+    /**
+     * Fetches all outputs that can be derived from the provided security code
+     *
+     * @param cvv The security code
+     * @return An object containing the response value for the OrderLVT
+     */
+    @GetMapping("/cvv/{cvv}")
+    @ResponseBody
+    public OutputFields getCVVOutputs(@PathVariable("cvv") String cvv) {
+        OutputFields response = new OutputFields();
+
+        response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
+
+        return response;
+    }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
     @ResponsePayload
@@ -58,11 +139,7 @@ public class EWSSimulatorEndpoint {
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
-            response.setTokenNewlyGenerated(true);
-        } else {
-            response.setTokenNewlyGenerated(false);
-        }
+        response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
         return response;
     }
@@ -104,17 +181,7 @@ public class EWSSimulatorEndpoint {
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
         String cvv = request.getCardSecurityCode();
-        String orderLVT = "3";
-
-        //Generates the OrderLVT by repeating cvv until its at least 18 characters
-        while(orderLVT.length() < 18) {
-            if (!(cvv.equals(""))) {
-                orderLVT += cvv;
-            } else {
-                orderLVT += "00000000000000000";
-            }
-        }
-        response.setOrderLVT(orderLVT.substring(0,18));
+        response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
 
         response.setRequestId(EWSUtils.randomReqId());
         addMerchantRefId(request, response);
@@ -395,23 +462,17 @@ public class EWSSimulatorEndpoint {
         // set expiration date (mandatory)
         // if card's cvv is odd, the expiration date would be 5001; otherwise empty
         String CVV = EWSUtils.getCVVThroughToken(token);
-        answer.setExpirationDate("5001");
+        answer.setExpirationDate(EWSUtils.getExpDate());
         // set CVV (optional)
         if (request.isCardSecurityCodeRequested() != null && request.isCardSecurityCodeRequested()) {
             answer.setCardSecurityCode(CVV);
         }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
-        int indicator = (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
-        if (indicator == 1) {
-            answer.setWalletType(WalletType.ANDROID);
-            answer.setElectronicCommerceIndicator("07");
-        } else if (indicator == 2) {
-            answer.setWalletType(WalletType.APPLE);
-            answer.setElectronicCommerceIndicator("05");
-        } else if (indicator == 3) {
-            answer.setWalletType(WalletType.SAMSUNG);
-            answer.setElectronicCommerceIndicator("07");
-        }// set cryptogram
+        int indicator = EWSUtils.getIndicator(regId);
+        answer.setElectronicCommerceIndicator(EWSUtils.getEci(indicator));
+        answer.setWalletType(EWSUtils.getWalletType(indicator));
+
+        // set cryptogram
         // if indicator equals 0 it means it's not DPAN
         if (indicator != 0) {
             // the soap framework will re-encode this value on its own.

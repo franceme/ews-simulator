@@ -8,7 +8,9 @@ import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
 import java.util.Random;
 import java.util.UUID;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.worldpay.simulator.AccountType;
+import com.worldpay.simulator.WalletType;
 import com.worldpay.simulator.errors.EWSError;
 import com.worldpay.simulator.errors.ErrorIdMap;
 import com.worldpay.simulator.VError;
@@ -67,6 +69,60 @@ public class EWSUtils {
             return generatePropertyStrategyPAN(input);
 
         return input;
+    }
+
+    public static boolean checkNewlyGenerated(String pan) {
+        int length = pan.length();
+        return (length >= 4 && pan.substring(length - 4, length - 1).equals("000"));
+    }
+
+    public static String getExpDate() {
+        return "5001";
+    }
+
+    public static int getIndicator(String regId) {
+        return (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
+    }
+
+    public static String getEci(int indicator) {
+        switch (indicator) {
+            case 1:
+            case 3:
+                return "07";
+            case 2:
+                return "05";
+            default:
+                return null;
+
+        }
+    }
+
+    public static WalletType getWalletType(int indicator) {
+        switch (indicator) {
+            case 1:
+                return WalletType.ANDROID;
+            case 2:
+                return WalletType.APPLE;
+            case 3:
+                return WalletType.SAMSUNG;
+            default:
+                return null;
+        }
+    }
+
+    public static String getOrderLVT(String cvv) {
+        String orderLVT = "3";
+
+        //Generates the OrderLVT by repeating cvv until its at least 18 characters
+        while(orderLVT.length() < 18) {
+            if (!(cvv.equals(""))) {
+                orderLVT += cvv;
+            } else {
+                orderLVT += "00000000000000000";
+            }
+        }
+
+        return orderLVT.substring(0,18);
     }
 
     public static String getPANToken(String primaryAccountNumber) {
