@@ -15,7 +15,9 @@ import com.worldpay.simulator.errors.ErrorIdMap;
 import com.worldpay.simulator.VError;
 import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.exceptions.ServerFaultException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EWSUtils {
     private static String defaultPan = "3000100011118566";
 

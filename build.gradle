@@ -15,7 +15,11 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
+<<<<<<< HEAD
 apply plugin:'maven'
+=======
+apply plugin: 'maven'
+>>>>>>> ba7541dbe198ccf476104054ecf65af9e34b0e3a
 apply plugin: 'war'
 
 description = "Worldpay's EWS Simulator v${JAR_VERSION}"
@@ -38,8 +42,13 @@ bootJar {
 }
 
 bootWar {
+<<<<<<< HEAD
     baseName = "${JAR_NAME}"
     version =  "${JAR_VERSION}"
+=======
+    archiveBaseName = "${JAR_NAME}"
+    version = "${JAR_VERSION}"
+>>>>>>> ba7541dbe198ccf476104054ecf65af9e34b0e3a
 }
 
 repositories {
@@ -64,7 +73,10 @@ targetCompatibility = 1.8
 
 dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+<<<<<<< HEAD
 
+=======
+>>>>>>> ba7541dbe198ccf476104054ecf65af9e34b0e3a
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-web-services")
     compile("org.springframework.boot:spring-boot-starter-actuator")
