@@ -1,3 +1,5 @@
+const URI = "http://localhost:8080/sample/";
+
 $(document).ready(function () {
     $("#input-btn").click(function () {
         let pan = $("#input-pan").val();
@@ -32,28 +34,56 @@ $(document).ready(function () {
         let cvv = $("#output-cvv").val();
 
         if (pan !== '') {
-            let first6 = pan.substr(0, 6);
-            let last4 = pan.substr(pan.length - 4, pan.length);
-            let mid = pan.substr(6, pan.length - 10);
-            let regId = '999999999' - mid + '';
-            let output_mid = mid.split("").reverse().join("");
-            $("#input-token").val(first6 + output_mid + last4);
-            $("#input-regid").val(first6.split("").reverse().join("") + regId + last4.split("").reverse().join(""));
+            let xhttp = new XMLHttpRequest();
+            xhttp.open("GET", URI + "inputPAN?" + "primaryAccountNumber=" + pan, true);
+            xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        let response = JSON.parse(xhttp.responseText);
+                        $("#input-regid").val(response.regId);
+                        $("#input-token").val(response.token);
+                    } catch {
+                        alert("EWS API not return correct response");
+                    }
+                }
+            }
+            xhttp.send(null);
+
         } else if (token !== '') {
-            let first6 = token.substr(0, 6);
-            let last4 = token.substr(token.length - 4, token.length);
-            let mid = token.substr(6, token.length - 10);
-            let regId = '999999999' - mid + '';
-            let output_mid = mid.split("").reverse().join("");
-            $("#input-pan").val(first6 + output_mid + last4);
-            $("#input-regid").val(first6.split("").reverse().join("") + regId.split("").reverse().join("") + last4.split("").reverse().join(""));
+            let xhttp = new XMLHttpRequest();
+            xhttp.open("GET", URI + "inputToken?" + "token=" + token, true);
+            xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        let response = JSON.parse(xhttp.responseText);
+                        $("#input-regid").val(response.regId);
+                        $("#input-pan").val(response.pan);
+                    } catch {
+                        alert("EWS API not return correct response");
+                    }
+                }
+            }
+            xhttp.send(null);
+
         } else if (regId !== '') {
-            let first6 = regId.substr(0, 6);
-            let last4 = regId.substr(regId.length - 4, regId.length);
-            let mid = regId.substr(6, regId.length - 10);
-            let outputMid = '999999999' - mid + '';
-            $("#input-pan").val(first6.split("").reverse().join("") + outputMid + last4.split("").reverse().join(""));
-            $("#input-token").val(first6.split("").reverse().join("") + outputMid.split("").reverse().join("") + last4.split("").reverse().join(""));
+            let xhttp = new XMLHttpRequest();
+            xhttp.open("GET", URI + "inputRegId?" + "regId=" + regId, true);
+            xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    try {
+                        let response = JSON.parse(xhttp.responseText);
+                        $("#input-pan").val(response.pan);
+                        $("#input-token").val(response.token);
+                    } catch {
+                        alert("EWS API not return correct response");
+                    }
+                }
+            }
+            xhttp.send(null);
+
         }
 
         if (tokenNewlyGen !== '') {
@@ -76,95 +106,94 @@ $(document).ready(function () {
             alert ("CVV is the last three but one digits of the token. So token value should be xxx"+cvv+"x");
         }
     });
-
 })
 
 function processInputRegId() {
-    let regId = $("#input-regid").val();
-    let first6 = regId.substr(0, 6);
-    let last4 = regId.substr(regId.length - 4, regId.length);
-    let mid = regId.substr(6, regId.length - 10);
-    let panMid = '999999999' - mid + '';
-    if (first6.substring(0, 1) == '3') {
-        while (panMid.length < 5) {
-            panMid = '0' + panMid;
-        }
-    } else {
-        while (panMid.length < 6) {
-            panMid = '0' + panMid;
-        }
-    }
-    let tokenMid = panMid.split("").reverse().join("");
-    let pan = first6.split("").reverse().join("") + panMid + last4.split("").reverse().join("");
-    let token = first6.split("").reverse().join("") + tokenMid + last4.split("").reverse().join("");
-    $("#output-expdate").val("5001");
-    $("#output-pan").val(pan);
-    $("#output-token").val(token);
-    let secondToLastDigit = regId.substr(regId.length - 2, 1);
-    secondToLastDigit = secondToLastDigit % 4 + '';
-    let walletType = '', eci = '';
-    switch (secondToLastDigit) {
-        case "1": walletType = "ANDROID"; eci = "07"; break;
-        case "2": walletType = "APPLE"; eci = "05"; break;
-        case "3": walletType = "SAMSUNG"; eci = "07"; break;
 
+    let regId = $("#input-regid").val();
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URI + "inputRegId?" + "regId=" + regId, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                let response = JSON.parse(xhttp.responseText);
+                $("#output-wallet").val(response.walletType);
+                $("#output-eci").val(response.eci);
+                $("#output-expdate").val(response.expDate);
+                $("#output-pan").val(response.pan);
+                $("#output-token").val(response.token);
+            } catch {
+                alert("EWS API not return correct response");
+            }
+        }
     }
-    $("#output-wallet").val(walletType);
-    $("#output-eci").val(eci);
+
+    xhttp.send(null);
 }
 
 function processInputPan () {
-    let pan = $("#input-pan").val();
-    let first6 = pan.substr(0, 6);
-    let last4 = pan.substr(pan.length - 4, pan.length);
-    let mid = pan.substr(6, pan.length - 10);
-    let regId = '999999999' - mid;
-    let output_mid = mid.split("").reverse().join("");
-    let isTokenNew = pan.substr(pan.length-4, 3);
-    $("#output-token").val(first6 + output_mid + last4);
-    if (isTokenNew == '000') {
-        $("#output-tokennewlygen").val("true");
-    } else {
-        $("#output-tokennewlygen").val("false");
-    }
-    $("#output-regid").val(first6.split("").reverse().join("") + regId + last4.split("").reverse().join(""));
 
+    let pan = $("#input-pan").val();
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URI + "inputPAN?" + "primaryAccountNumber=" + pan, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                let response = JSON.parse(xhttp.responseText);
+                $("#output-tokennewlygen").val(response.tokenNewlyGenerated);
+                $("#output-regid").val(response.regId);
+                $("#output-token").val(response.token);
+            } catch {
+                alert("EWS API not return correct response");
+            }
+        }
+    }
+
+    xhttp.send(null);
 }
 
 function processInputToken () {
-    let token = $("#input-token").val();
-    let first6 = token.substr(0, 6);
-    let last4 = token.substr(token.length - 4, token.length);
-    let mid = token.substr(6, token.length - 10);
-    mid = mid.split("").reverse().join("");
-    let cvv = token.substr(token.length-4, 3);
-    $("#output-pan").val(first6 + mid + last4);
-    if (token.length > 3) {
-        let regStart = token.substr(0, 6);
-        regStart = regStart.split("").reverse().join("");
-        let regMid = token.substr(6, token.length - 4);
-        regMid = regMid.split("").reverse().join("");
-        let regEnd = token.substr(token.length - 4, token.length);
-        regEnd = regEnd.split("").reverse().join("");
-        $("#output-regid").val(regStart + regMid + regEnd);
-    } else {
-        $("#output-regid").val(token);
-    }
-    $("#output-cvv").val(cvv);
-    $("#output-expdate").val("5001");
 
+    let token = $("#input-token").val();
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URI + "inputToken?" + "token=" + token, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                let response = JSON.parse(xhttp.responseText);
+                $("#output-cvv").val(response.cvv);
+                $("#output-expdate").val(response.expDate);
+                $("#output-regid").val(response.regId);
+                $("#output-pan").val(response.pan);
+            } catch {
+                alert("EWS API not return correct response");
+            }
+        }
+    }
+
+    xhttp.send(null);
 }
 
 function processInputCvv () {
+
     let cvv = $("#input-cvv").val();
-    let orderLvt = '3';
-    while (orderLvt.length < 18) {
-        if (cvv !== '') {
-            orderLvt += cvv;
-        } else {
-            orderLvt += '00000000000000000';
+    console.log(cvv);
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", URI + "inputCVV?" + "cvv=" + cvv, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                let response = JSON.parse(xhttp.responseText);
+                $("#output-orderlvt").val(response.orderLVT);
+            } catch {
+                alert("EWS API not return correct response");
+            }
         }
     }
-    orderLvt = orderLvt.substr(0,18);
-    $("#output-orderlvt").val(orderLvt);
+
+    xhttp.send(null);
 }

@@ -321,6 +321,8 @@ public class EWSUtils {
 
         //Generates the OrderLVT by repeating cvv until its at least 18 characters
         while(orderLVT.length() < 18) {
+            System.out.println(orderLVT);
+            System.out.println(cvv);
             if (!(cvv.equals(""))) {
                 orderLVT += cvv;
             } else {

@@ -39,79 +39,63 @@ public class EWSSimulatorEndpoint {
     @Autowired
     ValidatorService validatorService;
 
-    //public class GreetingController {
-//        @RequestMapping("/greeting")
-//        public Car greeting(@RequestParam(value="primaryAccountNumber", defaultValue="4100000000000027") String primaryAccountNumber) {
-//            //validatorService.validateRequest(request, auth);
-//            primaryAccountNumber = "4100000000000027";
-//            String a = EWSUtils.getPANToken(primaryAccountNumber);
-//            String b = EWSUtils.getRegIdFromPAN(primaryAccountNumber);
-//            String c = EWSUtils.randomReqId();
-//            Car response = new Car(a, b, c);
-//
-//
-//            return response;
-//        }
+    //TODO origins should be specific
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/inputPAN")
+    public OutputFields inputPAN(@RequestParam(value="primaryAccountNumber") String primaryAccountNumber) {
+        //response.setContentType("application/json");
 
-@RequestMapping("/inputPAN")
-public OutputFields inputPAN(@RequestParam(value="primaryAccountNumber", defaultValue="4100000000000027") String primaryAccountNumber) {
-    //response.setContentType("application/json");
+        OutputFields response = new OutputFields();
 
-    OutputFields response = new OutputFields();
+        int lengthPAN = primaryAccountNumber.length();
+        boolean temp;
+        if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
+            temp = true;
+        } else {
+            temp = false;
+        }
+        response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
+        response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
+        response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
-    int lengthPAN = primaryAccountNumber.length();
-    boolean temp;
-    if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
-        temp = true;
-    } else {
-        temp = false;
+
+
+        return response;
     }
-    response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
-    response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
-    response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/inputToken")
+    public OutputFields inputToken(@RequestParam(value="token") String token) {
+        OutputFields response = new OutputFields();
 
+        response.setPAN(EWSUtils.getPAN(token));
+        response.setRegId(EWSUtils.getRegIdFromToken(token));
+        response.setExpDate(EWSUtils.getExpDate());
+        response.setCVV(EWSUtils.getCVVThroughToken(token));
 
+        return response;
+    }
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/inputRegId")
+    public OutputFields inputRegId(@RequestParam(value="regId") String regId) {
+        OutputFields response = new OutputFields();
 
-    return response;
-}
-//
-@RequestMapping("/inputToken")
-public OutputFields inputToken(@RequestParam(value="token", defaultValue="4100000000000027") String token) {
-    OutputFields response = new OutputFields();
+        response.setPAN(EWSUtils.convertRegIdToPAN(regId));
+        response.setToken(EWSUtils.getPANToken(response.getPAN()));
+        response.setExpDate(EWSUtils.getExpDate());
+        int indicator = EWSUtils.getIndicator(regId);
+        response.setECI(EWSUtils.getEci(indicator));
+        response.setWalletType(EWSUtils.getWalletType(indicator));
 
-    response.setPAN(EWSUtils.getPAN(token));
-    response.setRegId(EWSUtils.getRegIdFromToken(token));
-    response.setExpDate(EWSUtils.getExpDate());
-    response.setCVV(EWSUtils.getCVVThroughToken(token));
+        return response;
+    }
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/inputCVV")
+    public OutputFields greeting(@RequestParam(value="cvv") String cvv) {
+        OutputFields response = new OutputFields();
+        response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
 
-    return response;
-}
-
-@RequestMapping("/inputRegId")
-public OutputFields inputRegId(@RequestParam(value="regId", defaultValue="4100000000000027") String regId) {
-    OutputFields response = new OutputFields();
-
-    response.setPAN(EWSUtils.convertRegIdToPAN(regId));
-    response.setToken(EWSUtils.getPANToken(response.getPAN()));
-    response.setExpDate(EWSUtils.getExpDate());
-    int indicator = EWSUtils.getIndicator(regId);
-    response.setECI(EWSUtils.getEci(indicator));
-    response.setWalletType(EWSUtils.getWalletType(indicator));
-
-    return response;
-}
-
-@RequestMapping("/inputCVV")
-public OutputFields greeting(@RequestParam(value="cvv", defaultValue="4100000000000027") String cvv) {
-    OutputFields response = new OutputFields();
-    response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
-
-    return response;
-}
-
-
-
-
+        return response;
+    }
 
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
