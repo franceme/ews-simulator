@@ -39,7 +39,6 @@ bootJar {
 
 bootWar {
     baseName = "${JAR_NAME}"
-    version =  "${JAR_VERSION}"
 }
 
 repositories {

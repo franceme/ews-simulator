@@ -1,5 +1,3 @@
-const URI = "http://localhost:8080/sample/";
-
 $(document).ready(function () {
     $("#input-btn").click(function () {
         let pan = $("#input-pan").val();
@@ -35,7 +33,7 @@ $(document).ready(function () {
 
         if (pan !== '') {
             let xhttp = new XMLHttpRequest();
-            xhttp.open("GET", URI + "inputPAN?" + "primaryAccountNumber=" + pan, true);
+            xhttp.open("GET",  "inputPAN?" + "primaryAccountNumber=" + pan, true);
             xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
@@ -52,7 +50,7 @@ $(document).ready(function () {
 
         } else if (token !== '') {
             let xhttp = new XMLHttpRequest();
-            xhttp.open("GET", URI + "inputToken?" + "token=" + token, true);
+            xhttp.open("GET", "inputToken?" + "token=" + token, true);
             xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
@@ -69,7 +67,7 @@ $(document).ready(function () {
 
         } else if (regId !== '') {
             let xhttp = new XMLHttpRequest();
-            xhttp.open("GET", URI + "inputRegId?" + "regId=" + regId, true);
+            xhttp.open("GET", "inputRegId?" + "regId=" + regId, true);
             xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
@@ -112,7 +110,7 @@ function processInputRegId() {
 
     let regId = $("#input-regid").val();
     let xhttp = new XMLHttpRequest();
-    xhttp.open("GET", URI + "inputRegId?" + "regId=" + regId, true);
+    xhttp.open("GET", "inputRegId?" + "regId=" + regId, true);
     xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -136,7 +134,7 @@ function processInputPan () {
 
     let pan = $("#input-pan").val();
     let xhttp = new XMLHttpRequest();
-    xhttp.open("GET", URI + "inputPAN?" + "primaryAccountNumber=" + pan, true);
+    xhttp.open("GET", "inputPAN?" + "primaryAccountNumber=" + pan, true);
     xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -158,7 +156,7 @@ function processInputToken () {
 
     let token = $("#input-token").val();
     let xhttp = new XMLHttpRequest();
-    xhttp.open("GET", URI + "inputToken?" + "token=" + token, true);
+    xhttp.open("GET", "inputToken?" + "token=" + token, true);
     xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -182,7 +180,7 @@ function processInputCvv () {
     let cvv = $("#input-cvv").val();
     console.log(cvv);
     let xhttp = new XMLHttpRequest();
-    xhttp.open("GET", URI + "inputCVV?" + "cvv=" + cvv, true);
+    xhttp.open("GET", "inputCVV?" + "cvv=" + cvv, true);
     xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {

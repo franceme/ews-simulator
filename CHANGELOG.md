@@ -1,5 +1,8 @@
 CHANGELOG
 ---------
+## 4.3.16
+* **Feature** Integrated EWS-Simulator webpage with EWS API
+
 ## 4.3.15
 * **BugFix** Updated Deregistration to produce 15-digit PAN for generated PANs starting with 3
 

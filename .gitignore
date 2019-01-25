@@ -25,7 +25,6 @@ hs_err_pid*
 # Project files to ignore
 bin/
 build/
-.gradle
 .classpath
 .project
 .settings/
