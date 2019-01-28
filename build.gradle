@@ -39,6 +39,7 @@ bootJar {
 
 bootWar {
     baseName = "${JAR_NAME}"
+    version =  "${JAR_VERSION}"
 }
 
 repositories {
@@ -126,6 +127,12 @@ task copyJarToKit(type:Copy, dependsOn:[check,jar]){
     into KIT_DIR
 }
 
+task copyWarToKit(type:Copy, dependsOn:[check,jar]){
+    from "${buildDir}/libs/${JAR_NAME}-${JAR_VERSION}.war"
+    from "LICENSE"
+    into KIT_DIR
+}
+
 task copyLibsToKit(type:Copy, dependsOn:check){
     from configurations.compile.asFileTree.matching{
         include '**/activation*'
@@ -144,14 +151,14 @@ task copyLibsToKit(type:Copy, dependsOn:check){
     into KIT_DEPENDENCIES_DIR
 }
 
-task tarKit(type:Tar, dependsOn:[copyJarToKit, copyLibsToKit]){
+task tarKit(type:Tar, dependsOn:[copyJarToKit, copyWarToKit,copyLibsToKit]){
     compression = Compression.GZIP
     destinationDir = file("$buildDir/${RELEASE_DIR}")
     archiveName = "${JAR_NAME}-${JAR_VERSION}.tar.gz"
     from "$buildDir/kit/java15"
 }
 
-task zipKit(type:Zip, dependsOn:[copyJarToKit, copyLibsToKit]){
+task zipKit(type:Zip, dependsOn:[copyJarToKit, copyWarToKit, copyLibsToKit]){
     destinationDir = file("$buildDir/${RELEASE_DIR}")
     archiveName = "${JAR_NAME}-${JAR_VERSION}.zip"
     from "$buildDir/kit/java15"
