@@ -368,11 +368,10 @@ public class EWSSimulatorEndpoint {
         String token = request.getToken();
 
         String primaryAccountNumber = EWSUtils.getPAN(token);
-
-        if (request.isCVV2Requested()) {
+        if (request.isCVV2Requested() != null && request.isCVV2Requested()) {
             answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
         }
-        if (request.isExpirationDateRequested()) {
+        if (request.isExpirationDateRequested() != null && request.isExpirationDateRequested()) {
             answer.setExpirationDate("5001");
         }
 

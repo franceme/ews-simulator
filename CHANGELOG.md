@@ -2,6 +2,7 @@ CHANGELOG
 ---------
 ## 4.3.16
 * **Feature** Integrated EWS-Simulator webpage with EWS API
+* **BugFix** Updated Detokenize to handle empty optional fields
 
 ## 4.3.15
 * **BugFix** Updated Deregistration to produce 15-digit PAN for generated PANs starting with 3
