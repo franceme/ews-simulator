@@ -121,13 +121,13 @@ javadoc{
     destinationDir = file("$buildDir/doc")
 }
 
-task copyJarToKit(type:Copy, dependsOn:[check,jar]){
+task copyJarToKit(type:Copy, dependsOn:[check,bootJar]){
     from "${buildDir}/libs/${JAR_NAME}-${JAR_VERSION}.jar"
     from "LICENSE"
     into KIT_DIR
 }
 
-task copyWarToKit(type:Copy, dependsOn:[check,jar]){
+task copyWarToKit(type:Copy, dependsOn:[check,bootWar]){
     from "${buildDir}/libs/${JAR_NAME}-${JAR_VERSION}.war"
     from "LICENSE"
     into KIT_DIR
