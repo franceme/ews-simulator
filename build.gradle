@@ -151,7 +151,7 @@ task copyLibsToKit(type:Copy, dependsOn:check){
     into KIT_DEPENDENCIES_DIR
 }
 
-task tarKit(type:Tar, dependsOn:[copyJarToKit, copyWarToKit,copyLibsToKit]){
+task tarKit(type:Tar, dependsOn:[copyJarToKit, copyWarToKit, copyLibsToKit]){
     compression = Compression.GZIP
     destinationDir = file("$buildDir/${RELEASE_DIR}")
     archiveName = "${JAR_NAME}-${JAR_VERSION}.tar.gz"
