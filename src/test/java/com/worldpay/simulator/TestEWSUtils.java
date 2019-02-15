@@ -6,7 +6,12 @@ import com.worldpay.simulator.utils.EWSUtils;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.context.TestComponent;
+import org.springframework.ws.soap.SoapFault;
+
 import static org.junit.Assert.*;
+
+import javax.xml.soap.SOAPFault;
 
 public class TestEWSUtils {
   private String reqId1;
@@ -188,12 +193,21 @@ public class TestEWSUtils {
   }
 
   @Test
-  public void testGetAccountType(){
-    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("120"));
-    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("121"));
-    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("122"));
-    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("123"));
+  public void testGetAccountType_AccountType() {
+    assertEquals(0, EWSUtils.getAccountType(CHECKING));
+    assertEquals(1, EWSUtils.getAccountType(SAVINGS));
+    assertEquals(2, EWSUtils.getAccountType(CORPORATE_CHECKING));
+    assertEquals(3, EWSUtils.getAccountType(CORPORATE_SAVINGS));
   }
+
+  @Test
+  public void testGetAccountType(){
+    assertEquals(CHECKING,EWSUtils.getAccountType("100"));
+    assertEquals(SAVINGS,EWSUtils.getAccountType("111"));
+    assertEquals(CORPORATE_CHECKING,EWSUtils.getAccountType("122"));
+    assertEquals(CORPORATE_SAVINGS,EWSUtils.getAccountType("133"));
+  }
+
 
   @Test
   public void testGetRoutingNumber(){
@@ -210,11 +224,18 @@ public class TestEWSUtils {
   public void testGenerateEcheckToken(){
       assertEquals("2876543210987654322",EWSUtils.generateEcheckToken("12345678901234567",AccountType.CORPORATE_CHECKING));
       assertEquals("87654321098765432",EWSUtils.generateEcheckToken("12345678901234567"));
+      assertEquals("00000000000000000", EWSUtils.generateEcheckToken("99999999999999999"));
   }
 
   @Test
   public void testGenerateEcheckAccount(){
       assertEquals("12345678901234567",EWSUtils.generateEcheckAccount("2876543210987654322"));
+      try {
+        EWSUtils.generateEcheckAccount("");
+        fail("Must throw exception");
+      } catch (ClientFaultException e) {
+        assertEquals("Token Not Found", e.getRequestValidationFault().getMessage());
+      }
   }
 
   @Test
@@ -224,6 +245,7 @@ public class TestEWSUtils {
     assertEquals(error1.getId(),tempError.getId());
     assertEquals(error1.getCode(),tempError.getCode());
     assertEquals(error1.getMessage(),tempError.getMessage());
+    assertNull(EWSUtils.getError("1030"));
 
   }
 
@@ -239,5 +261,54 @@ public class TestEWSUtils {
       expectedPAN = "4865090000041001";
       assertEquals(expectedPAN, actualPAN);
   }
+
+  @Test
+  public void testCheckNewlyGenerated() {
+    assertFalse(EWSUtils.checkNewlyGenerated("000"));
+    assertTrue(EWSUtils.checkNewlyGenerated("0000"));
+    assertTrue(EWSUtils.checkNewlyGenerated("0200"));
+    assertFalse(EWSUtils.checkNewlyGenerated("0010"));
+  }
+
+  @Test
+  public void testGetExpDate() {
+      assertEquals("5001", EWSUtils.getExpDate());
+  }
+
+  @Test
+  public void testGetIndicator() {
+    assertEquals(3, EWSUtils.getIndicator("1234"));
+    assertEquals(0, EWSUtils.getIndicator("1241"));
+  }
+
+  @Test
+  public void testGetEci() {
+    assertEquals("07", EWSUtils.getEci(1));
+    assertEquals("05", EWSUtils.getEci(2));
+    assertEquals("07", EWSUtils.getEci(3));
+    assertNull(EWSUtils.getEci(6));
+  }
+
+  @Test
+  public void getWalletType() {
+    assertEquals(WalletType.ANDROID, EWSUtils.getWalletType(1));
+    assertEquals(WalletType.APPLE, EWSUtils.getWalletType(2));
+    assertEquals(WalletType.SAMSUNG, EWSUtils.getWalletType(3));
+    assertNull(EWSUtils.getWalletType(5));
+  }
+
+  @Test
+  public void testGetOrderLVT() {
+    assertEquals("312312312312312312", EWSUtils.getOrderLVT("123"));
+    assertEquals("300000000000000000", EWSUtils.getOrderLVT(""));
+  }
+
+  @Test
+  public void testGetSoapFaultException() {
+    SOAPFault soapFault = EWSUtils.getSoapFaultException(999);
+    assertEquals("EWS is down", soapFault.getFaultString());
+  }
+
+
 
 }

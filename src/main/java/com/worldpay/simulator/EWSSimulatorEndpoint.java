@@ -5,14 +5,18 @@ import static com.worldpay.simulator.utils.EWSUtils.getError;
 import static com.worldpay.simulator.utils.EWSUtils.getRoutingNumber;
 import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
 
-import javax.servlet.http.HttpServletResponse;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
@@ -23,11 +27,6 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 import com.worldpay.simulator.validator.ValidatorService;
-
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.UnknownHostException;
-import java.util.Map;
 
 @RestController
 @Endpoint

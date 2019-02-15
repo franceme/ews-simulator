@@ -3,16 +3,17 @@ package com.worldpay.simulator.exceptions;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.ws.soap.SOAPFaultException;
 
-import com.worldpay.simulator.JAXBService;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
+import com.worldpay.simulator.JAXBService;
 import com.worldpay.simulator.RequestValidationFault;
 import com.worldpay.simulator.ServerFault;
 import com.worldpay.simulator.errors.EWSError;
@@ -32,13 +33,16 @@ public class DetailSoapFaultDefinitionExceptionResolver extends SoapFaultMapping
         if (ex instanceof SecurityErrorException){
             return;
         }
+        if (ex instanceof SOAPFaultException) {
+            return;
+        }
         if (ex instanceof ServerFaultException) {
             ServerFault serverFault = ((ServerFaultException) ex).getServerFault();
             addFaultDetail(serverFault, fault);
         } else if (ex instanceof ClientFaultException) {
             RequestValidationFault requestValidationFault = ((ClientFaultException) ex).getRequestValidationFault();
             addFaultDetail(requestValidationFault, fault);
-        } else {
+        }  else {
             logRuntimeError(ex);
             ServerFault serverFault = createServerFault();
             addFaultDetail(serverFault, fault);

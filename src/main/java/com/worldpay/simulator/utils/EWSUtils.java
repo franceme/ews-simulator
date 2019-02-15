@@ -1,21 +1,28 @@
 package com.worldpay.simulator.utils;
 
 
-import static com.worldpay.simulator.validator.ValidatorUtils.*;
+import static com.worldpay.simulator.validator.ValidatorUtils.isStringValidInteger;
 import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
-
 
 import java.util.Random;
 import java.util.UUID;
 
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
+
+import org.springframework.stereotype.Component;
+
 import com.worldpay.simulator.AccountType;
+import com.worldpay.simulator.VError;
 import com.worldpay.simulator.WalletType;
 import com.worldpay.simulator.errors.EWSError;
 import com.worldpay.simulator.errors.ErrorIdMap;
-import com.worldpay.simulator.VError;
 import com.worldpay.simulator.exceptions.ClientFaultException;
 import com.worldpay.simulator.exceptions.ServerFaultException;
-import org.springframework.stereotype.Component;
 
 @Component
 public class EWSUtils {
@@ -37,11 +44,9 @@ public class EWSUtils {
     }
 
     public static String generateEcheckToken(String input){
-        int inputLength = input.length();
-
-        Long l = 99999999999999999l;
+        Long _17_9s = 99999999999999999l;
         Long inputValue = Long.parseLong(input);
-        Long middleValue = (l-inputValue);
+        Long middleValue = (_17_9s-inputValue);
 
         StringBuilder middle = new StringBuilder(middleValue.toString());
 
@@ -53,7 +58,7 @@ public class EWSUtils {
 
     public static String generateEcheckAccount(String input){
         if(input.length() != 19 && !input.startsWith("2"))
-            throw new ClientFaultException(6,"Token Not Found");
+            throw new ClientFaultException(106,"Token Not Found");
 
         Long l = 99999999999999999l;
         String middleValue = input.substring(1,18);
@@ -171,17 +176,36 @@ public class EWSUtils {
     public static void throwDesiredException(int errorId) {
         if (isServerFaultError(errorId)) {
             throw new ServerFaultException(errorId);
+        } else if (isSOAPFaultError(errorId)) {
+            throw new SOAPFaultException(getSoapFaultException(errorId));
         } else if (isClientFaultError(errorId)) {
             throw new ClientFaultException(errorId);
         }
+    }
+
+    public static SOAPFault getSoapFaultException(int errorId) {
+        EWSError error = ErrorIdMap.getError(errorId);
+        SOAPFault soapFault = null;
+        try {
+            QName faultCode = new QName(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE, error.getErrorCode());
+            soapFault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL).createFault(error.getErrorMessage(), faultCode);
+        }
+        catch (SOAPException e) {
+            e.printStackTrace();
+        }
+        return soapFault;
     }
 
     public static boolean isServerFaultError(int errorId) {
         return errorId == 101 || errorId == 102 || errorId == 103 || errorId == 108;
     }
 
+    public static boolean isSOAPFaultError(int errorId) {
+        return errorId == 999;
+    }
+
     public static boolean isClientFaultError(int errorId) {
-        return ErrorIdMap.containsErrorId(errorId) && !isServerFaultError(errorId);
+        return ErrorIdMap.containsErrorId(errorId) && !isServerFaultError(errorId) && !isSOAPFaultError(errorId);
     }
 
 
@@ -253,8 +277,8 @@ public class EWSUtils {
 
 
     public static AccountType getAccountType(String AccNum){
-        int lastDigit = Integer.parseInt(AccNum.substring(AccNum.length()-2,AccNum.length() - 1));
-        switch (lastDigit%4){
+        int lastButOneDigit = Integer.parseInt(AccNum.substring(AccNum.length() - 2, AccNum.length() - 1));
+        switch (lastButOneDigit % 4) {
             case 0:
                 return AccountType.CHECKING;
             case 1:
@@ -281,7 +305,7 @@ public class EWSUtils {
     //NICK's code
     public static boolean checkNewlyGenerated(String pan) {
         int length = pan.length();
-        return (length >= 4 && pan.substring(length - 4, length - 1).equals("000"));
+        return (length >= 4 && pan.substring(length - 4, length - 1).matches("0\\d0"));
     }
 
     public static String getExpDate() {
@@ -321,8 +345,6 @@ public class EWSUtils {
 
         //Generates the OrderLVT by repeating cvv until its at least 18 characters
         while(orderLVT.length() < 18) {
-            System.out.println(orderLVT);
-            System.out.println(cvv);
             if (!(cvv.equals(""))) {
                 orderLVT += cvv;
             } else {

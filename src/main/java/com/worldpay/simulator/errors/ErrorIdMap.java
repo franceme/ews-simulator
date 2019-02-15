@@ -18,6 +18,7 @@ public class ErrorIdMap {
         errorIdMap.put(108, new EWSError("SERVICE_TIMED_OUT", "A back-end service/server timed out unexpectedly."));
         errorIdMap.put(109, new EWSError("TOKEN_ALREADY_EXISTS", "The Token already exists in the token vault."));
         errorIdMap.put(110, new EWSError("PAN_ALREADY_EXISTS", "The PAN already exists in the token vault"));
+        errorIdMap.put(999, new EWSError("EWS_IS_DOWN", "EWS is down"));
     }
 
     public static EWSError getError(int id) {

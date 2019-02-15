@@ -3,6 +3,8 @@ package com.worldpay.simulator;
 import java.util.List;
 import java.util.Properties;
 
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -17,7 +19,6 @@ import org.springframework.ws.soap.server.endpoint.SoapFaultDefinition;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 import org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor;
 import org.springframework.ws.transport.http.MessageDispatcherServlet;
-import org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 import org.springframework.xml.xsd.XsdSchema;
 
@@ -68,6 +69,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
         errorMappings.setProperty(ServerFaultException.class.getName(), SoapFaultDefinition.SERVER.toString());
         errorMappings.setProperty(ClientFaultException.class.getName(), SoapFaultDefinition.CLIENT.toString());
         errorMappings.setProperty(SecurityErrorException.class.getName(), SoapFaultDefinition.CLIENT.toString());
+        errorMappings.setProperty(SOAPFaultException.class.getName(), SoapFaultDefinition.SERVER.toString());
         exceptionResolver.setExceptionMappings(errorMappings);
         exceptionResolver.setOrder(1);
         return exceptionResolver;
