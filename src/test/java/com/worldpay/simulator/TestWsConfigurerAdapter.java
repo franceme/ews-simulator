@@ -2,8 +2,6 @@ package com.worldpay.simulator;
 
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
@@ -15,9 +13,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.ws.config.annotation.WsConfigurerAdapter;
 import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor;
 import org.springframework.xml.xsd.XsdSchema;

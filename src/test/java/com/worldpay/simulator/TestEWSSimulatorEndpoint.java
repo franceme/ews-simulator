@@ -1024,5 +1024,40 @@ public class TestEWSSimulatorEndpoint {
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
+    @Test
+    public void testInputPAN() {
+        OutputFields actual = ewsSimulatorEndpoint.inputPAN("1234567890123456");
+        assertEquals("1234562109873456", actual.getToken());
+        assertEquals("6543219992109876543", actual.getRegId());
+        assertEquals(false, actual.getTokenNewlyGenerated());
+    }
+
+    @Test
+    public void testInputToken() {
+        OutputFields actual = ewsSimulatorEndpoint.inputToken("1234562109873456");
+        assertEquals("1234567890123456", actual.getPAN());
+        assertEquals("6543219992109876543", actual.getRegId());
+        assertEquals("5001", actual.getExpDate());
+        assertEquals("345", actual.getCVV());
+    }
+
+    @Test
+    public void testInputRegId() {
+        OutputFields actual = ewsSimulatorEndpoint.inputRegId("6543219992109876543");
+        assertEquals("1234567890123456", actual.getPAN());
+        assertEquals("1234562109873456", actual.getToken());
+        assertEquals("5001", actual.getExpDate());
+        assertEquals(null, actual.getECI());
+        assertEquals(null, actual.getWalletType());
+    }
+
+    @Test
+    public void testInputCVV() {
+        OutputFields actual = ewsSimulatorEndpoint.inputCVV("345");
+        assertEquals("334534534534534534", actual.getOrderLVT());
+    }
+
+
+
 
 }

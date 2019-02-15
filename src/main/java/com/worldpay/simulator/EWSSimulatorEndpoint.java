@@ -42,25 +42,13 @@ public class EWSSimulatorEndpoint {
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputPAN")
     public OutputFields inputPAN(@RequestParam(value="primaryAccountNumber") String primaryAccountNumber) {
-        //response.setContentType("application/json");
-
         OutputFields response = new OutputFields();
-
-        int lengthPAN = primaryAccountNumber.length();
-        boolean temp;
-        if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
-            temp = true;
-        } else {
-            temp = false;
-        }
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
-
-
-
         return response;
     }
+
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputToken")
     public OutputFields inputToken(@RequestParam(value="token") String token) {
@@ -89,7 +77,7 @@ public class EWSSimulatorEndpoint {
     }
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputCVV")
-    public OutputFields greeting(@RequestParam(value="cvv") String cvv) {
+    public OutputFields inputCVV(@RequestParam(value="cvv") String cvv) {
         OutputFields response = new OutputFields();
         response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
 
