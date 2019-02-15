@@ -1,5 +1,10 @@
 CHANGELOG
 ---------
+
+## 4.3.17
+* **Feature** Add support for SOAP Fault. Use 999 for the error
+* **Change** TokenNewlyGenerated is now based on the fourth and second last digit of the pan.
+
 ## 4.3.16
 * **Feature** Integrated EWS-Simulator webpage with EWS API
 * **BugFix** Updated Detokenize to handle empty optional fields
