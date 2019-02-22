@@ -435,6 +435,30 @@ public class TestEWSSimulatorEndpoint {
     }
 
     @Test
+    public void testDeregistration_000CVV() throws InterruptedException {
+        String regId = "8948646153487578000";
+        DeregistrationRequest request = new DeregistrationRequest();
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+        request.setMerchant(merchant);
+        request.setRegId(regId);
+        request.setCardSecurityCodeRequested(true);
+
+        willDoNothing().given(validatorService).validateRequest(request, header);
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
+
+        assertNotNull(testResponse.getRequestId());
+        assertEquals("4684982421564830008",testResponse.getToken());
+        assertEquals("4684983846512420008",testResponse.getPrimaryAccountNumber());
+        assertNull(testResponse.getCardSecurityCode());
+        assertEquals(expirationDate,testResponse.getExpirationDate());
+
+        verify(validatorService, times(1)).validateRequest(request, header);
+        verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
+    }
+
+    @Test
     public void testDeregistration_returnCvv2OnlyIfAsked() throws Exception {
         DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();

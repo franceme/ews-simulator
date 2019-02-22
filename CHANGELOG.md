@@ -1,5 +1,7 @@
 CHANGELOG
 ---------
+## 4.3.18
+* **Change** For deregistration, if CVV is '000', then it will not be included in response.
 
 ## 4.3.17
 * **Feature** Add support for SOAP Fault. Use 999 for the error
