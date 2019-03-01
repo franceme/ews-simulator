@@ -1,4 +1,4 @@
-package com.worldpay.simulator.validator;
+package com.worldpay.simulator.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,7 +36,8 @@ import com.worldpay.simulator.TokenInquiryRequest;
 import com.worldpay.simulator.TokenRegistrationRequest;
 import com.worldpay.simulator.TokenizeRequest;
 import com.worldpay.simulator.VerifoneCryptogram;
-import com.worldpay.simulator.exceptions.ServerFaultException;
+import com.worldpay.simulator.service.RequestValidator;
+import com.worldpay.simulator.service.ValidatorService;
 
 
 @RunWith(SpringRunner.class)

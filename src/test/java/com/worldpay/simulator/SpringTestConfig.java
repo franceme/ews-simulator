@@ -1,12 +1,15 @@
 package com.worldpay.simulator;
 
+import com.worldpay.simulator.controller.EWSSimulatorEndpoint;
 import com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.worldpay.simulator.filter.FilterConfiguration;
+import com.worldpay.simulator.service.JAXBService;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
-import com.worldpay.simulator.validator.RequestValidator;
-import com.worldpay.simulator.validator.ValidatorService;
+import com.worldpay.simulator.service.RequestValidator;
+import com.worldpay.simulator.service.ValidatorService;
 
 @ContextConfiguration
 public class SpringTestConfig {

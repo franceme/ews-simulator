@@ -1,5 +1,9 @@
 CHANGELOG
 ---------
+
+## 4.3.19
+* **Feature** Get requests exceptionsOff, exceptionsOn to toggle exception simulations.
+
 ## 4.3.18
 * **Change** For deregistration, if CVV is '000', then it will not be included in response.
 

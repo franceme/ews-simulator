@@ -1,4 +1,4 @@
-package com.worldpay.simulator.validator;
+package com.worldpay.simulator.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.worldpay.simulator.exceptions.ClientFaultException;
+import com.worldpay.simulator.utils.ValidatorUtils;
 
 public class TestValidatorUtils {
     private String PAN1;

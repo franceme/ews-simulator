@@ -1,9 +1,9 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.controller;
 
 import static com.worldpay.simulator.utils.EWSUtils.getAccountType;
 import static com.worldpay.simulator.utils.EWSUtils.getError;
 import static com.worldpay.simulator.utils.EWSUtils.getRoutingNumber;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidToken;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -13,9 +13,13 @@ import javax.xml.transform.TransformerException;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -24,9 +28,48 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 
+import com.worldpay.simulator.Account;
+import com.worldpay.simulator.BatchDetokenizeRequest;
+import com.worldpay.simulator.BatchDetokenizeResponse;
+import com.worldpay.simulator.BatchTokenizeRequest;
+import com.worldpay.simulator.BatchTokenizeResponse;
+import com.worldpay.simulator.Card;
+import com.worldpay.simulator.DecryptRequest;
+import com.worldpay.simulator.DecryptResponse;
+import com.worldpay.simulator.DeregistrationRequest;
+import com.worldpay.simulator.DeregistrationResponse;
+import com.worldpay.simulator.DetokenizeRequest;
+import com.worldpay.simulator.DetokenizeResponse;
+import com.worldpay.simulator.ECheckDetokenizeRequest;
+import com.worldpay.simulator.ECheckDetokenizeResponse;
+import com.worldpay.simulator.ECheckToken;
+import com.worldpay.simulator.ECheckTokenizeRequest;
+import com.worldpay.simulator.ECheckTokenizeResponse;
+import com.worldpay.simulator.EchoRequest;
+import com.worldpay.simulator.EchoResponse;
+import com.worldpay.simulator.EncryptionRequest;
+import com.worldpay.simulator.EncryptionResponse;
+import com.worldpay.simulator.OrderDeregistrationRequest;
+import com.worldpay.simulator.OrderDeregistrationResponse;
+import com.worldpay.simulator.OrderRegistrationRequest;
+import com.worldpay.simulator.OrderRegistrationResponse;
+import com.worldpay.simulator.output.OutputFields;
+import com.worldpay.simulator.RegistrationRequest;
+import com.worldpay.simulator.RegistrationResponse;
+import com.worldpay.simulator.Token;
+import com.worldpay.simulator.TokenInquiryRequest;
+import com.worldpay.simulator.TokenInquiryResponse;
+import com.worldpay.simulator.TokenRegistrationRequest;
+import com.worldpay.simulator.TokenRegistrationResponse;
+import com.worldpay.simulator.TokenizeRequest;
+import com.worldpay.simulator.TokenizeResponse;
+import com.worldpay.simulator.VError;
+import com.worldpay.simulator.VerifoneCryptogram;
+import com.worldpay.simulator.VoltageCryptogram;
+import com.worldpay.simulator.WalletType;
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
-import com.worldpay.simulator.validator.ValidatorService;
+import com.worldpay.simulator.service.ValidatorService;
 
 @RestController
 @Endpoint
@@ -84,6 +127,20 @@ public class EWSSimulatorEndpoint {
         return response;
     }
 
+    @GetMapping("/exceptionsOff")
+    @ResponseBody
+    public ResponseEntity turnExceptionsOff() {
+        validatorService.turnOffExceptions();
+        return new ResponseEntity("EWS exception simulations are turned off.",HttpStatus.OK);
+    }
+
+    @GetMapping("/exceptionsOn")
+    @ResponseBody
+    public ResponseEntity turnExceptionsOn() {
+        validatorService.turnOnExceptions();
+        return new ResponseEntity("EWS exception simulations are turned on", HttpStatus.OK);
+    }
+
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
     private static final String HEADER_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
@@ -102,17 +159,12 @@ public class EWSSimulatorEndpoint {
         RegistrationResponse response = new RegistrationResponse();
 
         String primaryAccountNumber = request.getPrimaryAccountNumber();
-        int lengthPAN = primaryAccountNumber.length();
         addMerchantRefId(request, response);
         response.setRequestId(EWSUtils.randomReqId());
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if (lengthPAN >= 4 && (primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1).equals("000"))) {
-            response.setTokenNewlyGenerated(true);
-        } else {
-            response.setTokenNewlyGenerated(false);
-        }
+        response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
         return response;
     }
@@ -130,14 +182,9 @@ public class EWSSimulatorEndpoint {
         addMerchantRefId(tokenizeRequest, tokenizeResponse);
 
         String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
-        int lengthPAN = primaryAccountNumber.length();
         tokenizeResponse.setToken(EWSUtils.getPANToken(primaryAccountNumber));
 
-        if (lengthPAN >= 4 && ("000".equals(primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1)))) {
-            tokenizeResponse.setTokenNewlyGenerated(true);
-        } else {
-            tokenizeResponse.setTokenNewlyGenerated(false);
-        }
+        tokenizeResponse.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
         tokenizeResponse.setRequestId(EWSUtils.randomReqId());
         return tokenizeResponse;
@@ -212,9 +259,8 @@ public class EWSSimulatorEndpoint {
                 // response.getToken().add(token);
                 // break;
             } else {
-                int panLength = PAN.length();
                 token.setTokenValue(EWSUtils.getPANToken(PAN));
-                token.setTokenNewlyGenerated(PAN.substring(panLength - 4, panLength - 1).equals("000") ? true : false);
+                token.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(PAN));
             }
             response.getToken().add(token);
 
@@ -266,17 +312,17 @@ public class EWSSimulatorEndpoint {
 
         ECheckTokenizeResponse response = new ECheckTokenizeResponse();
 
-        String AccNum = request.getAccount().getAccountNumber();
+        String primaryAccountNumber = request.getAccount().getAccountNumber();
 
         ECheckToken token = new ECheckToken();
 
-        VError error = getError(AccNum);
+        VError error = getError(primaryAccountNumber);
         if (error != null) {
             token.setError(error);
             response.setToken(token);
         } else {
-            token.setTokenValue(EWSUtils.generateEcheckToken(AccNum, request.getAccount().getAccountType()));
-            token.setTokenNewlyGenerated(AccNum.substring(AccNum.length() - 4, AccNum.length() - 1).equals("000") ? true : false);
+            token.setTokenValue(EWSUtils.generateEcheckToken(primaryAccountNumber, request.getAccount().getAccountType()));
+            token.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
         }
         response.setToken(token);
 
@@ -296,7 +342,6 @@ public class EWSSimulatorEndpoint {
         ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
         String token = request.getToken().getTokenValue();
         String PAN = EWSUtils.generateEcheckAccount(token);
-        String AccountTypeValue = token.substring(token.length() - 1, token.length());
 
         Account account = new Account();
 
@@ -323,9 +368,8 @@ public class EWSSimulatorEndpoint {
 
         for (Card card : tokenInquiryRequest.getCard()) {
             String primaryAccountNumber = card.getPrimaryAccountNumber();
-            int lengthPAN = primaryAccountNumber.length();
 
-            if ("000".equals(primaryAccountNumber.substring(lengthPAN - 4, lengthPAN - 1))) {
+            if (EWSUtils.checkNewlyGenerated(primaryAccountNumber)) {
                 tokenInquiryResponse.getToken().add(null);
             } else {
                 Token token = new Token();

@@ -1,11 +1,11 @@
-package com.worldpay.simulator.validator;
+package com.worldpay.simulator.service;
 
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidAccount;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidCVV;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidMerchantRefId;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidRegId;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidToken;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidAccount;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidCVV;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidMerchantRefId;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidPAN;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidRegId;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidToken;
 import static java.lang.Thread.sleep;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,135 +39,80 @@ public class ValidatorService {
 
     @Value("${simulate.delay}")
     private int delay = 0;
+    private boolean doThrowException = true;
 
-    public void handleExceptionsAndDelayForPAN(String input) throws InterruptedException {
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (isValidPAN(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-            EWSUtils.handleDesiredExceptions(input);
-        }
+    public void turnOffExceptions() {
+        doThrowException = false;
     }
 
-    public void handleExceptionsAndDelayForToken(String input) throws InterruptedException {
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (isValidToken(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-            EWSUtils.handleDesiredExceptions(input);
-        }
-    }
-
-    public void handleExceptionsAndDelayForRegId(String input) throws InterruptedException {
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (isValidRegId(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-            EWSUtils.handleDesiredExceptions(input);
-        }
-    }
-
-    public void handleExceptionsAndDelayForCVV(String input) throws InterruptedException {
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (isValidCVV(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelayForCVV(input);
-            }
-            EWSUtils.handleDesiredExceptionsForCVV(input);
-        }
-    }
-
-    public void handleExceptionsAndDelayForAccountNumber(String input) throws InterruptedException {
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (isValidAccount(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-            EWSUtils.handleDesiredExceptions(input);
-        }
+    public void turnOnExceptions() {
+        doThrowException = true;
     }
 
     public void validateRequest(TokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
+        if (!doThrowException) {
+            return;
+        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateTokenizeRequest(request);
         handleExceptionsAndDelayForPAN(request.getPrimaryAccountNumber());
     }
 
     public void validateRequest(DetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateDetokenizeRequest(request);
         handleExceptionsAndDelayForToken(request.getToken());
     }
 
     public void validateRequest(BatchTokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        String input = request.getMerchantRefId();
+        if (!doThrowException) {
+            return;
+        }String input = request.getMerchantRefId();
         requestValidator.validateSoapHeader(header);
         requestValidator.validateBatchTokenizeRequest(request);
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (!isValidMerchantRefId(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-        }
+        addDelayForMerchantRefId(input);
     }
 
     public void validateRequest(BatchDetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        String input = request.getMerchantRefId();
+        if (!doThrowException) {
+            return;
+        }String input = request.getMerchantRefId();
         requestValidator.validateSoapHeader(header);
         requestValidator.validateBatchDetokenizeRequest(request);
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (!isValidMerchantRefId(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-        }
+        addDelayForMerchantRefId(input);
     }
 
     public void validateRequest(TokenInquiryRequest request, SoapHeaderElement header) throws InterruptedException {
-        String input = request.getMerchantRefId();
+        if (!doThrowException) {
+            return;
+        }String input = request.getMerchantRefId();
         requestValidator.validateSoapHeader(header);
         requestValidator.validateTokenInquiryRequest(request);
-        if (delay > 0) { // Delay is set in properties to be fixed in every request
-            sleep(delay);
-        }
-        if (!isValidMerchantRefId(input)) {
-            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
-                addDelay(input);
-            }
-        }
+        addDelayForMerchantRefId(input);
     }
 
     public void validateRequest(RegistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateRegistrationRequest(request);
         handleExceptionsAndDelayForPAN(request.getPrimaryAccountNumber());
     }
 
     public void validateRequest(DeregistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateDeregistrationRequest(request);
         handleExceptionsAndDelayForRegId(request.getRegId());
     }
 
     public void validateRequest(DecryptRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateDecryptRequest(request);
         VerifoneCryptogram verifoneCryptogram = request.getVerifoneCryptogram();
         Card encryptedCard = verifoneCryptogram.getEncryptedCard();
@@ -177,37 +122,108 @@ public class ValidatorService {
     }
 
     public void validateRequest(TokenRegistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateTokenRegistrationRequest(request);
         handleExceptionsAndDelayForToken(request.getToken());
     }
 
     public void validateRequest(ECheckTokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateECheckTokenizeRequest(request);
         handleExceptionsAndDelayForAccountNumber(request.getAccount().getAccountNumber());
     }
 
     public void validateRequest(ECheckDetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateECheckDetokenizeRequest(request);
         handleExceptionsAndDelayForToken(request.getToken().getTokenValue());
     }
 
     public void validateRequest(OrderRegistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateOrderRegistrationRequest(request);
         handleExceptionsAndDelayForCVV(request.getCardSecurityCode());
     }
 
     public void validateRequest(OrderDeregistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        requestValidator.validateSoapHeader(header);
+        if (!doThrowException) {
+            return;
+        }requestValidator.validateSoapHeader(header);
         requestValidator.validateOrderDeregistrationRequest(request);
         handleExceptionsAndDelayForToken(request.getToken());
     }
 
     public void validateRequest(EchoRequest request, SoapHeaderElement header) {
         requestValidator.validateSoapHeader(header);
+    }
+
+    public void handleExceptionsAndDelayForPAN(String input) throws InterruptedException {
+        addFixedDelayIfSet();
+        if (isValidPAN(input)) {
+            addDelayBasedOnInput(input);
+            EWSUtils.handleDesiredExceptions(input);
+        }
+    }
+
+    private void addDelayBasedOnInput(String input) throws InterruptedException {
+        if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
+            addDelay(input);
+        }
+    }
+
+    private void addFixedDelayIfSet() throws InterruptedException {
+        if (delay > 0) { // Delay is set in properties to be fixed in every request
+            sleep(delay);
+        }
+    }
+
+    public void handleExceptionsAndDelayForToken(String input) throws InterruptedException {
+        addFixedDelayIfSet();
+        if (isValidToken(input)) {
+            addDelayBasedOnInput(input);
+            EWSUtils.handleDesiredExceptions(input);
+        }
+    }
+
+    public void handleExceptionsAndDelayForRegId(String input) throws InterruptedException {
+        addFixedDelayIfSet();
+        if (isValidRegId(input)) {
+            addDelayBasedOnInput(input);
+            EWSUtils.handleDesiredExceptions(input);
+        }
+    }
+
+    public void handleExceptionsAndDelayForCVV(String input) throws InterruptedException {
+        addFixedDelayIfSet();
+        if (isValidCVV(input)) {
+            if (delay < 0) { // Delay is not set, use PAN, reg_id, or token as per availability to calculate
+                addDelayForCVV(input);
+            }
+            EWSUtils.handleDesiredExceptionsForCVV(input);
+        }
+    }
+
+    public void handleExceptionsAndDelayForAccountNumber(String input) throws InterruptedException {
+        addFixedDelayIfSet();
+        if (isValidAccount(input)) {
+            addDelayBasedOnInput(input);
+            EWSUtils.handleDesiredExceptions(input);
+        }
+    }
+
+    private void addDelayForMerchantRefId(String input) throws InterruptedException {
+        addFixedDelayIfSet();
+        if (!isValidMerchantRefId(input)) {
+            addDelayBasedOnInput(input);
+        }
     }
 
 

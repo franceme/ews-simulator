@@ -1,4 +1,4 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.filter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.worldpay.simulator.validator;
+package com.worldpay.simulator.service;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import org.w3c.dom.Node;
 
 import com.worldpay.simulator.exceptions.SecurityErrorException;
 
-import static com.worldpay.simulator.validator.ValidatorUtils.*;
+import static com.worldpay.simulator.utils.ValidatorUtils.*;
 
 /**
  * Validator class:-

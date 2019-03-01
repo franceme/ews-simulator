@@ -1,4 +1,4 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.filter;
 
 
 import static org.mockito.BDDMockito.willDoNothing;
@@ -10,12 +10,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.ws.transport.context.TransportContextHolder;
+
+import com.worldpay.simulator.SpringTestConfig;
+import com.worldpay.simulator.filter.FilterConfiguration;
+import com.worldpay.simulator.filter.RequestLogFilter;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringTestConfig.class)

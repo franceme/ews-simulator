@@ -3,7 +3,7 @@ package com.worldpay.simulator.exceptions;
 import com.worldpay.simulator.RequestValidationFault;
 import com.worldpay.simulator.ServerFault;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
-import com.worldpay.simulator.validator.ValidatorService;
+import com.worldpay.simulator.service.ValidatorService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

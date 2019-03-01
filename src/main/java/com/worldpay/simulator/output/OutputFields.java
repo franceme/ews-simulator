@@ -1,4 +1,6 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.output;
+
+import com.worldpay.simulator.WalletType;
 
 public class OutputFields {
 

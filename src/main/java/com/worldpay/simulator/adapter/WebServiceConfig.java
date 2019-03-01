@@ -1,4 +1,4 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.adapter;
 
 import java.util.List;
 import java.util.Properties;

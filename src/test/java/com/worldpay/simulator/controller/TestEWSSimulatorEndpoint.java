@@ -1,32 +1,68 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.controller;
 
-import com.worldpay.simulator.utils.HttpHeaderUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import com.worldpay.simulator.validator.ValidatorService;
+import java.util.List;
 
 import org.apache.tomcat.util.codec.binary.Base64;
-
-import static org.mockito.BDDMockito.willDoNothing;
-import static org.powermock.api.mockito.PowerMockito.*;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ws.soap.SoapHeaderElement;
-import static org.mockito.Mockito.*;
-import java.util.List;
+
+import com.worldpay.simulator.Account;
+import com.worldpay.simulator.AccountType;
+import com.worldpay.simulator.BatchDetokenizeRequest;
+import com.worldpay.simulator.BatchDetokenizeResponse;
+import com.worldpay.simulator.BatchTokenizeRequest;
+import com.worldpay.simulator.BatchTokenizeResponse;
+import com.worldpay.simulator.Card;
+import com.worldpay.simulator.DecryptRequest;
+import com.worldpay.simulator.DecryptResponse;
+import com.worldpay.simulator.DeregistrationRequest;
+import com.worldpay.simulator.DeregistrationResponse;
+import com.worldpay.simulator.DetokenizeRequest;
+import com.worldpay.simulator.DetokenizeResponse;
+import com.worldpay.simulator.ECheckDetokenizeRequest;
+import com.worldpay.simulator.ECheckDetokenizeResponse;
+import com.worldpay.simulator.ECheckToken;
+import com.worldpay.simulator.ECheckTokenizeRequest;
+import com.worldpay.simulator.ECheckTokenizeResponse;
+import com.worldpay.simulator.EchoRequest;
+import com.worldpay.simulator.EchoResponse;
+import com.worldpay.simulator.MerchantType;
+import com.worldpay.simulator.OrderDeregistrationRequest;
+import com.worldpay.simulator.OrderDeregistrationResponse;
+import com.worldpay.simulator.OrderRegistrationRequest;
+import com.worldpay.simulator.OrderRegistrationResponse;
+import com.worldpay.simulator.RegistrationRequest;
+import com.worldpay.simulator.RegistrationResponse;
+import com.worldpay.simulator.SpringTestConfig;
+import com.worldpay.simulator.Token;
+import com.worldpay.simulator.TokenInquiryRequest;
+import com.worldpay.simulator.TokenInquiryResponse;
+import com.worldpay.simulator.TokenRegistrationRequest;
+import com.worldpay.simulator.TokenRegistrationResponse;
+import com.worldpay.simulator.TokenizeRequest;
+import com.worldpay.simulator.TokenizeResponse;
+import com.worldpay.simulator.VerifoneCryptogram;
+import com.worldpay.simulator.VerifoneMerchantKeyType;
+import com.worldpay.simulator.VerifoneTerminal;
+import com.worldpay.simulator.VoltageCryptogram;
+import com.worldpay.simulator.WalletType;
+import com.worldpay.simulator.output.OutputFields;
+import com.worldpay.simulator.utils.HttpHeaderUtils;
+import com.worldpay.simulator.service.ValidatorService;
 
 
 // Test Case Id: TC15065; TC15066; TC15067; TC15068

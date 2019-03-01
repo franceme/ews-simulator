@@ -1,13 +1,12 @@
 package com.worldpay.simulator.exceptions;
 
-import com.worldpay.simulator.JAXBService;
+import com.worldpay.simulator.service.JAXBService;
 import com.worldpay.simulator.RequestValidationFault;
 import com.worldpay.simulator.ServerFault;
 import com.worldpay.simulator.SpringTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

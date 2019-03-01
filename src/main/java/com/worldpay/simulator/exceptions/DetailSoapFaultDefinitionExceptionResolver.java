@@ -13,7 +13,7 @@ import org.springframework.ws.soap.SoapFault;
 import org.springframework.ws.soap.SoapFaultDetail;
 import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionResolver;
 
-import com.worldpay.simulator.JAXBService;
+import com.worldpay.simulator.service.JAXBService;
 import com.worldpay.simulator.RequestValidationFault;
 import com.worldpay.simulator.ServerFault;
 import com.worldpay.simulator.errors.EWSError;

@@ -1,4 +1,4 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.adapter;
 
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -16,6 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor;
 import org.springframework.xml.xsd.XsdSchema;
+
+import com.worldpay.simulator.adapter.WebServiceConfig;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestWsConfigurerAdapter {

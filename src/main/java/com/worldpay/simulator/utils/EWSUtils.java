@@ -1,8 +1,8 @@
 package com.worldpay.simulator.utils;
 
 
-import static com.worldpay.simulator.validator.ValidatorUtils.isStringValidInteger;
-import static com.worldpay.simulator.validator.ValidatorUtils.isValidPAN;
+import static com.worldpay.simulator.utils.ValidatorUtils.isStringValidInteger;
+import static com.worldpay.simulator.utils.ValidatorUtils.isValidPAN;
 
 import java.util.Random;
 import java.util.UUID;

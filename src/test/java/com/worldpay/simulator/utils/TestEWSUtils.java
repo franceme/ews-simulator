@@ -1,17 +1,22 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.utils;
 
-import com.worldpay.simulator.exceptions.ServerFaultException;
-import com.worldpay.simulator.exceptions.ClientFaultException;
-import com.worldpay.simulator.utils.EWSUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import javax.xml.soap.SOAPFault;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.test.context.TestComponent;
-import org.springframework.ws.soap.SoapFault;
 
-import static org.junit.Assert.*;
-
-import javax.xml.soap.SOAPFault;
+import com.worldpay.simulator.AccountType;
+import com.worldpay.simulator.VError;
+import com.worldpay.simulator.WalletType;
+import com.worldpay.simulator.exceptions.ClientFaultException;
+import com.worldpay.simulator.exceptions.ServerFaultException;
 
 public class TestEWSUtils {
   private String reqId1;

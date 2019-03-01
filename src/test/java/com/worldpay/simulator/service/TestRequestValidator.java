@@ -1,4 +1,4 @@
-package com.worldpay.simulator.validator;
+package com.worldpay.simulator.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,6 +44,8 @@ import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
+import com.worldpay.simulator.service.RequestValidator;
+import com.worldpay.simulator.utils.ValidatorUtils;
 
 
 @RunWith(PowerMockRunner.class)

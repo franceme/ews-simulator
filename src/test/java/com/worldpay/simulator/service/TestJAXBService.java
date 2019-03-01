@@ -1,4 +1,4 @@
-package com.worldpay.simulator;
+package com.worldpay.simulator.service;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +11,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import static junit.framework.TestCase.assertEquals;
+
+import com.worldpay.simulator.RequestValidationFault;
+import com.worldpay.simulator.SecurityHeaderType;
+import com.worldpay.simulator.ServerFault;
+import com.worldpay.simulator.SpringTestConfig;
+import com.worldpay.simulator.service.JAXBService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringTestConfig.class)

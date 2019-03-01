@@ -1,4 +1,4 @@
-package com.worldpay.simulator.validator;
+package com.worldpay.simulator.utils;
 
 import com.worldpay.simulator.exceptions.ClientFaultException;
 import java.util.regex.Pattern;
