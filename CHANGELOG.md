@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.20
+* **Feature** Added ability to setup simulator responses for registration, tokenize, orderRegistration, tokenRegistration, detokenize, deregistration requests.
+
 ## 4.3.19
 * **Feature** Get requests exceptionsOff, exceptionsOn to toggle exception simulations.
 

@@ -441,16 +441,27 @@ public class EWSSimulatorEndpoint {
                                              @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException, JAXBException, TransformerException {
 
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(request, auth);
-
-        RegistrationResponse response = new RegistrationResponse();
-
         String primaryAccountNumber = request.getPrimaryAccountNumber();
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getRegistrationExceptionSavedIfAny(primaryAccountNumber);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        // Check for saved responses
+        RegistrationResponse savedResponse = simulatorResponseService.getRegistrationResponseSavedIfAny(primaryAccountNumber);
+        if (savedResponse != null) {
+            addMerchantRefId(request, savedResponse);
+            return savedResponse;
+        }
+
+        // Fallback
+        validatorService.validateRequest(request, auth);
+        RegistrationResponse response = new RegistrationResponse();
         addMerchantRefId(request, response);
         response.setRequestId(EWSUtils.randomReqId());
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
-
         response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
         return response;
@@ -462,17 +473,27 @@ public class EWSSimulatorEndpoint {
     public TokenizeResponse tokenize(@RequestPayload TokenizeRequest tokenizeRequest,
                                      @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
+        String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
+
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getTokenizeExceptionSavedIfAny(primaryAccountNumber);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        // Check for saved responses
+        TokenizeResponse savedResponse = simulatorResponseService.getTokenizeResponseSavedIfAny(primaryAccountNumber);
+        if (savedResponse != null) {
+            addMerchantRefId(tokenizeRequest, savedResponse);
+            return savedResponse;
+        }
+
+        // Fallback
         validatorService.validateRequest(tokenizeRequest, auth);
-
-
         TokenizeResponse tokenizeResponse = new TokenizeResponse();
         addMerchantRefId(tokenizeRequest, tokenizeResponse);
-
-        String primaryAccountNumber = tokenizeRequest.getPrimaryAccountNumber();
         tokenizeResponse.setToken(EWSUtils.getPANToken(primaryAccountNumber));
-
         tokenizeResponse.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
-
         tokenizeResponse.setRequestId(EWSUtils.randomReqId());
         return tokenizeResponse;
     }
@@ -484,10 +505,25 @@ public class EWSSimulatorEndpoint {
 
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
+        String cvv = request.getCardSecurityCode();
+
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getOrderRegistrationExceptionSavedIfAny(cvv);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        // Check for saved responses
+        OrderRegistrationResponse savedResponse = simulatorResponseService.getOrderRegistrationResponseSavedIfAny(cvv);
+        if (savedResponse != null) {
+            addMerchantRefId(request, savedResponse);
+            return savedResponse;
+        }
+
+        // Fallback
         validatorService.validateRequest(request, auth);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
-        String cvv = request.getCardSecurityCode();
         String orderLVT = "3";
 
         //Generates the OrderLVT by repeating cvv until its at least 18 characters
@@ -509,16 +545,31 @@ public class EWSSimulatorEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "TokenRegistrationRequest")
     @ResponsePayload
-    public TokenRegistrationResponse tokenRegistration(@RequestPayload TokenRegistrationRequest tokenRegistrationRequest,
+    public TokenRegistrationResponse tokenRegistration(@RequestPayload TokenRegistrationRequest request,
                                                        @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
-        validatorService.validateRequest(tokenRegistrationRequest, auth);
+        String token = request.getToken();
+
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getTokenRegistrationExceptionSavedIfAny(token);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        // Check for saved responses
+        TokenRegistrationResponse savedResponse = simulatorResponseService.getTokenRegistrationResponseSavedIfAny(token);
+        if (savedResponse != null) {
+            addMerchantRefId(request, savedResponse);
+            return savedResponse;
+        }
+
+        // Fallback
+        validatorService.validateRequest(request, auth);
 
         TokenRegistrationResponse tokenRegistrationResponse = new TokenRegistrationResponse();
-        addMerchantRefId(tokenRegistrationRequest, tokenRegistrationResponse);
+        addMerchantRefId(request, tokenRegistrationResponse);
         tokenRegistrationResponse.setRequestId(EWSUtils.randomReqId());
 
-        String token = tokenRegistrationRequest.getToken();
         tokenRegistrationResponse.setRegId(EWSUtils.getRegIdFromToken(token));
 
         return tokenRegistrationResponse;
@@ -675,6 +726,22 @@ public class EWSSimulatorEndpoint {
                                          @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
         httpHeaderUtils.customizeHttpResponseHeader();
+        String token = request.getToken();
+
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getDetokenizeExceptionSavedIfAny(token);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        // Check for saved responses
+        DetokenizeResponse savedResponse = simulatorResponseService.getDetokenizeResponseSavedIfAny(token);
+        if (savedResponse != null) {
+            addMerchantRefId(request, savedResponse);
+            return savedResponse;
+        }
+
+        // Fallback
 
         validatorService.validateRequest(request, auth);
 
@@ -683,7 +750,6 @@ public class EWSSimulatorEndpoint {
         String requestId = EWSUtils.randomReqId();
         answer.setRequestId(requestId);
 
-        String token = request.getToken();
 
         String primaryAccountNumber = EWSUtils.getPAN(token);
         if (request.isCVV2Requested() != null && request.isCVV2Requested()) {
@@ -758,10 +824,25 @@ public class EWSSimulatorEndpoint {
     public DeregistrationResponse deregistration(@RequestPayload DeregistrationRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
         httpHeaderUtils.customizeHttpResponseHeader();
+        String regId = request.getRegId();
+
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getDeregistrationExceptionSavedIfAny(regId);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        // Check for saved responses
+        DeregistrationResponse savedResponse = simulatorResponseService.getDeregistrationResponseSavedIfAny(regId);
+        if (savedResponse != null) {
+            addMerchantRefId(request, savedResponse);
+            return savedResponse;
+        }
+
+        // Fallback
         validatorService.validateRequest(request, auth);
 
         DeregistrationResponse answer = new DeregistrationResponse();
-        String regId = request.getRegId();
         String PAN = EWSUtils.getPANThroughRegId(regId);
 
         // set requestId (mandatory)

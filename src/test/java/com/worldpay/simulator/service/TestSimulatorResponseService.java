@@ -27,125 +27,6 @@ public class TestSimulatorResponseService {
     @Autowired
     private SimulatorResponseService service;
 
-    @Test
-    public void getDeregistrationResponseMap() {
-        assertNull(service.getDeregistrationResponseMap());
-    }
-
-    @Test
-    public void getOrderDeregistrationResponseMap() {
-        assertNull(service.getOrderDeregistrationResponseMap());
-    }
-
-    @Test
-    public void getDetokenizeResponseMap() {
-        assertNull(service.getDetokenizeResponseMap());
-    }
-
-    @Test
-    public void getTokenInquiryPanToTokenResponseMap() {
-        assertNull(service.getTokenInquiryPanToTokenResponseMap());
-    }
-
-    @Test
-    public void getECheckDetokenizeTokenToAccountResponseMap() {
-        assertNull(service.getECheckDetokenizeTokenToAccountResponseMap());
-    }
-
-    @Test
-    public void getECheckTokenizePanToTokenResponseMap() {
-        assertNull(service.getECheckTokenizePanToTokenResponseMap());
-    }
-
-    @Test
-    public void getBatchDetokenizeTokenToPanResponseMap() {
-        assertNull(service.getBatchDetokenizeTokenToPanResponseMap());
-    }
-
-    @Test
-    public void getBatchTokenizePANToTokenResponseMap() {
-        assertNull(service.getBatchTokenizePanToTokenResponseMap());
-    }
-
-    @Test
-    public void getTokenRegistrationResponseMap() {
-        assertNull(service.getTokenRegistrationResponseMap());
-    }
-
-    @Test
-    public void getOrderRegistrationResponseMap() {
-        assertNull(service.getOrderRegistrationResponseMap());
-    }
-
-    @Test
-    public void getTokenizeResponseMap() {
-        assertNull(service.getTokenizeResponseMap());
-    }
-
-    @Test
-    public void getRegistrationResponseMap() {
-        assertNull(service.getRegistrationResponseMap());
-    }
-
-    @Test
-    public void getDeregistrationExceptionMap() {
-        assertNull(service.getDeregistrationExceptionMap());
-    }
-
-    @Test
-    public void getOrderDeregistrationExceptionMap() {
-        assertNull(service.getOrderDeregistrationExceptionMap());
-    }
-
-    @Test
-    public void getDetokenizeExceptionMap() {
-        assertNull(service.getDetokenizeExceptionMap());
-    }
-
-    @Test
-    public void getTokenInquiryExceptionMap() {
-        assertNull(service.getTokenInquiryExceptionMap());
-    }
-
-    @Test
-    public void getECheckDetokenizeExceptionMap() {
-        assertNull(service.getECheckDetokenizeExceptionMap());
-    }
-
-    @Test
-    public void getECheckTokenizeExceptionMap() {
-        assertNull(service.getECheckTokenizeExceptionMap());
-    }
-
-    @Test
-    public void getBatchDetokenizeExceptionMap() {
-        assertNull(service.getBatchDetokenizeExceptionMap());
-    }
-
-    @Test
-    public void getBatchTokenizeExceptionMap() {
-        assertNull(service.getBatchTokenizeExceptionMap());
-    }
-
-    @Test
-    public void getTokenRegistrationExceptionMap() {
-        assertNull(service.getTokenRegistrationExceptionMap());
-    }
-
-    @Test
-    public void getOrderRegistrationExceptionMap() {
-        assertNull(service.getOrderRegistrationExceptionMap());
-    }
-
-    @Test
-    public void getTokenizeExceptionMap() {
-        assertNull(service.getTokenizeExceptionMap());
-    }
-
-    @Test
-    public void getRegistrationExceptionMap() {
-        assertNull(service.getRegistrationExceptionMap());
-    }
 
     @Test
     public void clearAllResponses() {
@@ -240,5 +121,154 @@ public class TestSimulatorResponseService {
         assertEquals(0, service.getTokenRegistrationExceptionMap().size());
         assertEquals(0, service.getOrderRegistrationExceptionMap().size());
 
+    }
+
+    @Test
+    public void getRegistrationExceptionSavedIfAny() {
+        assertNull(service.getRegistrationExceptionSavedIfAny("123"));
+        service.addRegistrationExceptionToMap("123", 101);
+        assertEquals(new Integer(101), service.getRegistrationExceptionSavedIfAny("123"));
+        service.clearRegistrationMap();
+        assertNull(service.getRegistrationExceptionSavedIfAny("123"));
+        service.addRegistrationExceptionToMap("*", 111);
+        assertEquals(new Integer(111), service.getRegistrationExceptionSavedIfAny("978"));
+    }
+
+    @Test
+    public void getRegistrationResponseSavedIfAny() {
+        assertNull(service.getRegistrationResponseSavedIfAny("123"));
+        RegistrationResponse response = new RegistrationResponse();
+        service.addRegistrationResponseToMap("123", response);
+        assertEquals(response, service.getRegistrationResponseSavedIfAny("123"));
+        service.clearRegistrationMap();
+        assertNull(service.getRegistrationResponseSavedIfAny("123"));
+        service.addRegistrationResponseToMap("*", response);
+        assertEquals(response, service.getRegistrationResponseSavedIfAny("978"));
+        service.clearRegistrationMap();
+    }
+
+    @Test
+    public void getTokenizeExceptionSavedIfAny() {
+        assertNull(service.getTokenizeExceptionSavedIfAny("123"));
+        service.addTokenizeExceptionToMap("123", 101);
+        assertEquals(new Integer(101), service.getTokenizeExceptionSavedIfAny("123"));
+        service.clearTokenizeMap();
+        assertNull(service.getTokenizeExceptionSavedIfAny("123"));
+        service.addTokenizeExceptionToMap("*", 111);
+        assertEquals(new Integer(111), service.getTokenizeExceptionSavedIfAny("978"));
+        service.clearTokenizeMap();
+    }
+
+    @Test
+    public void getTokenizeResponseSavedIfAny() {
+        assertNull(service.getTokenizeResponseSavedIfAny("123"));
+        TokenizeResponse response = new TokenizeResponse();
+        service.addTokenizeResponseToMap("123", response);
+        assertEquals(response, service.getTokenizeResponseSavedIfAny("123"));
+        service.clearTokenizeMap();
+        assertNull(service.getTokenizeResponseSavedIfAny("123"));
+        service.addTokenizeResponseToMap("*", response);
+        assertEquals(response, service.getTokenizeResponseSavedIfAny("978"));
+        service.clearTokenizeMap();
+    }
+
+    @Test
+    public void getOrderRegistrationExceptionSavedIfAny() {
+        assertNull(service.getOrderRegistrationExceptionSavedIfAny("123"));
+        service.addOrderRegistrationExceptionToMap("123", 101);
+        assertEquals(new Integer(101), service.getOrderRegistrationExceptionSavedIfAny("123"));
+        service.clearOrderRegistrationMap();
+        assertNull(service.getOrderRegistrationExceptionSavedIfAny("123"));
+        service.addOrderRegistrationExceptionToMap("*", 111);
+        assertEquals(new Integer(111), service.getOrderRegistrationExceptionSavedIfAny("978"));
+        service.clearOrderRegistrationMap();
+    }
+
+    @Test
+    public void getOrderRegistrationResponseSavedIfAny() {
+        assertNull(service.getOrderRegistrationResponseSavedIfAny("123"));
+        OrderRegistrationResponse response = new OrderRegistrationResponse();
+        service.addOrderRegistrationResponseToMap("123", response);
+        assertEquals(response, service.getOrderRegistrationResponseSavedIfAny("123"));
+        service.clearOrderRegistrationMap();
+        assertNull(service.getOrderRegistrationResponseSavedIfAny("123"));
+        service.addOrderRegistrationResponseToMap("*", response);
+        assertEquals(response, service.getOrderRegistrationResponseSavedIfAny("978"));
+        service.clearOrderRegistrationMap();
+    }
+
+    @Test
+    public void getTokenRegistrationExceptionSavedIfAny() {
+        assertNull(service.getTokenRegistrationExceptionSavedIfAny("123"));
+        service.addTokenRegistrationExceptionToMap("123", 101);
+        assertEquals(new Integer(101), service.getTokenRegistrationExceptionSavedIfAny("123"));
+        service.clearTokenRegistrationMap();
+        assertNull(service.getTokenRegistrationExceptionSavedIfAny("123"));
+        service.addTokenRegistrationExceptionToMap("*", 111);
+        assertEquals(new Integer(111), service.getTokenRegistrationExceptionSavedIfAny("978"));
+        service.clearTokenRegistrationMap();
+    }
+
+    @Test
+    public void getTokenRegistrationResponseSavedIfAny() {
+        assertNull(service.getTokenRegistrationResponseSavedIfAny("123"));
+        TokenRegistrationResponse response = new TokenRegistrationResponse();
+        service.addTokenRegistrationResponseToMap("123", response);
+        assertEquals(response, service.getTokenRegistrationResponseSavedIfAny("123"));
+        service.clearTokenRegistrationMap();
+        assertNull(service.getTokenRegistrationResponseSavedIfAny("123"));
+        service.addTokenRegistrationResponseToMap("*", response);
+        assertEquals(response, service.getTokenRegistrationResponseSavedIfAny("978"));
+        service.clearTokenRegistrationMap();
+    }
+
+    @Test
+    public void getDetokenizeExceptionSavedIfAny() {
+        assertNull(service.getDetokenizeExceptionSavedIfAny("123"));
+        service.addDetokenizeExceptionToMap("123", 101);
+        assertEquals(new Integer(101), service.getDetokenizeExceptionSavedIfAny("123"));
+        service.clearDetokenizeMap();
+        assertNull(service.getDetokenizeExceptionSavedIfAny("123"));
+        service.addDetokenizeExceptionToMap("*", 111);
+        assertEquals(new Integer(111), service.getDetokenizeExceptionSavedIfAny("978"));
+        service.clearDetokenizeMap();
+    }
+
+    @Test
+    public void getDetokenizeResponseSavedIfAny() {
+        assertNull(service.getDetokenizeResponseSavedIfAny("123"));
+        DetokenizeResponse response = new DetokenizeResponse();
+        service.addDetokenizeResponseToMap("123", response);
+        assertEquals(response, service.getDetokenizeResponseSavedIfAny("123"));
+        service.clearDetokenizeMap();
+        assertNull(service.getDetokenizeResponseSavedIfAny("123"));
+        service.addDetokenizeResponseToMap("*", response);
+        assertEquals(response, service.getDetokenizeResponseSavedIfAny("978"));
+        service.clearDetokenizeMap();
+    }
+
+    @Test
+    public void getDeregistrationExceptionSavedIfAny() {
+        assertNull(service.getDeregistrationExceptionSavedIfAny("123"));
+        service.addDeregistrationExceptionToMap("123", 101);
+        assertEquals(new Integer(101), service.getDeregistrationExceptionSavedIfAny("123"));
+        service.clearDeregistrationMap();
+        assertNull(service.getDeregistrationExceptionSavedIfAny("123"));
+        service.addDeregistrationExceptionToMap("*", 111);
+        assertEquals(new Integer(111), service.getDeregistrationExceptionSavedIfAny("978"));
+        service.clearDeregistrationMap();
+    }
+
+    @Test
+    public void getDeregistrationResponseSavedIfAny() {
+        assertNull(service.getDeregistrationResponseSavedIfAny("123"));
+        DeregistrationResponse response = new DeregistrationResponse();
+        service.addDeregistrationResponseToMap("123", response);
+        assertEquals(response, service.getDeregistrationResponseSavedIfAny("123"));
+        service.clearDeregistrationMap();
+        assertNull(service.getDeregistrationResponseSavedIfAny("123"));
+        service.addDeregistrationResponseToMap("*", response);
+        assertEquals(response, service.getDeregistrationResponseSavedIfAny("978"));
+        service.clearDeregistrationMap();
     }
 }

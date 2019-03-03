@@ -456,4 +456,100 @@ public class SimulatorResponseService {
         }
         registrationExceptionMap.put(key, registrationException);
     }
+
+    public Integer getRegistrationExceptionSavedIfAny(String pan) {
+        if (registrationExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = registrationExceptionMap.get(pan);
+        return errorId == null ? registrationExceptionMap.get("*") : errorId;
+    }
+
+    public RegistrationResponse getRegistrationResponseSavedIfAny(String pan) {
+        if (registrationResponseMap == null) {
+            return null;
+        }
+        RegistrationResponse response = registrationResponseMap.get(pan);
+        return response == null ? registrationResponseMap.get("*") : response;
+    }
+
+    public Integer getTokenizeExceptionSavedIfAny(String pan) {
+        if (tokenizeExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = tokenizeExceptionMap.get(pan);
+        return errorId == null ? tokenizeExceptionMap.get("*") : errorId;
+    }
+
+    public TokenizeResponse getTokenizeResponseSavedIfAny(String pan) {
+        if (tokenizeResponseMap == null) {
+            return null;
+        }
+        TokenizeResponse response = tokenizeResponseMap.get(pan);
+        return response == null ? tokenizeResponseMap.get("*") : response;
+    }
+
+    public Integer getOrderRegistrationExceptionSavedIfAny(String cvv) {
+        if (orderRegistrationExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = orderRegistrationExceptionMap.get(cvv);
+        return errorId == null ? orderRegistrationExceptionMap.get("*") : errorId;
+    }
+
+    public OrderRegistrationResponse getOrderRegistrationResponseSavedIfAny(String cvv) {
+        if (orderRegistrationResponseMap == null) {
+            return null;
+        }
+        OrderRegistrationResponse response = orderRegistrationResponseMap.get(cvv);
+        return response == null ? orderRegistrationResponseMap.get("*") : response;
+    }
+
+    public Integer getTokenRegistrationExceptionSavedIfAny(String token) {
+        if (tokenRegistrationExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = tokenRegistrationExceptionMap.get(token);
+        return errorId == null ? tokenRegistrationExceptionMap.get("*") : errorId;
+    }
+
+    public TokenRegistrationResponse getTokenRegistrationResponseSavedIfAny(String token) {
+        if (tokenRegistrationResponseMap == null) {
+            return null;
+        }
+        TokenRegistrationResponse response = tokenRegistrationResponseMap.get(token);
+        return response == null ? tokenRegistrationResponseMap.get("*") : response;
+    }
+
+    public Integer getDetokenizeExceptionSavedIfAny(String token) {
+        if (detokenizeExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = detokenizeExceptionMap.get(token);
+        return errorId == null ? detokenizeExceptionMap.get("*") : errorId;
+    }
+
+    public DetokenizeResponse getDetokenizeResponseSavedIfAny(String token) {
+        if (detokenizeResponseMap == null) {
+            return null;
+        }
+        DetokenizeResponse response = detokenizeResponseMap.get(token);
+        return response == null ? detokenizeResponseMap.get("*") : response;
+    }
+
+    public Integer getDeregistrationExceptionSavedIfAny(String regId) {
+        if (deregistrationExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = deregistrationExceptionMap.get(regId);
+        return errorId == null ? deregistrationExceptionMap.get("*") : errorId;
+    }
+
+    public DeregistrationResponse getDeregistrationResponseSavedIfAny(String regId) {
+        if (deregistrationResponseMap == null) {
+            return null;
+        }
+        DeregistrationResponse response = deregistrationResponseMap.get(regId);
+        return response == null ? deregistrationResponseMap.get("*") : response;
+    }
 }

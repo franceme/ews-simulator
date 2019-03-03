@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -64,6 +66,7 @@ import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
 import com.worldpay.simulator.WalletType;
+import com.worldpay.simulator.exceptions.ServerFaultException;
 import com.worldpay.simulator.pojo.OutputFields;
 import com.worldpay.simulator.service.SimulatorResponseService;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
@@ -1307,6 +1310,188 @@ public class TestEWSSimulatorEndpoint {
         OutputFields actual = ewsSimulatorEndpoint.inputCVV("345");
         assertEquals("334534534534534534", actual.getOrderLVT());
     }
+
+    @Test
+    public void registration() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        RegistrationRequest request = new RegistrationRequest();
+        request.setPrimaryAccountNumber("123");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getRegistrationExceptionSavedIfAny("123");
+
+        try{
+            ewsSimulatorEndpoint.registration(request, header);
+            fail("Must throw exception");
+        } catch (Exception e) {
+            assertEquals("Server Fault Exception", e.getMessage());
+        }
+        RegistrationResponse response = new RegistrationResponse();
+        willReturn(null).given(simulatorResponseService).getRegistrationExceptionSavedIfAny("123");
+        willReturn(response).given(simulatorResponseService).getRegistrationResponseSavedIfAny("123");
+        try{
+            RegistrationResponse actual = ewsSimulatorEndpoint.registration(request, header);
+            assertEquals("merchantRefId", actual.getMerchantRefId());
+        } catch (Exception e) {
+            fail("Must not throw exception");
+        }
+    }
+
+    @Test
+    public void tokenize() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        TokenizeRequest request = new TokenizeRequest();
+        request.setPrimaryAccountNumber("123");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getTokenizeExceptionSavedIfAny("123");
+
+        try{
+            ewsSimulatorEndpoint.tokenize(request, header);
+            fail("Must throw exception");
+        } catch (Exception e) {
+            assertEquals("Server Fault Exception", e.getMessage());
+        }
+        TokenizeResponse response = new TokenizeResponse();
+        willReturn(null).given(simulatorResponseService).getTokenizeExceptionSavedIfAny("123");
+        willReturn(response).given(simulatorResponseService).getTokenizeResponseSavedIfAny("123");
+        try{
+            TokenizeResponse actual = ewsSimulatorEndpoint.tokenize(request, header);
+            assertEquals("merchantRefId", actual.getMerchantRefId());
+        } catch (Exception e) {
+            fail("Must not throw exception");
+        }
+    }
+
+    @Test
+    public void orderRegistration() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        OrderRegistrationRequest request = new OrderRegistrationRequest();
+        request.setCardSecurityCode("123");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getOrderRegistrationExceptionSavedIfAny("123");
+
+        try{
+            ewsSimulatorEndpoint.orderRegistration(request, header);
+            fail("Must throw exception");
+        } catch (Exception e) {
+            assertEquals("Server Fault Exception", e.getMessage());
+        }
+        OrderRegistrationResponse response = new OrderRegistrationResponse();
+        willReturn(null).given(simulatorResponseService).getOrderRegistrationExceptionSavedIfAny("123");
+        willReturn(response).given(simulatorResponseService).getOrderRegistrationResponseSavedIfAny("123");
+        try{
+            OrderRegistrationResponse actual = ewsSimulatorEndpoint.orderRegistration(request, header);
+            assertEquals("merchantRefId", actual.getMerchantRefId());
+        } catch (Exception e) {
+            fail("Must not throw exception");
+        }
+    }
+
+    @Test
+    public void tokenRegistration() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        TokenRegistrationRequest request = new TokenRegistrationRequest();
+        request.setToken("123");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getTokenRegistrationExceptionSavedIfAny("123");
+
+        try{
+            ewsSimulatorEndpoint.tokenRegistration(request, header);
+            fail("Must throw exception");
+        } catch (Exception e) {
+            assertEquals("Server Fault Exception", e.getMessage());
+        }
+        TokenRegistrationResponse response = new TokenRegistrationResponse();
+        willReturn(null).given(simulatorResponseService).getTokenRegistrationExceptionSavedIfAny("123");
+        willReturn(response).given(simulatorResponseService).getTokenRegistrationResponseSavedIfAny("123");
+        try{
+            TokenRegistrationResponse actual = ewsSimulatorEndpoint.tokenRegistration(request, header);
+            assertEquals("merchantRefId", actual.getMerchantRefId());
+        } catch (Exception e) {
+            fail("Must not throw exception");
+        }
+    }
+
+    @Test
+    public void detokenize() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        DetokenizeRequest request = new DetokenizeRequest();
+        request.setToken("123");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getDetokenizeExceptionSavedIfAny("123");
+
+        try{
+            ewsSimulatorEndpoint.detokenize(request, header);
+            fail("Must throw exception");
+        } catch (Exception e) {
+            assertEquals("Server Fault Exception", e.getMessage());
+        }
+        DetokenizeResponse response = new DetokenizeResponse();
+        willReturn(null).given(simulatorResponseService).getDetokenizeExceptionSavedIfAny("123");
+        willReturn(response).given(simulatorResponseService).getDetokenizeResponseSavedIfAny("123");
+        try{
+            DetokenizeResponse actual = ewsSimulatorEndpoint.detokenize(request, header);
+            assertEquals("merchantRefId", actual.getMerchantRefId());
+        } catch (Exception e) {
+            fail("Must not throw exception");
+        }
+    }
+
+    @Test
+    public void deregistration() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        DeregistrationRequest request = new DeregistrationRequest();
+        request.setRegId("123");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getDeregistrationExceptionSavedIfAny("123");
+
+        try{
+            ewsSimulatorEndpoint.deregistration(request, header);
+            fail("Must throw exception");
+        } catch (Exception e) {
+            assertEquals("Server Fault Exception", e.getMessage());
+        }
+        DeregistrationResponse response = new DeregistrationResponse();
+        willReturn(null).given(simulatorResponseService).getDeregistrationExceptionSavedIfAny("123");
+        willReturn(response).given(simulatorResponseService).getDeregistrationResponseSavedIfAny("123");
+        try{
+            DeregistrationResponse actual = ewsSimulatorEndpoint.deregistration(request, header);
+            assertEquals("merchantRefId", actual.getMerchantRefId());
+        } catch (Exception e) {
+            fail("Must not throw exception");
+        }
+    }
+    
+    
 
 
 
