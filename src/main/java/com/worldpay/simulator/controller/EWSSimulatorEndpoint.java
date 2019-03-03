@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,6 +30,7 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.server.endpoint.annotation.SoapHeader;
 
 import com.worldpay.simulator.Account;
+import com.worldpay.simulator.AccountType;
 import com.worldpay.simulator.BatchDetokenizeRequest;
 import com.worldpay.simulator.BatchDetokenizeResponse;
 import com.worldpay.simulator.BatchTokenizeRequest;
@@ -53,7 +55,7 @@ import com.worldpay.simulator.OrderDeregistrationRequest;
 import com.worldpay.simulator.OrderDeregistrationResponse;
 import com.worldpay.simulator.OrderRegistrationRequest;
 import com.worldpay.simulator.OrderRegistrationResponse;
-import com.worldpay.simulator.output.OutputFields;
+import com.worldpay.simulator.pojo.OutputFields;
 import com.worldpay.simulator.RegistrationRequest;
 import com.worldpay.simulator.RegistrationResponse;
 import com.worldpay.simulator.Token;
@@ -67,6 +69,7 @@ import com.worldpay.simulator.VError;
 import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VoltageCryptogram;
 import com.worldpay.simulator.WalletType;
+import com.worldpay.simulator.service.SimulatorResponseService;
 import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 import com.worldpay.simulator.service.ValidatorService;
@@ -81,10 +84,13 @@ public class EWSSimulatorEndpoint {
     @Autowired
     ValidatorService validatorService;
 
+    @Autowired
+    SimulatorResponseService simulatorResponseService;
+
     //TODO origins should be specific
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputPAN")
-    public OutputFields inputPAN(@RequestParam(value="primaryAccountNumber") String primaryAccountNumber) {
+    public OutputFields inputPAN(@RequestParam(value = "primaryAccountNumber") String primaryAccountNumber) {
         OutputFields response = new OutputFields();
         response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
@@ -94,7 +100,7 @@ public class EWSSimulatorEndpoint {
 
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputToken")
-    public OutputFields inputToken(@RequestParam(value="token") String token) {
+    public OutputFields inputToken(@RequestParam(value = "token") String token) {
         OutputFields response = new OutputFields();
 
         response.setPAN(EWSUtils.getPAN(token));
@@ -104,9 +110,10 @@ public class EWSSimulatorEndpoint {
 
         return response;
     }
+
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputRegId")
-    public OutputFields inputRegId(@RequestParam(value="regId") String regId) {
+    public OutputFields inputRegId(@RequestParam(value = "regId") String regId) {
         OutputFields response = new OutputFields();
 
         response.setPAN(EWSUtils.convertRegIdToPAN(regId));
@@ -118,9 +125,10 @@ public class EWSSimulatorEndpoint {
 
         return response;
     }
+
     @CrossOrigin(origins = "*")
     @RequestMapping("/inputCVV")
-    public OutputFields inputCVV(@RequestParam(value="cvv") String cvv) {
+    public OutputFields inputCVV(@RequestParam(value = "cvv") String cvv) {
         OutputFields response = new OutputFields();
         response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
 
@@ -129,16 +137,295 @@ public class EWSSimulatorEndpoint {
 
     @GetMapping("/exceptionsOff")
     @ResponseBody
-    public ResponseEntity turnExceptionsOff() {
+    public ResponseEntity turnOffExceptions() {
         validatorService.turnOffExceptions();
-        return new ResponseEntity("EWS exception simulations are turned off.",HttpStatus.OK);
+        return new ResponseEntity("EWS Simulator - Exception simulations are turned off", HttpStatus.OK);
     }
 
     @GetMapping("/exceptionsOn")
     @ResponseBody
-    public ResponseEntity turnExceptionsOn() {
+    public ResponseEntity turnOnExceptions() {
         validatorService.turnOnExceptions();
-        return new ResponseEntity("EWS exception simulations are turned on", HttpStatus.OK);
+        return new ResponseEntity("EWS Simulator - Exception simulations are turned on", HttpStatus.OK);
+    }
+
+    @PostMapping("/clearAllResponses")
+    @ResponseBody
+    public ResponseEntity clearAllResponses() {
+        simulatorResponseService.clearAllResponses();
+        return new ResponseEntity("EWS Simulator -  All responses cleared", HttpStatus.OK);
+    }
+
+    @PostMapping("/addRegistrationResponse")
+    @ResponseBody
+    public ResponseEntity addRegistrationResponse(@RequestParam(value = "inputPan") String inputPan,
+                                                  @RequestParam(value = "outputRegId") String outputRegId,
+                                                  @RequestParam(value = "outputToken") String outputToken,
+                                                  @RequestParam(value = "outputTokenNewlyGen") String outputTokenNewlyGen) {
+        RegistrationResponse response = new RegistrationResponse();
+        response.setRequestId(EWSUtils.randomReqId());
+        response.setRegId(outputRegId);
+        response.setToken(outputToken);
+        response.setTokenNewlyGenerated("true".equalsIgnoreCase(outputTokenNewlyGen));
+        simulatorResponseService.addRegistrationResponseToMap(inputPan, response);
+        return new ResponseEntity("EWS Simulator - RegistrationResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addTokenizeResponse")
+    @ResponseBody
+    public ResponseEntity addTokenizeResponse(@RequestParam(value = "inputPan") String inputPan,
+                                              @RequestParam(value = "outputToken") String outputToken,
+                                              @RequestParam(value = "outputTokenNewlyGen") String outputTokenNewlyGen) {
+        TokenizeResponse tokenizeResponse = new TokenizeResponse();
+        tokenizeResponse.setToken(outputToken);
+        tokenizeResponse.setTokenNewlyGenerated("true".equalsIgnoreCase(outputTokenNewlyGen));
+        tokenizeResponse.setRequestId(EWSUtils.randomReqId());
+        simulatorResponseService.addTokenizeResponseToMap(inputPan, tokenizeResponse);
+        return new ResponseEntity("EWS Simulator - TokenizeResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addOrderRegistrationResponse")
+    @ResponseBody
+    public ResponseEntity addOrderRegistrationResponse(@RequestParam(value = "inputCvv") String inputCvv,
+                                                       @RequestParam(value = "outputOrderLVT") String outputOrderLVT) {
+        OrderRegistrationResponse orderRegistrationResponse = new OrderRegistrationResponse();
+        orderRegistrationResponse.setOrderLVT(outputOrderLVT);
+        orderRegistrationResponse.setRequestId(EWSUtils.randomReqId());
+        simulatorResponseService.addOrderRegistrationResponseToMap(inputCvv, orderRegistrationResponse);
+        return new ResponseEntity("EWS Simulator - OrderRegistrationResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addTokenRegistrationResponse")
+    @ResponseBody
+    public ResponseEntity addTokenRegistrationResponse(@RequestParam(value = "inputToken") String inputToken,
+                                                       @RequestParam(value = "outputRegId") String outputRegId) {
+        TokenRegistrationResponse tokenRegistrationResponse = new TokenRegistrationResponse();
+        tokenRegistrationResponse.setRegId(outputRegId);
+        tokenRegistrationResponse.setRequestId(EWSUtils.randomReqId());
+        simulatorResponseService.addTokenRegistrationResponseToMap(inputToken, tokenRegistrationResponse);
+        return new ResponseEntity("EWS Simulator - TokenregistrationResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addBatchTokenizePanToTokenResponse")
+    @ResponseBody
+    public ResponseEntity addBatchTokenizePanToTokenResponse(@RequestParam(value = "inputPan") String inputPan,
+                                                             @RequestParam(value = "outputToken") String outputToken,
+                                                             @RequestParam(value = "outputTokenNewlyGen") String outputTokenNewlyGen) {
+        Token token = new Token();
+        token.setTokenValue(outputToken);
+        token.setTokenNewlyGenerated("true".equalsIgnoreCase(outputTokenNewlyGen));
+        simulatorResponseService.addBatchTokenizePanToTokenResponseToMap(inputPan, token);
+        return new ResponseEntity("EWS Simulator - BatchTokenizePANToTokenResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addBatchDetokenizeTokenToPanResponseToMap")
+    @ResponseBody
+    public ResponseEntity addBatchDetokenizeTokenToPanResponseToMap(@RequestParam(value = "inputToken") String inputToken,
+                                                                    @RequestParam(value = "outputPan") String outputPan) {
+        simulatorResponseService.addBatchDetokenizeTokenToPanResponseToMap(inputToken, outputPan);
+        return new ResponseEntity("EWS Simulator - BatchDetokenizeTokenToPANResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addECheckTokenizePanToTokenResponse")
+    @ResponseBody
+    public ResponseEntity addECheckTokenizePanToTokenResponse(@RequestParam(value = "inputPan") String inputPan,
+                                                              @RequestParam(value = "outputToken") String outputToken,
+                                                              @RequestParam(value = "outputTokenNewlyGen") String outputTokenNewlyGen) {
+        Token token = new Token();
+        token.setTokenValue(outputToken);
+        token.setTokenNewlyGenerated("true".equalsIgnoreCase(outputTokenNewlyGen));
+        simulatorResponseService.addECheckTokenizePanToTokenResponseToMap(inputPan, token);
+        return new ResponseEntity("EWS Simulator - EcheckTokenizePanToTokenResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addECheckDetokenizeTokenToAccountResponse")
+    @ResponseBody
+    public ResponseEntity addECheckDetokenizeTokenToAccountResponse(@RequestParam(value = "inputToken") String inputToken,
+                                                                    @RequestParam(value = "outputAccNum") String outputAccNum,
+                                                                    @RequestParam(value = "outputAccType") String outputAccType,
+                                                                    @RequestParam(value = "outputAccRoutingNum") String outputAccRoutingNum) {
+        Account account = new Account();
+
+        account.setAccountNumber(outputAccNum);
+        account.setAccountType(AccountType.fromValue(outputAccType));
+        account.setRoutingNumber(outputAccRoutingNum);
+        simulatorResponseService.addECheckDetokenizeTokenToAccountResponseToMap(inputToken, account);
+        return new ResponseEntity("EWS Simulator - ECheckDetokenizeTokenToAccountResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addTokenInquiryPanToTokenResponse")
+    @ResponseBody
+    public ResponseEntity addTokenInquiryPanToTokenResponse(@RequestParam(value = "inputPan") String inputPan,
+                                                            @RequestParam(value = "outputToken") String outputToken,
+                                                            @RequestParam(value = "outputTokenNewlyGen") String outputTokenNewlyGen) {
+        boolean tokenNewlyGenerated = "true".equalsIgnoreCase(outputTokenNewlyGen);
+        if (tokenNewlyGenerated) {
+            simulatorResponseService.addTokenInquiryPanToTokenResponseToMap(inputPan, null);
+            return new ResponseEntity("EWS Simulator - TokenInquiryPanToTokenResponse added", HttpStatus.OK);
+        }
+        Token token = new Token();
+        token.setTokenValue(outputToken);
+        token.setTokenNewlyGenerated(false);
+        simulatorResponseService.addTokenInquiryPanToTokenResponseToMap(inputPan, token);
+        return new ResponseEntity("EWS Simulator - TokenInquiryPanToTokenResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addDetokenizeResponse")
+    @ResponseBody
+    public ResponseEntity addDetokenizeResponse(@RequestParam(value = "inputToken") String inputToken,
+                                                @RequestParam(value = "outputPan") String outputPan,
+                                                @RequestParam(value = "outputCvv") String outputCvv,
+                                                @RequestParam(value = "outputExpDate") String outputExpDate) {
+        DetokenizeResponse detokenizeResponse = new DetokenizeResponse();
+        detokenizeResponse.setRequestId(EWSUtils.randomReqId());
+        if (outputCvv != null && outputCvv != "") {
+            detokenizeResponse.setCardSecurityCode(outputCvv);
+        }
+        if (outputExpDate != null && outputExpDate != "") {
+            detokenizeResponse.setExpirationDate(outputExpDate);
+        }
+        detokenizeResponse.setPrimaryAccountNumber(outputPan);
+        simulatorResponseService.addDetokenizeResponseToMap(inputToken, detokenizeResponse);
+        return new ResponseEntity("EWS Simulator - DetokenizeResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addOrderDeregistrationResponse")
+    @ResponseBody
+    public ResponseEntity addOrderDeregistrationResponse(@RequestParam(value = "inputToken") String inputToken,
+                                                         @RequestParam(value = "outputPan") String outputPan,
+                                                         @RequestParam(value = "outputCvv") String outputCvv) {
+        OrderDeregistrationResponse orderDeregistrationResponse = new OrderDeregistrationResponse();
+
+        orderDeregistrationResponse.setRequestId(EWSUtils.randomReqId());
+        orderDeregistrationResponse.setPrimaryAccountNumber(outputPan);
+        orderDeregistrationResponse.setCardSecurityCode(outputCvv);
+        simulatorResponseService.addOrderDeregistrationResponseToMap(inputToken, orderDeregistrationResponse);
+        return new ResponseEntity("EWS Simulator - OrderDeregistrationResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addDeregistrationResponse")
+    @ResponseBody
+    public ResponseEntity addDeregistrationResponse(@RequestParam(value = "inputRegId") String inputRegId,
+                                                    @RequestParam(value = "outputToken") String outputToken,
+                                                    @RequestParam(value = "outputPan") String outputPan,
+                                                    @RequestParam(value = "outputCvv") String outputCvv,
+                                                    @RequestParam(value = "outputExpDate") String outputExpDate,
+                                                    @RequestParam(value = "outputWalletType") String outputWalletType,
+                                                    @RequestParam(value = "outputEci") String outputEci,
+                                                    @RequestParam(value = "outputCryptogram") String outputCryptogram) {
+        DeregistrationResponse deregistrationResponse = new DeregistrationResponse();
+        deregistrationResponse.setRequestId(EWSUtils.randomReqId());
+        deregistrationResponse.setToken(outputToken);
+        deregistrationResponse.setPrimaryAccountNumber(outputPan);
+        deregistrationResponse.setExpirationDate(outputExpDate);
+        if (outputCvv != null && outputCvv != "") {
+            deregistrationResponse.setCardSecurityCode(outputCvv);
+        }
+        if (outputEci != null && outputEci != "") {
+            deregistrationResponse.setElectronicCommerceIndicator(outputEci);
+        }
+        if (outputCryptogram != null && outputCryptogram != "") {
+            deregistrationResponse.setCryptogram(new Base64().decode(outputCryptogram.getBytes()));
+        }
+        if (outputWalletType != null && outputWalletType != "") {
+            deregistrationResponse.setWalletType(WalletType.valueOf(outputWalletType));
+        }
+        simulatorResponseService.addDeregistrationResponseToMap(inputRegId, deregistrationResponse);
+        return new ResponseEntity("EWS Simulator - DeregistrationResponse added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addRegistrationException")
+    @ResponseBody
+    public ResponseEntity addRegistrationException(@RequestParam(value = "inputPan") String inputPan,
+                                                   @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addRegistrationExceptionToMap(inputPan, outputErrorId);
+        return new ResponseEntity("EWS Simulator - RegistrationException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addTokenizeException")
+    @ResponseBody
+    public ResponseEntity addTokenizeException(@RequestParam(value = "inputPan") String inputPan,
+                                               @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addTokenizeExceptionToMap(inputPan, outputErrorId);
+        return new ResponseEntity("EWS Simulator - TokenizeException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addOrderRegistrationException")
+    @ResponseBody
+    public ResponseEntity addOrderRegistrationException(@RequestParam(value = "inputCvv") String inputCvv,
+                                                        @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addOrderRegistrationExceptionToMap(inputCvv, outputErrorId);
+        return new ResponseEntity("EWS Simulator - OrderRegistrationException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addTokenRegistrationException")
+    @ResponseBody
+    public ResponseEntity addTokenRegistrationException(@RequestParam(value = "inputToken") String inputToken,
+                                                        @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addTokenRegistrationExceptionToMap(inputToken, outputErrorId);
+        return new ResponseEntity("EWS Simulator - TokenregistrationException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addBatchTokenizeException")
+    @ResponseBody
+    public ResponseEntity addBatchTokenizeException(@RequestParam(value = "inputPan") String inputPan,
+                                                    @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addBatchTokenizeExceptionToMap(inputPan, outputErrorId);
+        return new ResponseEntity("EWS Simulator - BatchTokenizeException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addBatchDetokenizeException")
+    @ResponseBody
+    public ResponseEntity addBatchDetokenizeException(@RequestParam(value = "inputToken") String inputToken,
+                                                      @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addBatchDetokenizeExceptionToMap(inputToken, outputErrorId);
+        return new ResponseEntity("EWS Simulator - BatchDetokenizeException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addEcheckTokenizeException")
+    @ResponseBody
+    public ResponseEntity addEcheckTokenizeException(@RequestParam(value = "inputPan") String inputPan,
+                                                     @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addECheckTokenizeExceptionToMap(inputPan, outputErrorId);
+        return new ResponseEntity("EWS Simulator - EcheckTokenizeException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addECheckDetokenizeException")
+    @ResponseBody
+    public ResponseEntity addECheckDetokenizeException(@RequestParam(value = "inputToken") String inputToken,
+                                                       @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addECheckDetokenizeExceptionToMap(inputToken, outputErrorId);
+        return new ResponseEntity("EWS Simulator - ECheckDetokenizeResponseException added", HttpStatus.OK);
+    }
+
+    /*@PostMapping("/addTokenInquiryException")
+    @ResponseBody
+    public ResponseEntity addTokenInquiryException() {
+        return new ResponseEntity("EWS Simulator - TokenInquiryException added", HttpStatus.OK);
+    }*/
+
+    @PostMapping("/addDetokenizeException")
+    @ResponseBody
+    public ResponseEntity addDetokenizeException(@RequestParam(value = "inputToken") String inputToken,
+                                                 @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addDetokenizeExceptionToMap(inputToken, outputErrorId);
+        return new ResponseEntity("EWS Simulator - DetokenizeException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addOrderDeregistrationException")
+    @ResponseBody
+    public ResponseEntity addOrderDeregistrationException(@RequestParam(value = "inputToken") String inputToken,
+                                                          @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addOrderDeregistrationExceptionToMap(inputToken, outputErrorId);
+        return new ResponseEntity("EWS Simulator - OrderDeregistrationException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addDeregistrationException")
+    @ResponseBody
+    public ResponseEntity addDeregistrationException(@RequestParam(value = "inputRegId") String inputRegId,
+                                                     @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        simulatorResponseService.addDeregistrationExceptionToMap(inputRegId, outputErrorId);
+        return new ResponseEntity("EWS Simulator - DeregistrationException added", HttpStatus.OK);
     }
 
 
@@ -204,14 +491,14 @@ public class EWSSimulatorEndpoint {
         String orderLVT = "3";
 
         //Generates the OrderLVT by repeating cvv until its at least 18 characters
-        while(orderLVT.length() < 18) {
+        while (orderLVT.length() < 18) {
             if (!(cvv.equals(""))) {
                 orderLVT += cvv;
             } else {
                 orderLVT += "00000000000000000";
             }
         }
-        response.setOrderLVT(orderLVT.substring(0,18));
+        response.setOrderLVT(orderLVT.substring(0, 18));
 
         response.setRequestId(EWSUtils.randomReqId());
         addMerchantRefId(request, response);

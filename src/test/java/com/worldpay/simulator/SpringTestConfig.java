@@ -7,6 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import com.worldpay.simulator.filter.FilterConfiguration;
 import com.worldpay.simulator.service.JAXBService;
+import com.worldpay.simulator.service.SimulatorResponseService;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 import com.worldpay.simulator.service.RequestValidator;
 import com.worldpay.simulator.service.ValidatorService;
@@ -42,6 +43,12 @@ public class SpringTestConfig {
     public RequestValidator requestValidator() {
         RequestValidator requestValidator = new RequestValidator();
         return requestValidator;
+    }
+
+    @Bean(name = "testSimulatorResponseService")
+    public SimulatorResponseService simulatorResponseService() {
+        SimulatorResponseService simulatorResponseService = new SimulatorResponseService();
+        return simulatorResponseService;
     }
 
     @Bean

@@ -1,4 +1,4 @@
-package com.worldpay.simulator.output;
+package com.worldpay.simulator.pojo;
 
 import com.worldpay.simulator.WalletType;
 

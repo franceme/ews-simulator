@@ -3,6 +3,9 @@ package com.worldpay.simulator.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.ws.soap.SoapHeaderElement;
 
@@ -60,7 +64,8 @@ import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
 import com.worldpay.simulator.WalletType;
-import com.worldpay.simulator.output.OutputFields;
+import com.worldpay.simulator.pojo.OutputFields;
+import com.worldpay.simulator.service.SimulatorResponseService;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 import com.worldpay.simulator.service.ValidatorService;
 
@@ -75,6 +80,9 @@ public class TestEWSSimulatorEndpoint {
 
     @MockBean
     ValidatorService validatorService;
+
+    @MockBean
+    SimulatorResponseService simulatorResponseService;
 
     @Autowired
     @Qualifier("testEWSSimulator")
@@ -145,6 +153,189 @@ public class TestEWSSimulatorEndpoint {
         AMEXToken = "378810330025459";
         AMEXRegId = "0188739999799669545";
     }
+
+    @Test
+    public void testTurnExceptionsOff() {
+        ResponseEntity actual = ewsSimulatorEndpoint.turnOffExceptions();
+        verify(validatorService).turnOffExceptions();
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+    @Test
+    public void testTurnExceptionsOn() {
+        ResponseEntity actual = ewsSimulatorEndpoint.turnOnExceptions();
+        verify(validatorService).turnOnExceptions();
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+    @Test
+    public void testClearAllResponses() {
+        ResponseEntity actual = ewsSimulatorEndpoint.clearAllResponses();
+        verify(simulatorResponseService).clearAllResponses();
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddRegistrationResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addRegistrationResponse("pan", "regId", "token", "new");
+        verify(simulatorResponseService).addRegistrationResponseToMap(eq("pan"), any(RegistrationResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddTokenizeResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addTokenizeResponse("pan", "token", "new");
+        verify(simulatorResponseService).addTokenizeResponseToMap(eq("pan"), any(TokenizeResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddOrderRegistrationResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addOrderRegistrationResponse("cvv", "lvt");
+        verify(simulatorResponseService).addOrderRegistrationResponseToMap(eq("cvv"), any(OrderRegistrationResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddTokenRegistrationResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addTokenRegistrationResponse("token", "regid");
+        verify(simulatorResponseService).addTokenRegistrationResponseToMap(eq("token"), any(TokenRegistrationResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddBatchTokenizePanToTokenResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addBatchTokenizePanToTokenResponse("pan", "token", "new");
+        verify(simulatorResponseService).addBatchTokenizePanToTokenResponseToMap(eq("pan"), any(Token.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddBatchDetokenizeTokenToPANResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addBatchDetokenizeTokenToPanResponseToMap("pan", "token");
+        verify(simulatorResponseService).addBatchDetokenizeTokenToPanResponseToMap("pan", "token");
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddEcheckTokenizePanToTokenResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addECheckTokenizePanToTokenResponse("pan", "token", "new");
+        verify(simulatorResponseService).addECheckTokenizePanToTokenResponseToMap(eq("pan"), any(Token.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddECheckDetokenizeTokenToAccountResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addECheckDetokenizeTokenToAccountResponse("token", "accNum", AccountType.CHECKING.value(), "routingNum");
+        verify(simulatorResponseService).addECheckDetokenizeTokenToAccountResponseToMap(eq("token"), any(Account.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddTokenInquiryPanToTokenResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addTokenInquiryPanToTokenResponse("pan", "token", "new");
+        verify(simulatorResponseService).addTokenInquiryPanToTokenResponseToMap(eq("pan"), any(Token.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddDetokenizeResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addDetokenizeResponse("token", "pan", "cvv", "expdate");
+        verify(simulatorResponseService).addDetokenizeResponseToMap(eq("token"), any(DetokenizeResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddOrderDeregistrationResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addOrderDeregistrationResponse("token", "pan", "cvv");
+        verify(simulatorResponseService).addOrderDeregistrationResponseToMap(eq("token"), any(OrderDeregistrationResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddDeregistrationResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addDeregistrationResponse("regId", "token", "pan", "cvv", "expdate", WalletType.ANDROID.value(), "eci", "cryptogram");
+        verify(simulatorResponseService).addDeregistrationResponseToMap(eq("regId"), any(DeregistrationResponse.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddRegistrationException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addRegistrationException("pan", 101);
+        verify(simulatorResponseService).addRegistrationExceptionToMap("pan", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddTokenizeException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addTokenizeException("pan", 101);
+        verify(simulatorResponseService).addTokenizeExceptionToMap("pan", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddOrderRegistrationException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addOrderRegistrationException("cvv", 101);
+        verify(simulatorResponseService).addOrderRegistrationExceptionToMap("cvv", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddTokenRegistrationException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addTokenRegistrationException("token", 101);
+        verify(simulatorResponseService).addTokenRegistrationExceptionToMap("token", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddBatchTokenizeException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addBatchTokenizeException("pan", 101);
+        verify(simulatorResponseService).addBatchTokenizeExceptionToMap("pan", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddBatchDetokenizeException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addBatchDetokenizeException("token", 101);
+        verify(simulatorResponseService).addBatchDetokenizeExceptionToMap("token", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddEcheckTokenizeException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addEcheckTokenizeException("pan", 101);
+        verify(simulatorResponseService).addECheckTokenizeExceptionToMap("pan", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddECheckDetokenizeException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addECheckDetokenizeException("token", 101);
+        verify(simulatorResponseService).addECheckDetokenizeExceptionToMap("token", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddDetokenizeException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addDetokenizeException("token", 101);
+        verify(simulatorResponseService).addDetokenizeExceptionToMap("token", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddOrderDeregistrationException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addOrderDeregistrationException("token", 101);
+        verify(simulatorResponseService).addOrderDeregistrationExceptionToMap("token", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddDeregistrationException() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addDeregistrationException("regId", 101);
+        verify(simulatorResponseService).addDeregistrationExceptionToMap("regId", 101);
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+
+
 
     @Test
     public void testRegistration() throws Exception {
