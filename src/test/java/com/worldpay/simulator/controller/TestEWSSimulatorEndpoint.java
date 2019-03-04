@@ -66,11 +66,10 @@ import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
 import com.worldpay.simulator.WalletType;
-import com.worldpay.simulator.exceptions.ServerFaultException;
 import com.worldpay.simulator.pojo.OutputFields;
 import com.worldpay.simulator.service.SimulatorResponseService;
-import com.worldpay.simulator.utils.HttpHeaderUtils;
 import com.worldpay.simulator.service.ValidatorService;
+import com.worldpay.simulator.utils.HttpHeaderUtils;
 
 
 // Test Case Id: TC15065; TC15066; TC15067; TC15068
@@ -1490,10 +1489,4 @@ public class TestEWSSimulatorEndpoint {
             fail("Must not throw exception");
         }
     }
-    
-    
-
-
-
-
 }

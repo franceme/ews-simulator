@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.21
+* **Change** Third from the last digit of the regId drives cryptogram in response. If it is 0, there will be no cryptogram
+
 ## 4.3.20
 * **Feature** Added ability to setup simulator responses for registration, tokenize, orderRegistration, tokenRegistration, detokenize, deregistration requests.
 

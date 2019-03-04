@@ -863,19 +863,20 @@ public class EWSSimulatorEndpoint {
             answer.setCardSecurityCode(CVV);
         }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
-        int indicator = (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
-        if (indicator == 1) {
+        int secondLastDigit = (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
+        if (secondLastDigit == 1) {
             answer.setWalletType(WalletType.ANDROID);
             answer.setElectronicCommerceIndicator("07");
-        } else if (indicator == 2) {
+        } else if (secondLastDigit == 2) {
             answer.setWalletType(WalletType.APPLE);
             answer.setElectronicCommerceIndicator("05");
-        } else if (indicator == 3) {
+        } else if (secondLastDigit == 3) {
             answer.setWalletType(WalletType.SAMSUNG);
             answer.setElectronicCommerceIndicator("07");
         }// set cryptogram
         // if indicator equals 0 it means it's not DPAN
-        if (indicator != 0) {
+        int thirdLastDigit = (Integer.parseInt(regId.charAt(regId.length() - 3) + "")) % 4;
+        if (thirdLastDigit != 0) {
             // the soap framework will re-encode this value on its own.
             byte[] cryptogramBytes = new Base64().decode(DEMOBYTE.getBytes());
             answer.setCryptogram(cryptogramBytes);
