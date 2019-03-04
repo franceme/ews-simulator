@@ -35,5 +35,5 @@ nohup.out
 gradle.properties
 classes/
 logs/
-
+.gradle/
 
