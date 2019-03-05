@@ -876,7 +876,8 @@ public class EWSSimulatorEndpoint {
         }// set cryptogram
         // if indicator equals 0 it means it's not DPAN
         int thirdLastDigit = (Integer.parseInt(regId.charAt(regId.length() - 3) + "")) % 4;
-        if (thirdLastDigit != 0) {
+        // Cryptogram should be only for Android, samsung and apple wallet types
+        if (thirdLastDigit != 0 && (secondLastDigit == 1 || secondLastDigit == 2 || secondLastDigit == 3)) {
             // the soap framework will re-encode this value on its own.
             byte[] cryptogramBytes = new Base64().decode(DEMOBYTE.getBytes());
             answer.setCryptogram(cryptogramBytes);

@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.22
+* **Change** Cryptogram should be responded only for valid wallet types
+
 ## 4.3.21
 * **Change** Third from the last digit of the regId drives cryptogram in response. If it is 0, there will be no cryptogram
 
