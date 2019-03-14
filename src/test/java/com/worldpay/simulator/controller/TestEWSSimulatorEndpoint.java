@@ -665,7 +665,7 @@ public class TestEWSSimulatorEndpoint {
 
     @Test
     public void testDeregistration_000CVV() throws InterruptedException {
-        String regId = "8948646153487578000";
+        String regId = "8948646153487578090";
         DeregistrationRequest request = new DeregistrationRequest();
         MerchantType merchant = new MerchantType();
         merchant.setRollupId(rollupId);
@@ -678,8 +678,8 @@ public class TestEWSSimulatorEndpoint {
         DeregistrationResponse testResponse = ewsSimulatorEndpoint.deregistration(request,header);
 
         assertNotNull(testResponse.getRequestId());
-        assertEquals("4684982421564830008",testResponse.getToken());
-        assertEquals("4684983846512420008",testResponse.getPrimaryAccountNumber());
+        assertEquals("4684982421564830908",testResponse.getToken());
+        assertEquals("4684983846512420908",testResponse.getPrimaryAccountNumber());
         assertNull(testResponse.getCardSecurityCode());
         assertEquals(expirationDate,testResponse.getExpirationDate());
 

@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.24
+* **Change** For deregistration, if CVV is '090', then it will not be included in response.
+
 ## 4.3.23
 * **Change** Cryptogram should be responded only if fifth from last digit of regId is not 0
 
