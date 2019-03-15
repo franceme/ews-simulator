@@ -863,7 +863,7 @@ public class EWSSimulatorEndpoint {
             answer.setCardSecurityCode(CVV);
         }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
-        int secondLastDigit = (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
+        int secondLastDigit = Integer.parseInt(regId.charAt(regId.length() - 2) + "") ;
         if (secondLastDigit == 1) {
             answer.setWalletType(WalletType.ANDROID);
             answer.setElectronicCommerceIndicator("07");

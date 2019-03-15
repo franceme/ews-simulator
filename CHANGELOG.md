@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.25
+* **Change** For deregistration, Wallet types are based on the second last digit of regId, 1=Android, 2=Apple, 3=Samsung
+
 ## 4.3.24
 * **Change** For deregistration, if CVV is '090', then it will not be included in response.
 
