@@ -78,6 +78,7 @@ import com.worldpay.simulator.service.ValidatorService;
 @Endpoint
 public class EWSSimulatorEndpoint {
 
+    public static final String CVV_TO_IGNORE_FROM_RESPONSE = "090";
     @Autowired
     HttpHeaderUtils httpHeaderUtils;
 
@@ -752,8 +753,9 @@ public class EWSSimulatorEndpoint {
 
 
         String primaryAccountNumber = EWSUtils.getPAN(token);
-        if (request.isCVV2Requested() != null && request.isCVV2Requested()) {
-            answer.setCardSecurityCode(EWSUtils.getCVVThroughToken(token));
+        String cvvThroughToken = EWSUtils.getCVVThroughToken(token);
+        if (request.isCVV2Requested() != null && request.isCVV2Requested() && !CVV_TO_IGNORE_FROM_RESPONSE.equals(cvvThroughToken)) {
+            answer.setCardSecurityCode(cvvThroughToken);
         }
         if (request.isExpirationDateRequested() != null && request.isExpirationDateRequested()) {
             answer.setExpirationDate("5001");
@@ -859,7 +861,7 @@ public class EWSSimulatorEndpoint {
         answer.setExpirationDate("5001");
         // set CVV (optional)
         if (request.isCardSecurityCodeRequested() != null
-                && request.isCardSecurityCodeRequested() && !"090".equals(CVV)) {
+                && request.isCardSecurityCodeRequested() && !CVV_TO_IGNORE_FROM_RESPONSE.equals(CVV)) {
             answer.setCardSecurityCode(CVV);
         }// set wallet type and ECI
         // take the last digit of CVV and module it by 3, the remaining would be indicator
