@@ -269,7 +269,7 @@ public class EWSUtils {
     }
 
     public static String getCVVThroughToken(String token) {
-        if(token.length() < 4){
+        if(token.length() < 4) {
             return "566";
         }
         return token.substring(token.length() - 4, token.length() - 1);
@@ -311,9 +311,11 @@ public class EWSUtils {
     public static String getExpDate() {
         return "5001";
     }
+
     public static int getIndicator(String regId) {
         return Integer.parseInt(regId.charAt(regId.length() - 2) + "");
     }
+    
     public static String getECI(int indicator) {
         switch (indicator) {
             case 1:
