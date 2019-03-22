@@ -121,7 +121,7 @@ public class EWSSimulatorEndpoint {
         response.setToken(EWSUtils.getPANToken(response.getPAN()));
         response.setExpDate(EWSUtils.getExpDate());
         int indicator = EWSUtils.getIndicator(regId);
-        response.setECI(EWSUtils.getEci(indicator));
+        response.setECI(EWSUtils.getECI(indicator));
         response.setWalletType(EWSUtils.getWalletType(indicator));
 
         return response;
@@ -525,20 +525,10 @@ public class EWSSimulatorEndpoint {
         validatorService.validateRequest(request, auth);
 
         OrderRegistrationResponse response = new OrderRegistrationResponse();
-        String orderLVT = "3";
-
-        //Generates the OrderLVT by repeating cvv until its at least 18 characters
-        while (orderLVT.length() < 18) {
-            if (!(cvv.equals(""))) {
-                orderLVT += cvv;
-            } else {
-                orderLVT += "00000000000000000";
-            }
-        }
-        response.setOrderLVT(orderLVT.substring(0, 18));
-
+        response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
         response.setRequestId(EWSUtils.randomReqId());
         addMerchantRefId(request, response);
+
         return response;
 
     }
@@ -680,13 +670,13 @@ public class EWSSimulatorEndpoint {
 
         ECheckDetokenizeResponse response = new ECheckDetokenizeResponse();
         String token = request.getToken().getTokenValue();
-        String PAN = EWSUtils.generateEcheckAccount(token);
+        String primaryAccountNumber = EWSUtils.generateEcheckAccount(token);
 
         Account account = new Account();
 
-        account.setAccountNumber(PAN);
+        account.setAccountNumber(primaryAccountNumber);
         account.setAccountType(getAccountType(token));
-        account.setRoutingNumber(getRoutingNumber(PAN));
+        account.setRoutingNumber(getRoutingNumber(primaryAccountNumber));
 
         response.setAccount(account);
 
@@ -758,7 +748,7 @@ public class EWSSimulatorEndpoint {
             answer.setCardSecurityCode(cvvThroughToken);
         }
         if (request.isExpirationDateRequested() != null && request.isExpirationDateRequested()) {
-            answer.setExpirationDate("5001");
+            answer.setExpirationDate(EWSUtils.getExpDate());
         }
 
         answer.setPrimaryAccountNumber(primaryAccountNumber);
@@ -787,11 +777,11 @@ public class EWSSimulatorEndpoint {
 
         if (!isValidToken(token) || token.length() < 3) token = "3000100011118566";
 
-        String PAN = EWSUtils.getPAN(token);
+        String primaryAccountNumber = EWSUtils.getPAN(token);
 
-        EWSUtils.handleDesiredExceptions(PAN);
+        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
 
-        answer.setPrimaryAccountNumber(PAN);
+        answer.setPrimaryAccountNumber(primaryAccountNumber);
 
 
         // check position 2 for '6', '7', '8' or '9' to simulate error
@@ -845,37 +835,29 @@ public class EWSSimulatorEndpoint {
         validatorService.validateRequest(request, auth);
 
         DeregistrationResponse answer = new DeregistrationResponse();
-        String PAN = EWSUtils.getPANThroughRegId(regId);
+        String primaryAccountNumber = EWSUtils.getPANThroughRegId(regId);
 
         // set requestId (mandatory)
         answer.setRequestId(EWSUtils.randomReqId());
         // set token (mandatory)
-        String token = EWSUtils.getPANToken(PAN);
+        String token = EWSUtils.getPANToken(primaryAccountNumber);
         EWSUtils.handleDesiredExceptions(token);
         answer.setToken(token);
         // set PAN (mandatory)
-        answer.setPrimaryAccountNumber(PAN);
+        answer.setPrimaryAccountNumber(primaryAccountNumber);
         // set expiration date (mandatory)
         // if card's cvv is odd, the expiration date would be 5001; otherwise empty
         String CVV = EWSUtils.getCVVThroughToken(token);
-        answer.setExpirationDate("5001");
+        answer.setExpirationDate(EWSUtils.getExpDate());
         // set CVV (optional)
         if (request.isCardSecurityCodeRequested() != null
                 && request.isCardSecurityCodeRequested() && !CVV_TO_IGNORE_FROM_RESPONSE.equals(CVV)) {
             answer.setCardSecurityCode(CVV);
-        }// set wallet type and ECI
-        // take the last digit of CVV and module it by 3, the remaining would be indicator
-        int secondLastDigit = Integer.parseInt(regId.charAt(regId.length() - 2) + "") ;
-        if (secondLastDigit == 1) {
-            answer.setWalletType(WalletType.ANDROID);
-            answer.setElectronicCommerceIndicator("07");
-        } else if (secondLastDigit == 2) {
-            answer.setWalletType(WalletType.APPLE);
-            answer.setElectronicCommerceIndicator("05");
-        } else if (secondLastDigit == 3) {
-            answer.setWalletType(WalletType.SAMSUNG);
-            answer.setElectronicCommerceIndicator("07");
-        }// set cryptogram
+        }
+        // set wallet type and ECI
+        int secondLastDigit = EWSUtils.getIndicator(regId);
+        answer.setWalletType(EWSUtils.getWalletType(secondLastDigit));
+        answer.setElectronicCommerceIndicator(EWSUtils.getECI(secondLastDigit));
         // if indicator equals 0 it means it's not DPAN
         char fifthLastDigit = regId.charAt(regId.length() - 5);
         // Cryptogram should be only for Android, samsung and apple wallet types

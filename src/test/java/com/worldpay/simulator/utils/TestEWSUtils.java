@@ -283,15 +283,14 @@ public class TestEWSUtils {
   @Test
   public void testGetIndicator() {
     assertEquals(3, EWSUtils.getIndicator("1234"));
-    assertEquals(0, EWSUtils.getIndicator("1241"));
   }
 
   @Test
   public void testGetEci() {
-    assertEquals("07", EWSUtils.getEci(1));
-    assertEquals("05", EWSUtils.getEci(2));
-    assertEquals("07", EWSUtils.getEci(3));
-    assertNull(EWSUtils.getEci(6));
+    assertEquals("07", EWSUtils.getECI(1));
+    assertEquals("05", EWSUtils.getECI(2));
+    assertEquals("07", EWSUtils.getECI(3));
+    assertNull(EWSUtils.getECI(6));
   }
 
   @Test

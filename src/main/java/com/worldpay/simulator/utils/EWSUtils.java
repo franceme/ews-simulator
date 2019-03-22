@@ -312,9 +312,9 @@ public class EWSUtils {
         return "5001";
     }
     public static int getIndicator(String regId) {
-        return (Integer.parseInt(regId.charAt(regId.length() - 2) + "")) % 4;
+        return Integer.parseInt(regId.charAt(regId.length() - 2) + "");
     }
-    public static String getEci(int indicator) {
+    public static String getECI(int indicator) {
         switch (indicator) {
             case 1:
             case 3:
