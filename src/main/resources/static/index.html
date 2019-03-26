@@ -280,7 +280,7 @@
                             Detokenize
                         </td>
                         <td>
-                            Always 2308
+                            Always 5001
                         </td>
                     </tr>
                     <tr>
@@ -291,7 +291,7 @@
                             Deregistration
                         </td>
                         <td>
-                            Always 2308
+                            Always 5001
                         </td>
                     </tr>
                 </table>
@@ -310,7 +310,7 @@
                             Deregistration
                         </td>
                         <td>
-                            Second to last digit of RegId mod 4 (1 = 07, 2 = 05, 3 = 07)
+                            Second to last digit of RegId (1 = 07, 2 = 05, 3 = 07); null if no match
                         </td>
                     </tr>
                 </table>
@@ -329,7 +329,7 @@
                             Deregistration
                         </td>
                         <td>
-                            Second to last digit of RegId mod 4 (1 = ANDROID, 2 = APPLE, 3 = SAMSUNG)
+                            Second to last digit of RegId (1 = ANDROID, 2 = APPLE, 3 = SAMSUNG); null if no match
                         </td>
                     </tr>
                 </table>
@@ -348,7 +348,7 @@
                             Detokenize
                         </td>
                         <td>
-                            Remove last digit from Token value, take last three digits of that
+                            Last three but one digits of token value, or 566 if token value is less than four digits
                         </td>
                     </tr>
                     <tr>
