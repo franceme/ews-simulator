@@ -13,6 +13,79 @@ public class OutputFields {
     private WalletType walletType;
     private String cvv;
     private String orderLVT;
+    private String tokenRandomMod10;
+    private String tokenWithPANLast4Mod10;
+    private String tokenVault1Mod10;
+    private String tokenWithPANFirst6Last4Mod10;
+    private String tokenRandomMod11;
+    private String tokenWithPANLast4Mod11;
+    private String tokenVault1Mod11;
+    private String tokenWithPANFirst6Last4Mod11;
+
+
+    public String getTokenRandomMod10() {
+        return tokenRandomMod10;
+    }
+
+    public void setTokenRandomMod10(String tokenRandomMod10) {
+        this.tokenRandomMod10 = tokenRandomMod10;
+    }
+
+    public String getTokenWithPANLast4Mod10() {
+        return tokenWithPANLast4Mod10;
+    }
+
+    public void setTokenWithPANLast4Mod10(String tokenWithPANLast4Mod10) {
+        this.tokenWithPANLast4Mod10 = tokenWithPANLast4Mod10;
+    }
+
+    public String getTokenVault1Mod10() {
+        return tokenVault1Mod10;
+    }
+
+    public void setTokenVault1Mod10(String tokenVault1Mod10) {
+        this.tokenVault1Mod10 = tokenVault1Mod10;
+    }
+
+    public String getTokenWithPANFirst6Last4Mod10() {
+        return tokenWithPANFirst6Last4Mod10;
+    }
+
+    public void setTokenWithPANFirst6Last4Mod10(String tokenWithPANFirst6Last4Mod10) {
+        this.tokenWithPANFirst6Last4Mod10 = tokenWithPANFirst6Last4Mod10;
+    }
+
+    public String getTokenRandomMod11() {
+        return tokenRandomMod11;
+    }
+
+    public void setTokenRandomMod11(String tokenRandomMod11) {
+        this.tokenRandomMod11 = tokenRandomMod11;
+    }
+
+    public String getTokenWithPANLast4Mod11() {
+        return tokenWithPANLast4Mod11;
+    }
+
+    public void setTokenWithPANLast4Mod11(String tokenWithPANLast4Mod11) {
+        this.tokenWithPANLast4Mod11 = tokenWithPANLast4Mod11;
+    }
+
+    public String getTokenVault1Mod11() {
+        return tokenVault1Mod11;
+    }
+
+    public void setTokenVault1Mod11(String tokenVault1Mod11) {
+        this.tokenVault1Mod11 = tokenVault1Mod11;
+    }
+
+    public String getTokenWithPANFirst6Last4Mod11() {
+        return tokenWithPANFirst6Last4Mod11;
+    }
+
+    public void setTokenWithPANFirst6Last4Mod11(String tokenWithPANFirst6Last4Mod11) {
+        this.tokenWithPANFirst6Last4Mod11 = tokenWithPANFirst6Last4Mod11;
+    }
 
     public String getPAN() {
         return pan;

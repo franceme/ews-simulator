@@ -16,69 +16,46 @@
 
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <h1>EWS Simulator responses</h1>
     <div class="row">
-        <p>The simulator generates responses based on the input.
-            Use the below form to verify the responses that you'll get from the simulator based on the input.</p>
+        <div class="col-md-12">
+            <p>The simulator generates responses based on the input.
+                Use the below form to verify the responses that you'll get from the simulator based on the input.
+            </p>
+            <p>
+               Details on each of the request types supported can be found here:
+                <a href="https://github.com/Vantiv/ews-simulator/wiki" target="_blank">EWS Simulator Wiki</a>
+            </p>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-6">
             <h4>Input</h4>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">PAN</span>
+                    <span class="input-group-text">PAN</span>
                 </div>
-                <input type="text" id="input-pan" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" >
+                <input type="text" id="input-pan" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Token</span>
+                    <span class="input-group-text">Token</span>
                 </div>
-                <input type="text" id="input-token" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="input-token" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">RegId</span>
+                    <span class="input-group-text">RegId</span>
                 </div>
-                <input type="text" id="input-regid" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="input-regid" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">CVV</span>
+                    <span class="input-group-text">CVV</span>
                 </div>
-                <input type="text" id="input-cvv" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="input-cvv" class="form-control">
             </div>
-            <!--<div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Token Newly Generated</span>
-                </div>
-                <input type="text" id="input-tokennewlygen" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Expiration Date</span>
-                </div>
-                <input type="text" id="input-expdate" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">ECI</span>
-                </div>
-                <input type="text" id="input-eci" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Wallet Type</span>
-                </div>
-                <input type="text" id="input-wallet" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">CVV2</span>
-                </div>
-                <input type="text" id="input-cvv" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-            </div>-->
             <button type="button" id="input-btn" class="btn btn-primary">Generate Output</button>
             <button type="button" id="input-reset-btn" class="btn btn-default">Reset Input</button>
 
@@ -97,7 +74,8 @@
                 <button class="tablinks" onclick="openTab(event, 'Wallet')">WalletType</button>
                 <button class="tablinks" onclick="openTab(event, 'CVV2')">CVV2</button>
                 <button class="tablinks" onclick="openTab(event, 'OrderLVT')">OrderLVT</button>
-
+                <button class="tablinks" onclick="openTab(event, 'AddSimResponse')">AddSimResponse</button>
+                <button class="tablinks" onclick="openTab(event, 'AddSimException')">AddSimException</button>
             </div>
 
             <!-- Tab content -->
@@ -384,6 +362,225 @@
                 </table>
             </div>
 
+            <div id="AddSimResponse" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Method</th>
+                    <th scope="col">Input</th>
+                    <th scope="col">Output</th>
+                    <tr>
+                        <td>
+                            /clearAllResponses
+                        </td>
+                        <td>
+                            N/A
+                        </td>
+                        <td>
+                            Clears all stored simulator responses.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addRegistrationResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputRegId</li>
+                                <li>outputToken</li>
+                                <li>outputTokenNewlyGen</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds a Registration response of given output fields for the given input PAN.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addTokenizeResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputToken</li>
+                                <li>outputTokenNewlyGen</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds a Tokenize response of given output fields for the given input PAN.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addOrderRegistrationResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputCvv</li>
+                                <li>outputOrderLVT</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds an Order Registration response of given output fields for the given input CVV.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addTokenRegistrationResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputToken</li>
+                                <li>outputRegId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds a Token Registration response of given output fields for the given input token.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addDetokenizeResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputToken</li>
+                                <li>outputPan</li>
+                                <li>outputCvv</li>
+                                <li>outputExpDate</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds a Detokenize response of given output fields for the given input token.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addDeregistrationResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputRegId</li>
+                                <li>outputToken</li>
+                                <li>outputPan</li>
+                                <li>outputCvv</li>
+                                <li>outputExpDate</li>
+                                <li>outputWalletType</li>
+                                <li>outputEci</li>
+                                <li>outputCryptogram</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds a Deregistration response of given output fields for the given input regId.
+                        </td>
+                    </tr>
+
+
+                </table>
+            </div>
+
+            <div id="AddSimException" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Method</th>
+                    <th scope="col">Input</th>
+                    <th scope="col">Output</th>
+                    <tr>
+                        <td>
+                            /addRegistrationException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds Registration exception with the given outputErrorId for given inputPan.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addTokenizeException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds Tokenize exception with the given outputErrorId for given inputPan.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addOrderRegistrationException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputCvv</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds OrderRegistration exception with the given outputErrorId for given inputCvv.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addTokenRegistrationException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputToken</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds TokenRegistration exception with the given outputErrorId for given inputToken.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addDetokenizeException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputToken</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds Detokenize exception with the given outputErrorId for given inputToken.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            /addDeregistrationException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputRegId</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds Deregistration exception with the given outputErrorId for given inputRegId.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
 
 
 
@@ -394,57 +591,102 @@
             <h4>Output</h4>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">PAN</span>
+                    <span class="input-group-text">PAN</span>
                 </div>
-                <input type="text" id="output-pan" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="output-pan" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Token</span>
+                    <span class="input-group-text">Token - Default</span>
                 </div>
-                <input type="text" id="output-token" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="output-token" class="form-control">
+            </div>
+            <p>
+                Use the values in the table below for adding a custom simulator response mentioned in <span onclick="openTab(event, 'AddSimResponse')"><i><u>AddSimResponse</u></i></span> tab.
+            </p>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">Token Format</th>
+                    <th scope="col">MOD-10 Value</th>
+                    <th scope="col">MOD-11 Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">PAN First 6, Last 4</th>
+                    <td id="output-token-pan-first6-last4-mod10"></td>
+                    <td id="output-token-pan-first6-last4-mod11"></td>
+                </tr>
+                <tr>
+                    <th scope="row">Random</th>
+                    <td id="output-token-random-mod10"></td>
+                    <td id="output-token-random-mod11"></td>
+                </tr>
+                <tr>
+                    <th scope="row">PAN Last 4</th>
+                    <td id="output-token-pan-last4-mod10"></td>
+                    <td id="output-token-pan-last4-mod11"></td>
+                </tr>
+                <tr>
+                    <th scope="row">Vault starting with 1</th>
+                    <td id="output-token-vault1-mod10"></td>
+                    <td id="output-token-vault1-mod11"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">RegId</span>
+                </div>
+                <input type="text" id="output-regid" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">RegId</span>
+                    <span class="input-group-text">Token Newly Generated</span>
                 </div>
-                <input type="text" id="output-regid" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <select id="output-tokennewlygen" class="form-control">
+                    <option value=""></option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </select>
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Token Newly Generated</span>
+                    <span class="input-group-text">Expiration Date</span>
                 </div>
-                <input type="text" id="output-tokennewlygen" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="output-expdate" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Expiration Date</span>
+                    <span class="input-group-text">ECI</span>
                 </div>
-                <input type="text" id="output-expdate" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="output-eci" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">ECI</span>
+                    <span class="input-group-text">Wallet Type</span>
                 </div>
-                <input type="text" id="output-eci" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <select id="output-wallet" class="form-control">
+                    <option value=""></option>
+                    <option value="ANDROID">Android</option>
+                    <option value="APPLE">Apple</option>
+                    <option value="SAMSUNG">Samsung</option>
+                </select>
+                <!--<input type="text" id="output-wallet" class="form-control">-->
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Wallet Type</span>
+                    <span class="input-group-text">CVV2</span>
                 </div>
-                <input type="text" id="output-wallet" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="output-cvv" class="form-control">
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">CVV2</span>
+                    <span class="input-group-text">OrderLVT</span>
                 </div>
-                <input type="text" id="output-cvv" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-            </div>
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">OrderLVT</span>
-                </div>
-                <input type="text" id="output-orderlvt" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input type="text" id="output-orderlvt" class="form-control">
             </div>
             <button type="button" id="output-btn" class="btn btn-success col-centered">Generate Input</button>
             <button type="button" id="output-reset-btn" class="btn btn-default">Reset Output</button>

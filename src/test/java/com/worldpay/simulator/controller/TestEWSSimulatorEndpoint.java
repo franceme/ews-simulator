@@ -157,18 +157,6 @@ public class TestEWSSimulatorEndpoint {
     }
 
     @Test
-    public void testTurnExceptionsOff() {
-        ResponseEntity actual = ewsSimulatorEndpoint.turnOffExceptions();
-        verify(validatorService).turnOffExceptions();
-        assertTrue(actual.getStatusCode().is2xxSuccessful());
-    }
-    @Test
-    public void testTurnExceptionsOn() {
-        ResponseEntity actual = ewsSimulatorEndpoint.turnOnExceptions();
-        verify(validatorService).turnOnExceptions();
-        assertTrue(actual.getStatusCode().is2xxSuccessful());
-    }
-    @Test
     public void testClearAllResponses() {
         ResponseEntity actual = ewsSimulatorEndpoint.clearAllResponses();
         verify(simulatorResponseService).clearAllResponses();

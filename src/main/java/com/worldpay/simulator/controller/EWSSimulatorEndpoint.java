@@ -93,7 +93,21 @@ public class EWSSimulatorEndpoint {
     @RequestMapping("/inputPAN")
     public OutputFields inputPAN(@RequestParam(value = "primaryAccountNumber") String primaryAccountNumber) {
         OutputFields response = new OutputFields();
-        response.setToken(EWSUtils.getPANToken(primaryAccountNumber));
+        String tokenPANFirst6Last4 = EWSUtils.getPANToken(primaryAccountNumber);
+        response.setToken(tokenPANFirst6Last4);
+        String tokenRandom = EWSUtils.generateRandomToken();
+        String tokenPANLast4 = EWSUtils.generateTokenWithPANLastFour(primaryAccountNumber);
+        String tokenVault1 = EWSUtils.generateVaultToken1(primaryAccountNumber);
+
+        response.setTokenRandomMod10(EWSUtils.getMod10Value(tokenRandom));
+        response.setTokenWithPANLast4Mod10(EWSUtils.getMod10Value(tokenPANLast4));
+        response.setTokenVault1Mod10(EWSUtils.getMod10Value(tokenVault1));
+        response.setTokenWithPANFirst6Last4Mod10(EWSUtils.getMod10Value(tokenPANFirst6Last4));
+        response.setTokenRandomMod11(EWSUtils.getMod11Value(tokenRandom));
+        response.setTokenWithPANLast4Mod11(EWSUtils.getMod11Value(tokenPANLast4));
+        response.setTokenVault1Mod11(EWSUtils.getMod11Value(tokenVault1));
+        response.setTokenWithPANFirst6Last4Mod11(EWSUtils.getMod11Value(tokenPANFirst6Last4));
+
         response.setRegId(EWSUtils.getRegIdFromPAN(primaryAccountNumber));
         response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
         return response;
@@ -117,8 +131,22 @@ public class EWSSimulatorEndpoint {
     public OutputFields inputRegId(@RequestParam(value = "regId") String regId) {
         OutputFields response = new OutputFields();
 
-        response.setPAN(EWSUtils.convertRegIdToPAN(regId));
-        response.setToken(EWSUtils.getPANToken(response.getPAN()));
+        String pan = EWSUtils.convertRegIdToPAN(regId);
+        response.setPAN(pan);
+        String tokenPANFirst6Last4 = EWSUtils.getPANToken(pan);
+        response.setToken(tokenPANFirst6Last4);
+        String tokenRandom = EWSUtils.generateRandomToken();
+        String tokenPANLast4 = EWSUtils.generateTokenWithPANLastFour(pan);
+        String tokenVault1 = EWSUtils.generateVaultToken1(pan);
+
+        response.setTokenRandomMod10(EWSUtils.getMod10Value(tokenRandom));
+        response.setTokenWithPANLast4Mod10(EWSUtils.getMod10Value(tokenPANLast4));
+        response.setTokenVault1Mod10(EWSUtils.getMod10Value(tokenVault1));
+        response.setTokenWithPANFirst6Last4Mod10(EWSUtils.getMod10Value(tokenPANFirst6Last4));
+        response.setTokenRandomMod11(EWSUtils.getMod11Value(tokenRandom));
+        response.setTokenWithPANLast4Mod11(EWSUtils.getMod11Value(tokenPANLast4));
+        response.setTokenVault1Mod11(EWSUtils.getMod11Value(tokenVault1));
+        response.setTokenWithPANFirst6Last4Mod11(EWSUtils.getMod11Value(tokenPANFirst6Last4));
         response.setExpDate(EWSUtils.getExpDate());
         int indicator = EWSUtils.getIndicator(regId);
         response.setECI(EWSUtils.getECI(indicator));
@@ -134,20 +162,6 @@ public class EWSSimulatorEndpoint {
         response.setOrderLVT(EWSUtils.getOrderLVT(cvv));
 
         return response;
-    }
-
-    @GetMapping("/exceptionsOff")
-    @ResponseBody
-    public ResponseEntity turnOffExceptions() {
-        validatorService.turnOffExceptions();
-        return new ResponseEntity("EWS Simulator - Exception simulations are turned off", HttpStatus.OK);
-    }
-
-    @GetMapping("/exceptionsOn")
-    @ResponseBody
-    public ResponseEntity turnOnExceptions() {
-        validatorService.turnOnExceptions();
-        return new ResponseEntity("EWS Simulator - Exception simulations are turned on", HttpStatus.OK);
     }
 
     @PostMapping("/clearAllResponses")

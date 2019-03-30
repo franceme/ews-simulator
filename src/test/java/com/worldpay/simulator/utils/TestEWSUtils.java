@@ -3,6 +3,7 @@ package com.worldpay.simulator.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -123,12 +124,6 @@ public class TestEWSUtils {
     assertEquals("3000100011118566",temp);
   }
 
-  @Test
-  public void testGenerateRandomNumber(){
-    String temp1 = EWSUtils.generateRandomNumber(5);
-    String temp2 = EWSUtils.generateRandomNumber(5);
-    assertNotEquals(temp1,temp2);
-  }
 
   @Test(expected = Exception.class)
   public void handleDesiredExceptions_throwException(){
@@ -311,6 +306,47 @@ public class TestEWSUtils {
   public void testGetSoapFaultException() {
     SOAPFault soapFault = EWSUtils.getSoapFaultException(999);
     assertEquals("EWS is down", soapFault.getFaultString());
+  }
+
+  @Test
+  public void testGenerateRandomToken() {
+    assertNotNull(EWSUtils.generateRandomToken());
+    assertEquals(16, EWSUtils.generateRandomToken().length());
+  }
+
+  @Test
+  public void testGenerateTokenWithPANLastFour() {
+    String pan = "1234567890123456";
+    String token = EWSUtils.generateTokenWithPANLastFour(pan);
+    assertEquals(16, token.length());
+    assertNotEquals(pan, token);
+    assertEquals("3456", token.substring(12));
+  }
+
+  @Test
+  public void testGenerateVaultToken1() {
+    String pan = "7123510003521231";
+    String expectedToken = "1123512530001231";
+    String actualToken = EWSUtils.generateVaultToken1(pan);
+    assertEquals(expectedToken,actualToken);
+  }
+
+  @Test
+  public void testMod10_11() {
+    String pan = "9876543210987654";
+    String token = EWSUtils.getPANToken(pan);
+    String tokenLast4 = EWSUtils.generateTokenWithPANLastFour(pan);
+    String random = EWSUtils.generateRandomToken();
+    String vault = EWSUtils.generateVaultToken1(pan);
+    assertTrue(EWSUtils.validateMod10(EWSUtils.getMod10Value(token)));
+    assertTrue(EWSUtils.validateMod10(EWSUtils.getMod10Value(tokenLast4)));
+    assertTrue(EWSUtils.validateMod10(EWSUtils.getMod10Value(random)));
+    assertTrue(EWSUtils.validateMod10(EWSUtils.getMod10Value(vault)));
+
+    assertTrue(EWSUtils.validateMod11(EWSUtils.getMod11Value(token)));
+    assertTrue(EWSUtils.validateMod11(EWSUtils.getMod11Value(tokenLast4)));
+    assertTrue(EWSUtils.validateMod11(EWSUtils.getMod11Value(random)));
+    assertTrue(EWSUtils.validateMod11(EWSUtils.getMod11Value(vault)));
   }
 
 

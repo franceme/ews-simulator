@@ -21,6 +21,8 @@ $(document).ready(function () {
 
     $("#output-reset-btn").click(function () {
         $("input[id^=output]").val('');
+        $("td[id*=output-token-]").html("");
+        $("select[id^=output]").html("");
     });
     
     $("#output-btn").click(function () {
@@ -84,24 +86,29 @@ $(document).ready(function () {
 
         }
 
+        let alertMsg = '';
         if (tokenNewlyGen !== '') {
             if (tokenNewlyGen.toLowerCase() === 'true') {
-                alert("Last three but one digits of PAN should be 000");
+                alertMsg += "Token Newly Generated - true: Last three but one digits of PAN should be 0X0, where X is any integer\n";
             } else if (tokenNewlyGen.toLowerCase() === 'false') {
-                alert("Last three but one digits of PAN should not be 000");
+                alertMsg += "Token Newly Generated - false: Last three but one digits of PAN should not be 0X0, where X is any integer\n";
             }
         }
 
         if (walletType !== '') {
             switch (walletType.toLowerCase()) {
-                case "android": alert("Second to last digit of reg Id should be 1 or 5 or 9"); break;
-                case "apple": alert("Second to last digit of reg Id should be 2 or 6"); break;
-                case "samsung": alert("Second to last digit of reg Id should be 3 or 7"); break;
+                case "android": alertMsg += "Wallet Type - Android: Second to last digit of RegId should be 1\n"; break;
+                case "apple": alertMsg += "Wallet Type - Apple: Second to last digit of RegId should be 2\n"; break;
+                case "samsung": alertMsg += "Wallet Type - Samsung: Second to last digit of RegId should be 3\n"; break;
             }
         }
 
         if (cvv !== '') {
-            alert ("CVV is the last three but one digits of the token. So token value should be xxx"+cvv+"x");
+            alertMsg += "CVV - " + cvv + ": Should be the last three but one digits of the token. So token value should be xxx"+cvv+"x\n";
+        }
+
+        if (alertMsg != '') {
+            alert(alertMsg);
         }
     });
 })
@@ -121,6 +128,14 @@ function processInputRegId() {
                 $("#output-expdate").val(response.expDate);
                 $("#output-pan").val(response.pan);
                 $("#output-token").val(response.token);
+                $("#output-token-pan-first6-last4-mod10").html(response.tokenWithPANFirst6Last4Mod10);
+                $("#output-token-pan-first6-last4-mod11").html(response.tokenWithPANFirst6Last4Mod11);
+                $("#output-token-random-mod10").html(response.tokenRandomMod10);
+                $("#output-token-random-mod11").html(response.tokenRandomMod11);
+                $("#output-token-pan-last4-mod10").html(response.tokenWithPANLast4Mod10);
+                $("#output-token-pan-last4-mod11").html(response.tokenWithPANLast4Mod11);
+                $("#output-token-vault1-mod10").html(response.tokenVault1Mod10);
+                $("#output-token-vault1-mod11").html(response.tokenVault1Mod11);
             } catch {
                 alert("EWS API not return correct response");
             }
@@ -140,9 +155,18 @@ function processInputPan () {
         if (this.readyState == 4 && this.status == 200) {
             try {
                 let response = JSON.parse(xhttp.responseText);
-                $("#output-tokennewlygen").val(response.tokenNewlyGenerated);
+                console.log(response.tokenNewlyGenerated);
+                $("#output-tokennewlygen").val(response.tokenNewlyGenerated.toString());
                 $("#output-regid").val(response.regId);
                 $("#output-token").val(response.token);
+                $("#output-token-pan-first6-last4-mod10").html(response.tokenWithPANFirst6Last4Mod10);
+                $("#output-token-pan-first6-last4-mod11").html(response.tokenWithPANFirst6Last4Mod11);
+                $("#output-token-random-mod10").html(response.tokenRandomMod10);
+                $("#output-token-random-mod11").html(response.tokenRandomMod11);
+                $("#output-token-pan-last4-mod10").html(response.tokenWithPANLast4Mod10);
+                $("#output-token-pan-last4-mod11").html(response.tokenWithPANLast4Mod11);
+                $("#output-token-vault1-mod10").html(response.tokenVault1Mod10);
+                $("#output-token-vault1-mod11").html(response.tokenVault1Mod11);
             } catch {
                 alert("EWS API not return correct response");
             }

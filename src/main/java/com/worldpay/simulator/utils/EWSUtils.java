@@ -33,6 +33,56 @@ public class EWSUtils {
     }
 
 
+    public static String getMod10Value(String inputNumber) {
+        if (validateMod10(inputNumber)) {
+            return inputNumber;
+        }
+        String prefix = inputNumber.substring(0, inputNumber.length() - 5);
+        String suffix = inputNumber.substring(inputNumber.length() - 4);
+        int checkDigit = calculateMod10(inputNumber, 4);
+        return prefix + checkDigit + suffix;
+    }
+
+    public static String getMod11Value(String inputNumber) {
+        if (validateMod11(inputNumber)) {
+            return inputNumber;
+        }
+        String prefix = inputNumber.substring(0, 6);
+        String suffix = inputNumber.substring(7);
+        int checkDigit = calculateMod11(prefix, suffix);
+        return prefix + checkDigit + suffix;
+    }
+
+    public static String generateRandomToken() {
+        return generateRandomNumber(16);
+    }
+
+    public static String generateRandomNumber(int length) {
+        StringBuffer sb = new StringBuffer();
+        Random rand = new Random();
+        for (int i=0; i<length; i++) {
+            sb.append(rand.nextInt(9));
+        }
+        return sb.toString();
+    }
+
+    public static String generateTokenWithPANLastFour(String pan) {
+        if (pan == null || pan.length() < 4) {
+            return pan;
+        }
+        String lastFour = pan.substring(pan.length() - 4);
+        StringBuffer sb = new StringBuffer();
+        sb.append(generateRandomNumber(12));
+        sb.append(lastFour);
+        return sb.toString();
+    }
+
+    public static String generateVaultToken1(String pan) {
+        String token = getPANToken(pan);
+        token = 1 + token.substring(1);
+        return token;
+    }
+
 
     public static String generatePropertyStrategyPAN(String input){
         int lengthInput = input.length();
@@ -108,14 +158,6 @@ public class EWSUtils {
         if(!isValidPAN(generateProperty(token)))
             return defaultPan;
         return generateProperty(token);
-    }
-
-    public static String generateRandomNumber(int length){
-        Random rnd = new Random();
-        StringBuilder sb = new StringBuilder(length);
-        for(int i=0;i<length;i++)
-            sb.append((char)('0'+rnd.nextInt(10)));
-        return sb.toString();
     }
 
     public static VError getError(String PAN){
@@ -355,5 +397,136 @@ public class EWSUtils {
         }
 
         return orderLVT.substring(0,18);
+    }
+
+    public static int calculateMod10Checksum(String number)  {
+        int currentNum=0;
+        int sum=0;
+
+        //iterate through the account number
+        for (int i = 0; i < number.length(); i++) {
+            //according to the Luhn Formula we have to go right to left
+            char curDigit = number.charAt(number.length()-1-i);
+
+            currentNum=Character.digit(curDigit,10);
+            //double the alternating digits per the formula
+            if(i%2!=0){
+                currentNum = currentNum*2;
+                //if the digit is greater than 9 after doubling this little trick
+                //accomodates the LUHN's requirement to add EACH digit individually
+                if(currentNum>9){
+                    currentNum -= 9;
+                }
+            }
+            sum += currentNum;//calculate the sum
+        }
+        //if the sum is divisible by 10 the number is valid
+        return sum%10;
+    }
+
+    public static int calculateMod10(String number, int checkDigitPositionFromLast){
+        int checkSum=0;
+        int currentNum=0;
+        int sum=0;
+
+        int numLength = number.length();
+        //iterate through the account number
+        for (int i = 0; i < numLength; i++) {
+            if (i == checkDigitPositionFromLast) {
+                continue;
+            }
+            //according to the Luhn Formula we have to go right to left
+            currentNum=Character.digit(number.charAt(numLength-1-i),10);
+            //double the alternating digits per the formula
+            if(i%2!=0){
+                currentNum = currentNum*2;
+                //if the digit is greater than 9 after doubling this little trick
+                //accomodates the LUHN's requirement to add EACH digit individually
+                if(currentNum>9){
+                    currentNum -= 9;
+                }
+            }
+            sum += currentNum;//calculate the sum
+        }
+        //if the sum is divisible by 10 the check digit is 0
+        if(sum%10==0){
+            checkSum=0;
+        }
+        else{ //we need to calculate the next higher number that is divisible by 10
+            checkSum=(10-sum%10);
+        }
+        return checkSum;
+    }
+
+    public static int calculateMod10(String number){
+        int checkSum=0;
+        int currentNum=0;
+        int sum=0;
+
+        int numLength = number.length();
+        //iterate through the account number
+        for (int i = 0; i < numLength; i++) {
+            //according to the Luhn Formula we have to go right to left
+            currentNum=Character.digit(number.charAt(numLength-1-i),10);
+            //double the alternating digits per the formula
+            if(i%2==0){
+                currentNum = currentNum*2;
+                //if the digit is greater than 9 after doubling this little trick
+                //accomodates the LUHN's requirement to add EACH digit individually
+                if(currentNum>9){
+                    currentNum -= 9;
+                }
+            }
+            sum += currentNum;//calculate the sum
+        }
+        //if the sum is divisible by 10 the check digit is 0
+        if(sum%10==0){
+            checkSum=0;
+        }
+        else{ //we need to calculate the next higher number that is divisible by 10
+            checkSum=(10-sum%10);
+        }
+        return checkSum;
+    }
+
+    public static boolean validateMod10(String number){
+        return calculateMod10Checksum(number)==0;
+    }
+
+    public static boolean validateMod11(String number) {
+        return calculateMod10Checksum(number)==1;
+    }
+
+    /**
+     * Calculates the appropriate check digit for anl account number you want to
+     * pass the Mod 11) check.  Assumes the check digit will be inserted between the
+     * prefix and the suffix.
+     *
+     * @param number The number you want a check digit for.
+     * @return The check digit for the specified number.
+     */
+    public static int calculateMod11(String prefix, String suffix)  {
+        // Treat nulls as empty strings.
+        if (prefix == null) { prefix = ""; }
+        if (suffix == null) { suffix = ""; }
+
+        // Calculate what the checksum would be with a 0 checkdigit.
+        int mod10checksum = calculateMod10Checksum(prefix + "0" + suffix);
+
+        // How much does the checkdigit need to add to the checksum for it to be congruent to 1 mod 10.
+        int desiredChecksum = (11-mod10checksum)%10;
+        int desiredCheckdigit = desiredChecksum;
+
+        // if suffix length is odd, the checkdigit will be doubled (and 9 subtracted if that makes it 2 digits), so account for that.
+        if (suffix.length()%2 != 0) {
+            if (desiredChecksum%2 == 0) {
+                desiredCheckdigit = desiredChecksum/2;
+            } else {
+                desiredCheckdigit = (desiredChecksum+9)/2;
+            }
+        }
+
+        return desiredCheckdigit;
+
     }
 }

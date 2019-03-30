@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.27
+* **Change** Added mod-10 and mod-11 token values in simulator responses page
+
 ## 4.3.26
 * **Change** For detokenize, ignore cvv from response if it comes out to be 090
 

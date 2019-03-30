@@ -39,38 +39,21 @@ public class ValidatorService {
 
     @Value("${simulate.delay}")
     private int delay = 0;
-    private boolean doThrowException = true;
 
-    public void turnOffExceptions() {
-        doThrowException = false;
-    }
-
-    public void turnOnExceptions() {
-        doThrowException = true;
-    }
 
     public void validateRequest(TokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateTokenizeRequest(request);
         handleExceptionsAndDelayForPAN(request.getPrimaryAccountNumber());
     }
 
     public void validateRequest(DetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateDetokenizeRequest(request);
         handleExceptionsAndDelayForToken(request.getToken());
     }
 
     public void validateRequest(BatchTokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         String input = request.getMerchantRefId();
         requestValidator.validateSoapHeader(header);
         requestValidator.validateBatchTokenizeRequest(request);
@@ -78,9 +61,6 @@ public class ValidatorService {
     }
 
     public void validateRequest(BatchDetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         String input = request.getMerchantRefId();
         requestValidator.validateSoapHeader(header);
         requestValidator.validateBatchDetokenizeRequest(request);
@@ -88,9 +68,6 @@ public class ValidatorService {
     }
 
     public void validateRequest(TokenInquiryRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         String input = request.getMerchantRefId();
         requestValidator.validateSoapHeader(header);
         requestValidator.validateTokenInquiryRequest(request);
@@ -98,27 +75,18 @@ public class ValidatorService {
     }
 
     public void validateRequest(RegistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateRegistrationRequest(request);
         handleExceptionsAndDelayForPAN(request.getPrimaryAccountNumber());
     }
 
     public void validateRequest(DeregistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateDeregistrationRequest(request);
         handleExceptionsAndDelayForRegId(request.getRegId());
     }
 
     public void validateRequest(DecryptRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateDecryptRequest(request);
         VerifoneCryptogram verifoneCryptogram = request.getVerifoneCryptogram();
@@ -129,45 +97,30 @@ public class ValidatorService {
     }
 
     public void validateRequest(TokenRegistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateTokenRegistrationRequest(request);
         handleExceptionsAndDelayForToken(request.getToken());
     }
 
     public void validateRequest(ECheckTokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateECheckTokenizeRequest(request);
         handleExceptionsAndDelayForAccountNumber(request.getAccount().getAccountNumber());
     }
 
     public void validateRequest(ECheckDetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateECheckDetokenizeRequest(request);
         handleExceptionsAndDelayForToken(request.getToken().getTokenValue());
     }
 
     public void validateRequest(OrderRegistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateOrderRegistrationRequest(request);
         handleExceptionsAndDelayForCVV(request.getCardSecurityCode());
     }
 
     public void validateRequest(OrderDeregistrationRequest request, SoapHeaderElement header) throws InterruptedException {
-        if (!doThrowException) {
-            return;
-        }
         requestValidator.validateSoapHeader(header);
         requestValidator.validateOrderDeregistrationRequest(request);
         handleExceptionsAndDelayForToken(request.getToken());
