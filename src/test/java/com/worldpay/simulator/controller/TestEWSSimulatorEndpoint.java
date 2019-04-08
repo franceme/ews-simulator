@@ -61,6 +61,7 @@ import com.worldpay.simulator.TokenRegistrationRequest;
 import com.worldpay.simulator.TokenRegistrationResponse;
 import com.worldpay.simulator.TokenizeRequest;
 import com.worldpay.simulator.TokenizeResponse;
+import com.worldpay.simulator.VError;
 import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
@@ -208,7 +209,20 @@ public class TestEWSSimulatorEndpoint {
     @Test
     public void testAddEcheckTokenizePanToTokenResponse() {
         ResponseEntity actual = ewsSimulatorEndpoint.addECheckTokenizePanToTokenResponse("pan", "token", "new");
-        verify(simulatorResponseService).addECheckTokenizePanToTokenResponseToMap(eq("pan"), any(Token.class));
+        verify(simulatorResponseService).addECheckTokenizePanToTokenResponseToMap(eq("pan"), any(ECheckToken.class));
+        assertTrue(actual.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    public void testAddEcheckTokenizeErrorTokenResponse() {
+        ResponseEntity actual = ewsSimulatorEndpoint.addECheckTokenizeErrorResponse("pan", 103);
+        ECheckToken token = new ECheckToken();
+        VError vError = new VError();
+        vError.setId(103);
+        vError.setCode("INTERNAL_ERROR");
+        vError.setMessage("Internal Error.");
+        token.setError(vError);
+        verify(simulatorResponseService).addECheckTokenizePanToErrorTokenResponseToMap(eq("pan"), any(ECheckToken.class));
         assertTrue(actual.getStatusCode().is2xxSuccessful());
     }
 

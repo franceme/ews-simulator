@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.worldpay.simulator.Account;
 import com.worldpay.simulator.DeregistrationResponse;
 import com.worldpay.simulator.DetokenizeResponse;
+import com.worldpay.simulator.ECheckToken;
 import com.worldpay.simulator.OrderDeregistrationResponse;
 import com.worldpay.simulator.OrderRegistrationResponse;
 import com.worldpay.simulator.RegistrationResponse;
@@ -28,7 +29,9 @@ public class SimulatorResponseService {
     // Key - Token
     private Map<String, Account> eCheckDetokenizeTokenToAccountResponseMap;
     // Key - PAN
-    private Map<String, Token> eCheckTokenizePanToTokenResponseMap;
+    private Map<String, ECheckToken> eCheckTokenizePanToTokenResponseMap;
+    // Key - PAN
+    private Map<String, ECheckToken> eCheckTokenizePanToErrorTokenResponseMap;
     // Key - Token
     private Map<String, String> batchDetokenizeTokenToPanResponseMap;
     // Key - PAN
@@ -90,7 +93,7 @@ public class SimulatorResponseService {
         return eCheckDetokenizeTokenToAccountResponseMap;
     }
 
-    public Map<String, Token> getECheckTokenizePanToTokenResponseMap() {
+    public Map<String, ECheckToken> getECheckTokenizePanToTokenResponseMap() {
         return eCheckTokenizePanToTokenResponseMap;
     }
 
@@ -140,6 +143,10 @@ public class SimulatorResponseService {
 
     public Map<String, Integer> getECheckTokenizeExceptionMap() {
         return eCheckTokenizeExceptionMap;
+    }
+
+    public Map<String, ECheckToken> geteCheckTokenizePanToErrorTokenResponseMap() {
+        return eCheckTokenizePanToErrorTokenResponseMap;
     }
 
     public Map<String, Integer> getBatchDetokenizeExceptionMap() {
@@ -233,6 +240,9 @@ public class SimulatorResponseService {
         if (eCheckTokenizeExceptionMap != null) {
             eCheckTokenizeExceptionMap.clear();
         }
+        if (eCheckTokenizePanToErrorTokenResponseMap != null) {
+            eCheckTokenizePanToErrorTokenResponseMap.clear();
+        }
     }
 
     public void clearBatchDetokenizeMap() {
@@ -324,11 +334,18 @@ public class SimulatorResponseService {
         eCheckDetokenizeTokenToAccountResponseMap.put(key, account);
     }
 
-    public void addECheckTokenizePanToTokenResponseToMap(String key, Token token) {
+    public void addECheckTokenizePanToTokenResponseToMap(String key, ECheckToken token) {
         if (eCheckTokenizePanToTokenResponseMap == null) {
             eCheckTokenizePanToTokenResponseMap = new HashMap<>();
         }
         eCheckTokenizePanToTokenResponseMap.put(key, token);
+    }
+
+    public void addECheckTokenizePanToErrorTokenResponseToMap(String key, ECheckToken token) {
+        if (eCheckTokenizePanToErrorTokenResponseMap == null) {
+            eCheckTokenizePanToErrorTokenResponseMap = new HashMap<>();
+        }
+        eCheckTokenizePanToErrorTokenResponseMap.put(key, token);
     }
 
     public void addBatchDetokenizeTokenToPanResponseToMap(String token, String pan) {
@@ -551,5 +568,29 @@ public class SimulatorResponseService {
         }
         DeregistrationResponse response = deregistrationResponseMap.get(regId);
         return response == null ? deregistrationResponseMap.get("*") : response;
+    }
+
+    public Integer getEcheckTokenizeExceptionSavedIfAny(String pan) {
+        if (eCheckTokenizeExceptionMap == null) {
+            return null;
+        }
+        Integer errorId = eCheckTokenizeExceptionMap.get(pan);
+        return errorId == null ? eCheckTokenizeExceptionMap.get("*") : errorId;
+    }
+
+    public ECheckToken getEcheckTokenizeTokenResponseSavedIfAny(String pan) {
+        if (eCheckTokenizePanToTokenResponseMap == null) {
+            return null;
+        }
+        ECheckToken response = eCheckTokenizePanToTokenResponseMap.get(pan);
+        return response == null ? eCheckTokenizePanToTokenResponseMap.get("*") : response;
+    }
+
+    public ECheckToken getEcheckTokenizeErrorTokenSavedIfAny(String pan) {
+        if (eCheckTokenizePanToErrorTokenResponseMap == null) {
+            return null;
+        }
+        ECheckToken response = eCheckTokenizePanToErrorTokenResponseMap.get(pan);
+        return response == null ? eCheckTokenizePanToErrorTokenResponseMap.get("*") : response;
     }
 }

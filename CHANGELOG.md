@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.28
+* **Change** Added echeck tokenize response support in the simulator
+
 ## 4.3.27
 * **Change** Added mod-10 and mod-11 token values in simulator responses page
 

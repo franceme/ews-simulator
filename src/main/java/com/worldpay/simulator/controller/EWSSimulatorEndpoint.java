@@ -55,6 +55,8 @@ import com.worldpay.simulator.OrderDeregistrationRequest;
 import com.worldpay.simulator.OrderDeregistrationResponse;
 import com.worldpay.simulator.OrderRegistrationRequest;
 import com.worldpay.simulator.OrderRegistrationResponse;
+import com.worldpay.simulator.errors.EWSError;
+import com.worldpay.simulator.errors.ErrorIdMap;
 import com.worldpay.simulator.pojo.OutputFields;
 import com.worldpay.simulator.RegistrationRequest;
 import com.worldpay.simulator.RegistrationResponse;
@@ -246,7 +248,7 @@ public class EWSSimulatorEndpoint {
     public ResponseEntity addECheckTokenizePanToTokenResponse(@RequestParam(value = "inputPan") String inputPan,
                                                               @RequestParam(value = "outputToken") String outputToken,
                                                               @RequestParam(value = "outputTokenNewlyGen") String outputTokenNewlyGen) {
-        Token token = new Token();
+        ECheckToken token = new ECheckToken();
         token.setTokenValue(outputToken);
         token.setTokenNewlyGenerated("true".equalsIgnoreCase(outputTokenNewlyGen));
         simulatorResponseService.addECheckTokenizePanToTokenResponseToMap(inputPan, token);
@@ -403,6 +405,20 @@ public class EWSSimulatorEndpoint {
                                                      @RequestParam(value = "outputErrorId") Integer outputErrorId) {
         simulatorResponseService.addECheckTokenizeExceptionToMap(inputPan, outputErrorId);
         return new ResponseEntity("EWS Simulator - EcheckTokenizeException added", HttpStatus.OK);
+    }
+
+    @PostMapping("/addECheckTokenizeErrorResponse")
+    @ResponseBody
+    public ResponseEntity addECheckTokenizeErrorResponse(@RequestParam(value = "inputPan") String inputPan,
+                                                         @RequestParam(value = "outputErrorId") Integer outputErrorId) {
+        ECheckToken token = new ECheckToken();
+        EWSError error = ErrorIdMap.getError(outputErrorId);
+        VError vError = new VError();
+        vError.setId(outputErrorId);
+        vError.setCode(error.getErrorCode());
+        vError.setMessage(error.getErrorMessage());
+        simulatorResponseService.addECheckTokenizePanToErrorTokenResponseToMap(inputPan, token);
+        return new ResponseEntity("EWS Simulator - ECheckTokenizeErrorResponse added", HttpStatus.OK);
     }
 
     @PostMapping("/addECheckDetokenizeException")
@@ -649,13 +665,33 @@ public class EWSSimulatorEndpoint {
     public ECheckTokenizeResponse echeckTokenize(@RequestPayload ECheckTokenizeRequest request,
                                                  @SoapHeader("{" + HEADER_URI + "}Security") SoapHeaderElement auth) throws InterruptedException {
 
+        String primaryAccountNumber = request.getAccount().getAccountNumber();
+        // Check for saved exceptions
+        Integer savedException = simulatorResponseService.getEcheckTokenizeExceptionSavedIfAny(primaryAccountNumber);
+        if (savedException != null) {
+            EWSUtils.throwDesiredException(savedException);
+        }
+
+        ECheckTokenizeResponse response = new ECheckTokenizeResponse();
+        // Check for any saved errors
+        ECheckToken savedErrorToken = simulatorResponseService.getEcheckTokenizeErrorTokenSavedIfAny(primaryAccountNumber);
+        if (savedErrorToken != null) {
+            response.setToken(savedErrorToken);
+            return response;
+        }
+        // Check for saved responses
+        ECheckToken savedResponse = simulatorResponseService.getEcheckTokenizeTokenResponseSavedIfAny(primaryAccountNumber);
+        if (savedResponse != null) {
+            addMerchantRefId(request, response);
+            response.setToken(savedResponse);
+            return response;
+        }
+
+
+        // Fallback
         //handle default validator based on the merchantID or PAN
         httpHeaderUtils.customizeHttpResponseHeader();
         validatorService.validateRequest(request, auth);
-
-        ECheckTokenizeResponse response = new ECheckTokenizeResponse();
-
-        String primaryAccountNumber = request.getAccount().getAccountNumber();
 
         ECheckToken token = new ECheckToken();
 

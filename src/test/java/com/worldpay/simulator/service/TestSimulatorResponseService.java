@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.worldpay.simulator.Account;
 import com.worldpay.simulator.DeregistrationResponse;
 import com.worldpay.simulator.DetokenizeResponse;
+import com.worldpay.simulator.ECheckToken;
 import com.worldpay.simulator.OrderDeregistrationResponse;
 import com.worldpay.simulator.OrderRegistrationResponse;
 import com.worldpay.simulator.RegistrationResponse;
@@ -45,7 +46,7 @@ public class TestSimulatorResponseService {
         service.addECheckDetokenizeTokenToAccountResponseToMap("key", new Account());
         assertEquals(1, service.getECheckDetokenizeTokenToAccountResponseMap().size());
 
-        service.addECheckTokenizePanToTokenResponseToMap("key", new Token());
+        service.addECheckTokenizePanToTokenResponseToMap("key", new ECheckToken());
         assertEquals(1, service.getECheckTokenizePanToTokenResponseMap().size());
 
         service.addBatchDetokenizeTokenToPanResponseToMap("key", "pan");
@@ -84,6 +85,9 @@ public class TestSimulatorResponseService {
         service.addECheckTokenizeExceptionToMap("key", 101);
         assertEquals(1, service.getECheckDetokenizeExceptionMap().size());
 
+        service.addECheckTokenizePanToErrorTokenResponseToMap("key", new ECheckToken());
+        assertEquals(1, service.geteCheckTokenizePanToErrorTokenResponseMap().size());
+
         service.addBatchDetokenizeExceptionToMap("key", 101);
         assertEquals(1, service.getBatchDetokenizeExceptionMap().size());
 
@@ -116,7 +120,8 @@ public class TestSimulatorResponseService {
         assertEquals(0, service.getTokenInquiryExceptionMap().size());
         assertEquals(0, service.getECheckDetokenizeExceptionMap().size());
         assertEquals(0, service.getECheckDetokenizeExceptionMap().size());
-        assertEquals(0, service.getBatchDetokenizeExceptionMap().size());
+        assertEquals(0, service.getECheckTokenizeExceptionMap().size());
+        assertEquals(0, service.geteCheckTokenizePanToErrorTokenResponseMap().size());
         assertEquals(0, service.getBatchTokenizeExceptionMap().size());
         assertEquals(0, service.getTokenRegistrationExceptionMap().size());
         assertEquals(0, service.getOrderRegistrationExceptionMap().size());
@@ -270,5 +275,18 @@ public class TestSimulatorResponseService {
         service.addDeregistrationResponseToMap("*", response);
         assertEquals(response, service.getDeregistrationResponseSavedIfAny("978"));
         service.clearDeregistrationMap();
+    }
+
+    @Test
+    public void getEcheckTokenizeErrorTokenSavedIfAny() {
+        assertNull(service.getEcheckTokenizeErrorTokenSavedIfAny("123"));
+        ECheckToken response = new ECheckToken();
+        service.addECheckTokenizePanToErrorTokenResponseToMap("123", response);
+        assertEquals(response, service.getEcheckTokenizeErrorTokenSavedIfAny("123"));
+        service.clearECheckTokenizeMap();
+        assertNull(service.getEcheckTokenizeErrorTokenSavedIfAny("123"));
+        service.addECheckTokenizePanToErrorTokenResponseToMap("*", response);
+        assertEquals(response, service.getEcheckTokenizeErrorTokenSavedIfAny("978"));
+        service.clearECheckTokenizeMap();
     }
 }
