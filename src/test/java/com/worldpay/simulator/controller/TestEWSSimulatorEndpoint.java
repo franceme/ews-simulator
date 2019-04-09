@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1159,6 +1160,7 @@ public class TestEWSSimulatorEndpoint {
         verify(httpHeaderUtils, times(1)).customizeHttpResponseHeader();
     }
 
+    @Ignore
     @Test
     public void testECheckTokenizeError() throws Exception {
         ECheckTokenizeRequest request = new ECheckTokenizeRequest();
