@@ -76,6 +76,7 @@
                 <button class="tablinks" onclick="openTab(event, 'OrderLVT')">OrderLVT</button>
                 <button class="tablinks" onclick="openTab(event, 'AddSimResponse')">AddSimResponse</button>
                 <button class="tablinks" onclick="openTab(event, 'AddSimException')">AddSimException</button>
+                <button class="tablinks" onclick="openTab(event, 'AddSimError')">AddSimError</button>
             </div>
 
             <!-- Tab content -->
@@ -480,6 +481,22 @@
                         </td>
                     </tr>
 
+                    <tr>
+                        <td>
+                            /addECheckTokenizePanToTokenResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputToken</li>
+                                <li>outputTokenNewlyGen</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds a ECheck Tokenize response of given output fields for the given input PAN.
+                        </td>
+                    </tr>
+
 
                 </table>
             </div>
@@ -578,6 +595,44 @@
                             Adds Deregistration exception with the given outputErrorId for given inputRegId.
                         </td>
                     </tr>
+
+                    <tr>
+                        <td>
+                            /addEcheckTokenizeException
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds ECheck Tokenize exception with the given outputErrorId for given inputPan.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="AddSimError" class="tabcontent">
+                <table class="table table-striped">
+                    <th scope="col">Method</th>
+                    <th scope="col">Input</th>
+                    <th scope="col">Output</th>
+                    <tr>
+                        <td>
+                            /addECheckTokenizeErrorResponse
+                        </td>
+                        <td>
+                            <ul>
+                                <li>inputPan</li>
+                                <li>outputErrorId</li>
+                            </ul>
+                        </td>
+                        <td>
+                            Adds ECheck Tokenize error with the given outputErrorId for given inputPan.
+                        </td>
+                    </tr>
+
                 </table>
             </div>
 

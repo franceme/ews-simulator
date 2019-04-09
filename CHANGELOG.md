@@ -1,6 +1,9 @@
 CHANGELOG
 ---------
 
+## 4.3.29
+* **Change** Added echeck tokenize actions to the simulators responses page
+
 ## 4.3.28
 * **Change** Added echeck tokenize response support in the simulator
 
