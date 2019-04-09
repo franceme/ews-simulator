@@ -166,6 +166,16 @@ public class EWSSimulatorEndpoint {
         return response;
     }
 
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/inputEcheck")
+    public OutputFields inputEcheck(@RequestParam(value = "accNum") String accNum, @RequestParam(value = "routingNum") String routingNum ) {
+        OutputFields response = new OutputFields();
+        response.setToken(EWSUtils.generateEcheckTokenFromAccNumRoutingNum(accNum, routingNum));
+        response.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(accNum));
+
+        return response;
+    }
+
     @PostMapping("/clearAllResponses")
     @ResponseBody
     public ResponseEntity clearAllResponses() {
@@ -694,15 +704,17 @@ public class EWSSimulatorEndpoint {
         validatorService.validateRequest(request, auth);
 
         ECheckToken token = new ECheckToken();
+        token.setTokenValue(EWSUtils.generateEcheckTokenFromAccNumRoutingNum(primaryAccountNumber, request.getAccount().getRoutingNumber()));
+        token.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
 
-        VError error = getError(primaryAccountNumber);
+        /*VError error = getError(primaryAccountNumber);
         if (error != null) {
             token.setError(error);
             response.setToken(token);
         } else {
             token.setTokenValue(EWSUtils.generateEcheckToken(primaryAccountNumber, request.getAccount().getAccountType()));
             token.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
-        }
+        }*/
         response.setToken(token);
 
         addMerchantRefId(request, response);

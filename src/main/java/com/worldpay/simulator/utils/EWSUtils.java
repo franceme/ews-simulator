@@ -153,6 +153,18 @@ public class EWSUtils {
         return  "2"+generateEcheckToken(accountNumber)+String.valueOf(getAccountType(accountType));
     }
 
+    public static String generateEcheckTokenFromAccNumRoutingNum(String accountNumber, String routingNumber) {
+        String defaultToken = "21110000001111114";
+        if (accountNumber == null || accountNumber.length() < 4 || routingNumber == null || routingNumber.length() < 4) {
+            return defaultToken;
+        }
+        String prefix = "24190";
+        String last4AccoutNumber = accountNumber.substring(accountNumber.length()-4, accountNumber.length());
+        String last4RoutingNumber = routingNumber.substring(routingNumber.length()-4, routingNumber.length());
+        String suffix =   "000" + last4AccoutNumber + last4RoutingNumber;
+        return prefix + calculateMod11(prefix , suffix) + suffix;
+    }
+
     public static String getPAN(String token) {
 
         if(!isValidPAN(generateProperty(token)))

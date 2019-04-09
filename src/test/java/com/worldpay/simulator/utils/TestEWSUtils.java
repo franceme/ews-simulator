@@ -349,6 +349,15 @@ public class TestEWSUtils {
     assertTrue(EWSUtils.validateMod11(EWSUtils.getMod11Value(vault)));
   }
 
+  @Test
+  public void testGenerateEcheckTokenFromAccNumRoutingNum() {
+    assertEquals("21110000001111114", EWSUtils.generateEcheckTokenFromAccNumRoutingNum(null, null));
+    assertEquals("21110000001111114", EWSUtils.generateEcheckTokenFromAccNumRoutingNum("123", null));
+    assertEquals("21110000001111114", EWSUtils.generateEcheckTokenFromAccNumRoutingNum(null, "123"));
+    assertEquals("24190400034564321", EWSUtils.generateEcheckTokenFromAccNumRoutingNum("1234567890123456", "987654321"));
+    assertTrue(EWSUtils.validateMod11(EWSUtils.generateEcheckTokenFromAccNumRoutingNum("1234567890123456", "987654321")));
+  }
+
 
 
 }

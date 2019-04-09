@@ -56,6 +56,18 @@
                 </div>
                 <input type="text" id="input-cvv" class="form-control">
             </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">ECheck Account Number</span>
+                </div>
+                <input type="text" id="input-accNum" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">ECheck Routing Number</span>
+                </div>
+                <input type="text" id="input-routingNum" class="form-control">
+            </div>
             <button type="button" id="input-btn" class="btn btn-primary">Generate Output</button>
             <button type="button" id="input-reset-btn" class="btn btn-default">Reset Input</button>
 
@@ -194,6 +206,17 @@
                             999999999, add 0's until reaching 9 digits, then reverse all but first six and last four digits
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            Echeck account number, routing number
+                        </td>
+                        <td>
+                            ECheckTokenize
+                        </td>
+                        <td>
+                            Take prefix '24190' + Mod11 check digit + '000' + Account number last 4 + Routing number last 4
+                        </td>
+                    </tr>
                 </table>
             </div>
 
@@ -234,13 +257,13 @@
                     <th scope="col">Rules</th>
                     <tr>
                         <td>
-                            PAN
+                            PAN/Echeck account number
                         </td>
                         <td>
-                            Registration, Tokenize
+                            Registration, Tokenize, EcheckTokenize
                         </td>
                         <td>
-                            If PAN fourth from last and second last digits are 0, return true, else false.
+                            If PAN/Account number's fourth from last and second last digits are 0, return true, else false.
                         </td>
                     </tr>
                 </table>

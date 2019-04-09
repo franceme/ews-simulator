@@ -105,7 +105,7 @@ public class ValidatorService {
     public void validateRequest(ECheckTokenizeRequest request, SoapHeaderElement header) throws InterruptedException {
         requestValidator.validateSoapHeader(header);
         requestValidator.validateECheckTokenizeRequest(request);
-        handleExceptionsAndDelayForAccountNumber(request.getAccount().getAccountNumber());
+//        handleExceptionsAndDelayForAccountNumber(request.getAccount().getAccountNumber());
     }
 
     public void validateRequest(ECheckDetokenizeRequest request, SoapHeaderElement header) throws InterruptedException {

@@ -4,6 +4,8 @@ $(document).ready(function () {
         let token = $("#input-token").val();
         let regId = $("#input-regid").val();
         let cvv = $("#input-cvv").val();
+        let accNum = $("#input-accNum").val();
+        let routingNum = $("#input-routingNum").val();
         if (pan !== '') {
             processInputPan();
         } else if (token !== '') {
@@ -12,6 +14,8 @@ $(document).ready(function () {
             processInputRegId();
         } else if (cvv !== '') {
             processInputCvv();
+        } else if (accNum !== '' && routingNum !== '') {
+            processInputEcheck();
         }
     });
 
@@ -211,6 +215,28 @@ function processInputCvv () {
             try {
                 let response = JSON.parse(xhttp.responseText);
                 $("#output-orderlvt").val(response.orderLVT);
+            } catch {
+                alert("EWS API not return correct response");
+            }
+        }
+    }
+
+    xhttp.send(null);
+}
+
+function processInputEcheck () {
+
+    let accNum = $("#input-accNum").val();
+    let routingNum = $("#input-routingNum").val();
+    let xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "inputEcheck?" + "accNum=" + accNum +"&routingNum="+routingNum, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            try {
+                let response = JSON.parse(xhttp.responseText);
+                $("#output-tokennewlygen").val(response.tokenNewlyGenerated.toString());
+                $("#output-token").val(response.token);
             } catch {
                 alert("EWS API not return correct response");
             }
