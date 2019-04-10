@@ -716,7 +716,7 @@ public class EWSSimulatorEndpoint {
             token.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(primaryAccountNumber));
         }*/
         response.setToken(token);
-
+        response.setRequestId(EWSUtils.randomReqId());
         addMerchantRefId(request, response);
         return response;
     }
