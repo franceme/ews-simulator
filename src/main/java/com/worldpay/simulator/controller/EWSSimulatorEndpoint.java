@@ -7,16 +7,17 @@ import static com.worldpay.simulator.utils.ValidatorUtils.isValidToken;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 
+import com.worldpay.simulator.pojo.ExceptionMode;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -469,11 +470,23 @@ public class EWSSimulatorEndpoint {
         return new ResponseEntity("EWS Simulator - DeregistrationException added", HttpStatus.OK);
     }
 
+    /*
+    @PostMapping("/toggleRandomExceptions")
+    @ResponseBody
+    public ResponseEntity toggleRandomExceptions(@RequestParam(value = "isActive") boolean isActive) {
+        randomExceptionsEnabled = isActive;
+        return new ResponseEntity("EWS Simulator - Random exceptions are " + (isActive ? "online" : "offline") + "; rate set to " + avgErrorsPer200Requests + " in 200 requests", HttpStatus.OK);
+    }*/
+
 
     private static final String NAMESPACE_URI = "urn:com:vantiv:types:encryption:transactions:v1";
     private static final String HEADER_URI = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
     private static final String DEMOBYTE = "2wABBJQ1AgAAAAAgJDUCAAAAAAA=\n" +
             "                AAAAAAAA/COBt84dnIEcwAA3gAAGhgEDoLABAAhAgAABAAAALnNCLw==,";
+
+    // New variables
+    @Autowired
+    private ExceptionMode exceptionMode;
 
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "RegistrationRequest")
@@ -621,6 +634,7 @@ public class EWSSimulatorEndpoint {
             String PAN = card.getPrimaryAccountNumber();
             Token token = new Token();
 
+            // TODO: Determine whether this needs random exception support
             VError error = getError(PAN);
             if (error != null) {
                 token.setError(error);
@@ -653,6 +667,7 @@ public class EWSSimulatorEndpoint {
             String tokenValue = token.getTokenValue();
             Card card = new Card();
 
+            // TODO: Determine whether this needs random exception support
             VError error = getError(tokenValue);
             if (error != null) {
                 card.setError(error);
@@ -841,7 +856,11 @@ public class EWSSimulatorEndpoint {
 
         String primaryAccountNumber = EWSUtils.getPAN(token);
 
-        EWSUtils.handleDesiredExceptions(primaryAccountNumber);
+        if (exceptionMode.isRandomExceptionsEnabled()) {
+            throwRandomException();
+        } else {
+            EWSUtils.handleDesiredExceptions(primaryAccountNumber);
+        }
 
         answer.setPrimaryAccountNumber(primaryAccountNumber);
 
@@ -903,7 +922,14 @@ public class EWSSimulatorEndpoint {
         answer.setRequestId(EWSUtils.randomReqId());
         // set token (mandatory)
         String token = EWSUtils.getPANToken(primaryAccountNumber);
-        EWSUtils.handleDesiredExceptions(token);
+
+        // Check automatic exception mode and generate appropriate exceptions
+        if (exceptionMode.isRandomExceptionsEnabled()) {
+            throwRandomException();
+        } else {
+            EWSUtils.handleDesiredExceptions(token);
+        }
+
         answer.setToken(token);
         // set PAN (mandatory)
         answer.setPrimaryAccountNumber(primaryAccountNumber);
@@ -996,6 +1022,19 @@ public class EWSSimulatorEndpoint {
             String encryptedTrack2 = encryptedCard.getTrack2();
             decryptedCard.setTrack2(EWSUtils.decrypt(encryptedTrack2));
         }
+    }
+
+    private void throwRandomException(Random rand) {
+        int avgErrorsPer200Requests = exceptionMode.getAvgErrorsPer200Requests();
+        int[] enabledRandomErrorCodes = exceptionMode.getEnabledRandomErrorCodes();
+
+        if (rand.nextInt(200) < avgErrorsPer200Requests) {
+            EWSUtils.throwDesiredException(enabledRandomErrorCodes[rand.nextInt(enabledRandomErrorCodes.length)]);
+        }
+    }
+
+    private void throwRandomException() {
+        throwRandomException(new Random());
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "EchoRequest")
