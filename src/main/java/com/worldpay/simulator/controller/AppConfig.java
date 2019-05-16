@@ -3,12 +3,14 @@ package com.worldpay.simulator.controller;
 import com.worldpay.simulator.pojo.ExceptionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@PropertySource("classpath:config.properties")
+@ComponentScan("com.worldpay.simulator")
+@PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true)
 public class AppConfig {
 
     private static final int DEFAULT_ERROR_RATE = 10;
@@ -17,7 +19,7 @@ public class AppConfig {
     @Autowired
     Environment env;
 
-    @Bean
+    @Bean("exceptionMode")
     public ExceptionMode exceptionMode() {
 
         String randomExceptionsEnabledString = env.getProperty("exceptions.random.enabled");

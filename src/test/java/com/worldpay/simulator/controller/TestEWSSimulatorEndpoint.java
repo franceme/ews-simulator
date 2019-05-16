@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.List;
 
+import com.worldpay.simulator.pojo.ExceptionMode;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -87,6 +88,9 @@ public class TestEWSSimulatorEndpoint {
 
     @MockBean
     SimulatorResponseService simulatorResponseService;
+
+    @MockBean
+    ExceptionMode exceptionMode;
 
     @Autowired
     @Qualifier("testEWSSimulator")

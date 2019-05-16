@@ -2,6 +2,7 @@ package com.worldpay.simulator;
 
 import com.worldpay.simulator.controller.EWSSimulatorEndpoint;
 import com.worldpay.simulator.exceptions.DetailSoapFaultDefinitionExceptionResolver;
+import com.worldpay.simulator.pojo.ExceptionMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -25,6 +26,12 @@ public class SpringTestConfig {
     public EWSSimulatorEndpoint eWSSimulatorEndpoint(){
         EWSSimulatorEndpoint eWSSimulatorEndpoint = new EWSSimulatorEndpoint();
         return eWSSimulatorEndpoint;
+    }
+
+    @Bean(name = "testExceptionMode")
+    public ExceptionMode exceptionMode() {
+        ExceptionMode exceptionMode = new ExceptionMode(false, 10, new int[0]);
+        return exceptionMode;
     }
 
     @Bean(name = "testFilterConfig")

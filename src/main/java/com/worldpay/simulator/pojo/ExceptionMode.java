@@ -1,5 +1,7 @@
 package com.worldpay.simulator.pojo;
 
+import org.springframework.stereotype.Component;
+
 public class ExceptionMode {
 
     private boolean randomExceptionsEnabled;
