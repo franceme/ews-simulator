@@ -14,6 +14,7 @@ import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.worldpay.simulator.AccountType;
@@ -27,7 +28,14 @@ import com.worldpay.simulator.exceptions.ServerFaultException;
 @Component
 public class EWSUtils {
     private static String defaultPan = "3000100011118566";
+    public static double errorPercent;
 
+    @Value("${error.percent}")
+    public void setErrorPercent(double ep) {
+        System.out.println(ep);
+        this.errorPercent = ep;
+    }
+    
     public static String randomReqId() {
         return UUID.randomUUID().toString();
     }
@@ -228,12 +236,14 @@ public class EWSUtils {
     }
 
     public static void throwDesiredException(int errorId) {
-        if (isServerFaultError(errorId)) {
-            throw new ServerFaultException(errorId);
-        } else if (isSOAPFaultError(errorId)) {
-            throw new SOAPFaultException(getSoapFaultException(errorId));
-        } else if (isClientFaultError(errorId)) {
-            throw new ClientFaultException(errorId);
+        if((Math.random()*100) <= errorPercent && errorPercent != 0) {
+            if (isServerFaultError(errorId)) {
+                throw new ServerFaultException(errorId);
+            } else if (isSOAPFaultError(errorId)) {
+                throw new SOAPFaultException(getSoapFaultException(errorId));
+            } else if (isClientFaultError(errorId)) {
+                throw new ClientFaultException(errorId);
+            }
         }
     }
 
