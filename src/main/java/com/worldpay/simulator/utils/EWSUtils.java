@@ -28,11 +28,10 @@ import com.worldpay.simulator.exceptions.ServerFaultException;
 @Component
 public class EWSUtils {
     private static String defaultPan = "3000100011118566";
-    public static double errorPercent;
+    private static double errorPercent = 100;
 
     @Value("${error.percent}")
     public void setErrorPercent(double ep) {
-        System.out.println(ep);
         this.errorPercent = ep;
     }
     
