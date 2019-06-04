@@ -69,7 +69,6 @@ public class TestEWSUtils {
     error1.setCode("INVALID_REQUEST");
     error1.setMessage("Invalid request (syntax error).");
     EWSUtils tempUtils = new EWSUtils();
-    EWSUtils.setErrorPercentFromTests(100);
   }
 
 
@@ -148,26 +147,61 @@ public class TestEWSUtils {
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_1(){
+    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(101);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_2(){
+    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(102);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_3(){
+    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(103);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_8(){
+    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(108);
   }
 
   @Test(expected = ClientFaultException.class)
   public void testThrowDesiredException_ClientFaultException(){
+    EWSUtils.setErrorPercentFromTests(100);
+    EWSUtils.throwDesiredException(107);
+  }
+
+  @Test
+  public void testDontThrowDesiredException_ServerFaultException_1(){
+    EWSUtils.setErrorPercentFromTests(0);
+    EWSUtils.throwDesiredException(101);
+  }
+
+  @Test
+  public void testDontThrowDesiredException_ServerFaultException_2(){
+    EWSUtils.setErrorPercentFromTests(0);
+    EWSUtils.throwDesiredException(102);
+  }
+
+  @Test
+  public void testDontThrowDesiredException_ServerFaultException_3(){
+    EWSUtils.setErrorPercentFromTests(0);
+    EWSUtils.throwDesiredException(103);
+  }
+
+  @Test
+  public void testDontThrowDesiredException_ServerFaultException_8(){
+    EWSUtils.setErrorPercentFromTests(0);
+    EWSUtils.throwDesiredException(108);
+  }
+
+  @Test
+  public void testDontThrowDesiredException_ClientFaultException(){
+    EWSUtils.setErrorPercentFromTests(0);
     EWSUtils.throwDesiredException(107);
   }
 

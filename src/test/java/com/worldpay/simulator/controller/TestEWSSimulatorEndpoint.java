@@ -1396,6 +1396,7 @@ public class TestEWSSimulatorEndpoint {
         } catch (Exception e) {
             assertEquals("Server Fault Exception", e.getMessage());
         }
+
         OrderRegistrationResponse response = new OrderRegistrationResponse();
         willReturn(null).given(simulatorResponseService).getOrderRegistrationExceptionSavedIfAny("123");
         willReturn(response).given(simulatorResponseService).getOrderRegistrationResponseSavedIfAny("123");
@@ -1480,12 +1481,14 @@ public class TestEWSSimulatorEndpoint {
         willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
         willReturn(new Integer(101)).given(simulatorResponseService).getDeregistrationExceptionSavedIfAny("123");
 
+        EWSUtils.setErrorPercentFromTests(100);
         try{
             ewsSimulatorEndpoint.deregistration(request, header);
             fail("Must throw exception");
         } catch (Exception e) {
             assertEquals("Server Fault Exception", e.getMessage());
         }
+
         DeregistrationResponse response = new DeregistrationResponse();
         willReturn(null).given(simulatorResponseService).getDeregistrationExceptionSavedIfAny("123");
         willReturn(response).given(simulatorResponseService).getDeregistrationResponseSavedIfAny("123");
@@ -1495,5 +1498,21 @@ public class TestEWSSimulatorEndpoint {
         } catch (Exception e) {
             fail("Must not throw exception");
         }
+    }
+    @Test
+    public void deregistrationNoErr() throws InterruptedException {
+        MerchantType merchant = new MerchantType();
+        merchant.setRollupId(rollupId);
+
+        DeregistrationRequest request = new DeregistrationRequest();
+        request.setRegId("1234567891234");
+        request.setMerchant(merchant);
+        request.setMerchantRefId("merchantRefId");
+
+        willDoNothing().given(httpHeaderUtils).customizeHttpResponseHeader();
+        willReturn(new Integer(101)).given(simulatorResponseService).getDeregistrationExceptionSavedIfAny("123");
+
+        EWSUtils.setErrorPercentFromTests(0);
+        ewsSimulatorEndpoint.deregistration(request, header);
     }
 }
