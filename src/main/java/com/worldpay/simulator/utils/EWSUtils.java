@@ -38,7 +38,7 @@ public class EWSUtils {
     public static void setErrorPercentFromTests(double error_percent) {
         errorPercent = error_percent;
     }
-    
+
     public static String randomReqId() {
         return UUID.randomUUID().toString();
     }
