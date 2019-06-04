@@ -626,7 +626,7 @@ public class EWSSimulatorEndpoint {
                 token.setError(error);
                 // break was specified in the document, but the cert environment behaves differently (So commenting out the below lines)
                 // response.getToken().add(token);
-                // break;
+                // break;@RequestMapping(
             } else {
                 token.setTokenValue(EWSUtils.getPANToken(PAN));
                 token.setTokenNewlyGenerated(EWSUtils.checkNewlyGenerated(PAN));
