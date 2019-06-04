@@ -71,6 +71,7 @@ import com.worldpay.simulator.WalletType;
 import com.worldpay.simulator.pojo.OutputFields;
 import com.worldpay.simulator.service.SimulatorResponseService;
 import com.worldpay.simulator.service.ValidatorService;
+import com.worldpay.simulator.utils.EWSUtils;
 import com.worldpay.simulator.utils.HttpHeaderUtils;
 
 
@@ -156,6 +157,8 @@ public class TestEWSSimulatorEndpoint {
         AMEXPAN = "378810200335459";
         AMEXToken = "378810330025459";
         AMEXRegId = "0188739999799669545";
+        
+        EWSUtils.setErrorPercentFromTests(100);
     }
 
     @Test

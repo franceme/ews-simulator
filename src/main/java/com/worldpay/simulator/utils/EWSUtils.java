@@ -31,8 +31,12 @@ public class EWSUtils {
     private static double errorPercent = 100;
 
     @Value("${error.percent}")
-    public void setErrorPercent(double ep) {
-        this.errorPercent = ep;
+    public void setErrorPercent(double error_percent) {
+        this.errorPercent = error_percent;
+    }
+
+    public static void setErrorPercentFromTests(double error_percent) {
+        errorPercent = error_percent;
     }
     
     public static String randomReqId() {

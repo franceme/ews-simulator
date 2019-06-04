@@ -35,6 +35,7 @@ import com.worldpay.simulator.TokenInquiryRequest;
 import com.worldpay.simulator.TokenRegistrationRequest;
 import com.worldpay.simulator.TokenizeRequest;
 import com.worldpay.simulator.VerifoneCryptogram;
+import com.worldpay.simulator.utils.EWSUtils;
 
 
 @RunWith(SpringRunner.class)
@@ -56,6 +57,7 @@ public class TestValidatorService {
     public void setUp() {
         header = null;
         spy = Mockito.spy(validatorService);
+        EWSUtils.setErrorPercentFromTests(100);
     }
 
     @Test

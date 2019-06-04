@@ -69,6 +69,7 @@ public class TestEWSUtils {
     error1.setCode("INVALID_REQUEST");
     error1.setMessage("Invalid request (syntax error).");
     EWSUtils tempUtils = new EWSUtils();
+    EWSUtils.setErrorPercentFromTests(100);
   }
 
 
