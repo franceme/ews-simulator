@@ -124,9 +124,21 @@ public class TestEWSUtils {
     assertEquals("3000100011118566",temp);
   }
 
+  @Test
+  public void testHandleDesiredExceptionsForCVVDontThrow(){
+    EWSUtils.setErrorPercentFromTests(0);
+    EWSUtils.handleDesiredExceptionsForCVV("104");
+  }
 
+  @Test(expected = ClientFaultException.class)
+  public void testHandleDesiredExceptionsForCVVThrow(){
+    EWSUtils.setErrorPercentFromTests(100);
+    EWSUtils.handleDesiredExceptionsForCVV("104");
+  }
+  
   @Test(expected = Exception.class)
   public void handleDesiredExceptions_throwException(){
+    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.handleDesiredExceptions("11033");
   }
 
@@ -142,66 +154,32 @@ public class TestEWSUtils {
 
   @Test
   public void handleDesiredExceptions_NoException(){
-    EWSUtils.handleDesiredExceptions("1313131");
+    EWSUtils.setErrorPercentFromTests(0);
+    EWSUtils.handleDesiredExceptions("11033");
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_1(){
-    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(101);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_2(){
-    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(102);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_3(){
-    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(103);
   }
 
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_8(){
-    EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.throwDesiredException(108);
   }
 
   @Test(expected = ClientFaultException.class)
   public void testThrowDesiredException_ClientFaultException(){
-    EWSUtils.setErrorPercentFromTests(100);
-    EWSUtils.throwDesiredException(107);
-  }
-
-  @Test
-  public void testDontThrowDesiredException_ServerFaultException_1(){
-    EWSUtils.setErrorPercentFromTests(0);
-    EWSUtils.throwDesiredException(101);
-  }
-
-  @Test
-  public void testDontThrowDesiredException_ServerFaultException_2(){
-    EWSUtils.setErrorPercentFromTests(0);
-    EWSUtils.throwDesiredException(102);
-  }
-
-  @Test
-  public void testDontThrowDesiredException_ServerFaultException_3(){
-    EWSUtils.setErrorPercentFromTests(0);
-    EWSUtils.throwDesiredException(103);
-  }
-
-  @Test
-  public void testDontThrowDesiredException_ServerFaultException_8(){
-    EWSUtils.setErrorPercentFromTests(0);
-    EWSUtils.throwDesiredException(108);
-  }
-
-  @Test
-  public void testDontThrowDesiredException_ClientFaultException(){
-    EWSUtils.setErrorPercentFromTests(0);
     EWSUtils.throwDesiredException(107);
   }
 

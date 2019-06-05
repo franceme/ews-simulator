@@ -216,7 +216,7 @@ public class EWSUtils {
                 // Do Nothing
             }
 
-            if (errorId > 0)
+            if (errorId > 0 && (Math.random()*100) <= errorPercent && errorPercent != 0)
                 throwDesiredException(errorId);
         }
     }
@@ -233,20 +233,18 @@ public class EWSUtils {
                 // Do Nothing
             }
 
-            if (errorId > 0)
+            if (errorId > 0 && (Math.random()*100) <= errorPercent && errorPercent != 0)
                 throwDesiredException(errorId);
         }
     }
 
     public static void throwDesiredException(int errorId) {
-        if((Math.random()*100) <= errorPercent && errorPercent != 0) {
-            if (isServerFaultError(errorId)) {
-                throw new ServerFaultException(errorId);
-            } else if (isSOAPFaultError(errorId)) {
-                throw new SOAPFaultException(getSoapFaultException(errorId));
-            } else if (isClientFaultError(errorId)) {
-                throw new ClientFaultException(errorId);
-            }
+        if (isServerFaultError(errorId)) {
+            throw new ServerFaultException(errorId);
+        } else if (isSOAPFaultError(errorId)) {
+            throw new SOAPFaultException(getSoapFaultException(errorId));
+        } else if (isClientFaultError(errorId)) {
+            throw new ClientFaultException(errorId);
         }
     }
 
