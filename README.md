@@ -65,7 +65,7 @@ Following are the command line options that can be used to start the simulator t
 | endpoint | merchant/encryption/v4 | Endpoint the simulator listens to. E.g. https://host:port/merchant/encryption/v4 | |
 | log-level | INFO | Level of details in logging | Optional | DEBUG |
 | log-path | ewsLog | The folder location where the log will be stored | Optional | temp/simulatorLog |
-| error-percent | 100 | Controls % of time that 'random' errors based on last 3 but 1 of PAN/CVV will occur | Optional | 0 |
+| error-percent | 0 | Controls % of time that 'random' errors based on last 3 but 1 of PAN/CVV will occur | Optional | 100 |
 
 ## Deployment
 
