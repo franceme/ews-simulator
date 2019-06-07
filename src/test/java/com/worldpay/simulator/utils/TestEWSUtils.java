@@ -9,9 +9,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.ws.soap.SoapFaultException;
 
 import com.worldpay.simulator.AccountType;
 import com.worldpay.simulator.VError;
@@ -25,9 +27,11 @@ public class TestEWSUtils {
   private String PAN1;
   private String PAN2;
   private String PAN3;
+  private String PAN4;
   private String regId1;
   private String regId2;
   private String regId3;
+  private String regId4;
   private String property1;
   private String property2;
   private String property3;
@@ -49,9 +53,11 @@ public class TestEWSUtils {
     PAN1 = "1235130000521231";
     PAN2 = "251";
     PAN3 = "7123510003521231";
+    PAN4 = "712351000352";
     regId1 = "3153219999999471321";
     regId2 = "251";
     regId3 = "1532179999996471321";
+    regId4 = "1532179999999992530";
     property1 = "123513251231";
     property2 = "251";
     property3 = "7123512530001231";
@@ -71,7 +77,14 @@ public class TestEWSUtils {
     EWSUtils tempUtils = new EWSUtils();
   }
 
+  @Test
+  public void testCalculateMod10(){
+    //positive test
+    assertEquals(5,EWSUtils.calculateMod10("426429633723976"));
 
+    //negative test
+    assertTrue(!(7==EWSUtils.calculateMod10("354336")));
+  }
 
 
   @Test
@@ -88,6 +101,13 @@ public class TestEWSUtils {
     temp = EWSUtils.getRegIdFromPAN(PAN3);
     assertEquals(regId3,temp);
   }
+
+  @Test
+  public void testGetRegIdDoesntStartWithThree(){
+    String temp = EWSUtils.getRegIdFromPAN(PAN4);
+    assertEquals(regId4,temp);
+  }
+  
   @Test
   public void testGetRegIdFromToken(){
     assertEquals("4625213341230348867",EWSUtils.getRegIdFromToken(token));
@@ -135,6 +155,11 @@ public class TestEWSUtils {
     EWSUtils.setErrorPercentFromTests(100);
     EWSUtils.handleDesiredExceptionsForCVV("104");
   }
+
+  @Test
+  public void testHandleDesiredExceptionsForCVVThrowNumberFormat(){
+    EWSUtils.handleDesiredExceptionsForCVV("notACVV");
+  }
   
   @Test(expected = Exception.class)
   public void handleDesiredExceptions_throwException(){
@@ -176,6 +201,11 @@ public class TestEWSUtils {
   @Test(expected = ServerFaultException.class)
   public void testThrowDesiredException_ServerFaultException_8(){
     EWSUtils.throwDesiredException(108);
+  }
+
+  @Test(expected = SOAPFaultException.class)
+  public void testThrowDesiredException_SoapFaultException(){
+    EWSUtils.throwDesiredException(999);
   }
 
   @Test(expected = ClientFaultException.class)
@@ -334,6 +364,14 @@ public class TestEWSUtils {
     assertEquals(16, token.length());
     assertNotEquals(pan, token);
     assertEquals("3456", token.substring(12));
+  }
+
+  @Test
+  public void testGenerateTokenWithPANLastFourInvalidLength() {
+    String pan = "123";
+    String token = EWSUtils.generateTokenWithPANLastFour(pan);
+    assertEquals(3, token.length());
+    assertEquals("123", pan);
   }
 
   @Test

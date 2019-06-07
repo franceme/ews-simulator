@@ -42,7 +42,7 @@ public class EWSUtils {
     public static String randomReqId() {
         return UUID.randomUUID().toString();
     }
-
+    
 
     public static String getMod10Value(String inputNumber) {
         if (validateMod10(inputNumber)) {
@@ -87,7 +87,7 @@ public class EWSUtils {
         sb.append(lastFour);
         return sb.toString();
     }
-
+    // End up making a token in manner from generatePropertyStrategyPAN and replace first digit with 1
     public static String generateVaultToken1(String pan) {
         String token = getPANToken(pan);
         token = 1 + token.substring(1);
