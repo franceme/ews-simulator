@@ -68,6 +68,10 @@ public class RequestValidator {
     @Autowired
     JAXBService jaxbService;
 
+    public void setValidateHeaderForTest(boolean val)
+    {
+        validateHeader = val;
+    }
     public JAXBContext getContext() {
         return jaxbService.getContext();
     }

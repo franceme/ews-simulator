@@ -12,6 +12,12 @@ import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
+import javax.xml.soap.SOAPMessage;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.ws.soap.SoapElement;
+import org.springframework.ws.soap.SoapHeaderElement;
 
 import com.worldpay.simulator.Account;
 import com.worldpay.simulator.BatchDetokenizeRequest;
@@ -44,6 +52,7 @@ import com.worldpay.simulator.VerifoneCryptogram;
 import com.worldpay.simulator.VerifoneMerchantKeyType;
 import com.worldpay.simulator.VerifoneTerminal;
 import com.worldpay.simulator.VoltageCryptogram;
+import com.worldpay.simulator.exceptions.SecurityErrorException;
 import com.worldpay.simulator.service.RequestValidator;
 import com.worldpay.simulator.utils.ValidatorUtils;
 
@@ -52,6 +61,8 @@ import com.worldpay.simulator.utils.ValidatorUtils;
 @PrepareForTest({ValidatorUtils.class})
 public class TestRequestValidator {
 
+    private SoapHeaderElement header;
+    
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
@@ -106,6 +117,22 @@ public class TestRequestValidator {
         TOKEN_NOT_FOUND = "Error: Token not found";
         rollupId = "1123";
 
+    }
+
+    @Test
+    public void testValidateSoapHeaderNoSchema()
+    {
+        requestValidator.setValidateHeaderForTest(false);
+        requestValidator.validateSoapHeader(null);
+        
+        // Should not reach point to throw error
+    }
+    
+    @Test(expected = SecurityErrorException.class)
+    public void testValidateSoapHeaderNull()
+    {
+        requestValidator.setValidateHeaderForTest(true);
+        requestValidator.validateSoapHeader(null);
     }
 
     @Test

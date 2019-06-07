@@ -1,8 +1,8 @@
 package com.worldpay.simulator.filter;
 
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
-import javax.servlet.http.HttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 
 public class RequestLogFilter extends CommonsRequestLoggingFilter {
     public RequestLogFilter() {

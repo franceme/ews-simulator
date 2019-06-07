@@ -19,6 +19,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.Result;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import static junit.framework.TestCase.*;
 import static org.mockito.BDDMockito.willReturn;
@@ -139,6 +140,19 @@ public class TestDetailSoapFaultDefinitionExceptionResolver {
         verify(exceptionResolverSpy, times(1)).addFaultDetail(serverFault, fault);
     }
 
+    @Test
+    public void testCustomizeFault_SecurityException() {
+        Object endpoint = "endpoint";
+        SecurityErrorException ex = mock(SecurityErrorException.class);
+        SecurityErrorException securityFault = new SecurityErrorException("");
+        
+        doNothing().when(exceptionResolverSpy).addFaultDetail(securityFault, fault);
+
+        exceptionResolverSpy.customizeFault(endpoint, ex, fault);
+
+        //Should return / do nothing
+    }
+    
 
     @Test
     public void testCreateServerFault() {
