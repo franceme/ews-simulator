@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/Vantiv/ews-simulator.svg?branch=4.x)](https://travis-ci.org/Vantiv/ews-simulator) [![codecov](https://codecov.io/gh/Vantiv/ews-simulator/branch/4.x/graph/badge.svg)](https://codecov.io/gh/Vantiv/ews-simulator/branch/4.x)
+[![codecov](https://codecov.io/gh/Vantiv/ews-simulator/branch/4.x/graph/badge.svg)](https://codecov.io/gh/Vantiv/ews-simulator/branch/4.x)
  [![GitHub](https://img.shields.io/github/license/vantiv/ews-simulator.svg)](https://github.com/Vantiv/ews-simulator/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/vantiv/ews-simulator.svg)](https://github.com/Vantiv/ews-simulator/issues) ![Github All Releases](https://img.shields.io/github/downloads/vantiv/ews-simulator/total.svg)
 
 
